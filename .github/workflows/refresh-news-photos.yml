@@ -68,12 +68,16 @@ jobs:
               hero_end = '</section><section class="section" id="latest">'
               html = html.replace(hero_end, '</section>' + spotlight + '<section class="section" id="latest">', 1)
 
-          # Remove the photo-less Manchester United vs Sabah homepage banner.
           html = re.sub(r'<section class="match-banner">.*?</section>', '', html, count=1, flags=re.S)
 
           css = '.sports-spotlight{margin-top:10px}.sports-spotlight .section-head{margin-bottom:18px}.sports-spotlight-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:22px}.spotlight-card{background:#fff;border:2px solid var(--navy);border-top:5px solid var(--red);border-radius:12px;overflow:hidden;box-shadow:0 6px 18px #00000018}.spotlight-card img{width:100%;height:280px;object-fit:cover;display:block}.spotlight-body{padding:22px}.spotlight-body h3{font:700 30px/1.12 Georgia;margin:8px 0 12px}.spotlight-body p{color:#46515c;font-size:15px;line-height:1.65}@media(max-width:700px){.sports-spotlight-grid{grid-template-columns:1fr}.spotlight-card img{height:240px}.spotlight-body h3{font-size:25px}}'
           if '.sports-spotlight{' not in html.split('</style>',1)[0]:
               html = html.replace('.sports-feature{border-top:4px solid var(--red)}', '.sports-feature{border-top:4px solid var(--red)}' + css, 1)
+
+          # Make the supplied logo prominent and prevent the old cached/undersized rendering.
+          html = html.replace('.mast{background:#fff;border-bottom:1px solid var(--line);padding:12px 5%}.brand-row{text-align:center}.site-logo{width:150px;height:150px;object-fit:contain;display:block;margin:0 auto 4px}.brand-row .tag{margin-top:0}', '.mast{background:#fff;border-bottom:4px solid var(--red);padding:10px 5% 14px}.brand-row{text-align:center}.site-logo{width:260px;height:260px;object-fit:contain;display:block;margin:0 auto 2px;filter:drop-shadow(0 5px 8px #0003)}.brand-row .tag{margin-top:0;font-weight:800}')
+          html = html.replace('<img class="site-logo" src="logo.svg" alt="Mbale Media Daily logo">', '<img class="site-logo" src="logo.svg?v=4" alt="Mbale Media Daily logo">')
+          html = html.replace('@media(max-width:700px){.top{font-size:10px}', '@media(max-width:700px){.site-logo{width:235px;height:235px}.top{font-size:10px}')
 
           p.write_text(html, encoding='utf-8')
           PY
@@ -84,5 +88,5 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add index.html
           git diff --cached --quiet && echo "No homepage changes needed" && exit 0
-          git commit -m "Remove photo-less homepage match banner"
+          git commit -m "Improve homepage logo visibility"
           git push
