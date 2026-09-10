@@ -1,0 +1,29 @@
+name: Fix logo visibility
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - '.github/workflows/fix-logo-visibility.yml'
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fix logo header
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path("index.html")
+          s=p.read_text(encoding="utf-8")
+          s=s.replace(".mast{background:#fff;border-bottom:1px solid var(--line);padding:12px 5%}.brand-row{text-align:center}.site-logo{width:150px;height:150px;object-fit:contain;display:block;margin:0 auto 4px}.brand-row .tag{margin-top:0}", ".mast{background:#fff;border-bottom:4px solid var(--red);padding:10px 5% 14px}.brand-row{text-align:center}.site-logo{width:260px;height:260px;object-fit:contain;display:block;margin:0 auto 2px;filter:drop-shadow(0 5px 8px #0003)}.brand-row .tag{margin-top:0;font-weight:800}")
+          s=s.replace("<img class=\"site-logo\" src=\"logo.svg\" alt=\"Mbale Media Daily logo\">", "<img class=\"site-logo\" src=\"logo.svg?v=3\" alt=\"Mbale Media Daily logo\">")
+          s=s.replace("@media(max-width:700px){.top{font-size:10px}", "@media(max-width:700px){.site-logo{width:235px;height:235px}.top{font-size:10px}")
+          p.write_text(s,encoding="utf-8")
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          git commit -m 'Fix logo visibility on mobile and desktop' || exit 0
+          git push
