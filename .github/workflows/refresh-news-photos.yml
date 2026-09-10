@@ -61,22 +61,20 @@ jobs:
           sports_anchor = '<section class="section" id="sports"><div class="section-head"><h2>SPORTS</h2></div>'
           sports_features = '''<article class="story sports-feature"><img src="https://mufc-live.cdn.scayle.cloud/images/c29b1c29c6b813e07ca5d6629b3b0765.jpg?quality=75" alt="Bruno Fernandes in the Manchester United 2026/27 home jersey"><div class="story-body"><div class="kicker">Manchester United • Bruno Fernandes</div><h3>Bruno Fernandes leads Manchester United into another big week</h3><p>Bruno Fernandes remains one of Manchester United's key leaders as the club prepares for its UEFA Champions League opener against Sabah and the Manchester derby. Fernandes scored three times and assisted once in United's 5–2 comeback win over Ipswich Town.</p><div class="meta">September 10, 2026 • Manchester United</div><a class="btn" href="sports.html">Read Full Story →</a><div class="source">Photo: Manchester United Store. Current football information checked against recent 2026/27 reports.</div></div></article><article class="story sports-feature"><img src="https://store.f.image.geki.jp/upload/save_image/ib5290-100_9.jpg" alt="Marcus Rashford in England's 2026 home shirt"><div class="story-body"><div class="kicker">Manchester United • Marcus Rashford</div><h3>Marcus Rashford back in Manchester United's attacking plans</h3><p>Marcus Rashford has returned to Manchester United's first-team plans after his loan spell at Barcelona and has started the club's last two Premier League matches. He played 70 minutes against Everton on September 6 before being substituted with a minor knock.</p><div class="meta">September 10, 2026 • Manchester United</div><a class="btn" href="sports.html">Read Full Story →</a><div class="source">Photo: 2026 England replica-kit image featuring Marcus Rashford. Current match information checked against recent football reports.</div></div></article>'''
 
-          if 'Bruno Fernandes leads Manchester United into another big week' not in html:
-              if sports_anchor in html:
-                  html = html.replace(sports_anchor, sports_anchor + '<div class="news-grid">' + sports_features, 1)
-                  print('Added Bruno Fernandes and Marcus Rashford sports features')
-          else:
-              # Keep the two Manchester United features inside the same responsive grid as the rest of Sports.
-              if sports_anchor in html and '<div class="news-grid">' not in html.split(sports_anchor,1)[1].split('<section class="section" id="global">',1)[0][:500]:
-                  html = html.replace(sports_anchor, sports_anchor + '<div class="news-grid">', 1)
-              html = html.replace('</article><div class="news-grid"><article class="story"><img src="https://media.licdn.com/dms/image/v2/D4D22AQFgFBNQMoYPDw/feedshare-shrink_800/feedshare-shrink_800/0/1733343410674?', '</article><article class="story"><img src="https://media.licdn.com/dms/image/v2/D4D22AQFgFBNQMoYPDw/feedshare-shrink_800/feedshare-shrink_800/0/1733343410674?', 1)
-              html = html.replace('<article class="story"><img src="https://mufc-live.cdn.scayle.cloud/images/c29b1c29c6b813e07ca5d6629b3b0765.jpg?quality=75"', '<article class="story sports-feature"><img src="https://mufc-live.cdn.scayle.cloud/images/c29b1c29c6b813e07ca5d6629b3b0765.jpg?quality=75"', 1)
-              html = html.replace('<article class="story"><img src="https://store.f.image.geki.jp/upload/save_image/ib5290-100_9.jpg"', '<article class="story sports-feature"><img src="https://store.f.image.geki.jp/upload/save_image/ib5290-100_9.jpg"', 1)
+          # Keep the two Manchester United stories in the Sports section.
+          if 'Bruno Fernandes leads Manchester United into another big week' not in html and sports_anchor in html:
+              html = html.replace(sports_anchor, sports_anchor + '<div class="news-grid">' + sports_features, 1)
 
-          # Add a polished visual treatment for the two Manchester United feature cards.
-          marker = '.sports-feature'
-          if marker not in html.split('</style>',1)[0]:
-              html = html.replace('.wide{grid-column:1/-1}', '.sports-feature{border-top:4px solid var(--red)}.sports-feature .story-body{padding:25px}.sports-feature h3{font-size:30px}.sports-feature img{height:250px}.wide{grid-column:1/-1}')
+          # Make sure the homepage itself shows a prominent Sports Spotlight immediately below the hero.
+          spotlight = '''<section class="section sports-spotlight" id="sports-spotlight"><div class="section-head"><h2>SPORTS SPOTLIGHT</h2><p class="tagline">Manchester United • Bruno Fernandes & Marcus Rashford</p></div><div class="sports-spotlight-grid"><article class="spotlight-card"><img src="https://mufc-live.cdn.scayle.cloud/images/c29b1c29c6b813e07ca5d6629b3b0765.jpg?quality=75" alt="Bruno Fernandes"><div class="spotlight-body"><div class="kicker">Manchester United • Bruno Fernandes</div><h3>Bruno Fernandes leads Manchester United into another big week</h3><p>Bruno Fernandes remains a key leader as Manchester United prepares for its Champions League opener and the Manchester derby.</p><a class="btn" href="sports.html">Read Bruno's Story →</a></div></article><article class="spotlight-card"><img src="https://store.f.image.geki.jp/upload/save_image/ib5290-100_9.jpg" alt="Marcus Rashford"><div class="spotlight-body"><div class="kicker">Manchester United • Marcus Rashford</div><h3>Marcus Rashford back in Manchester United's attacking plans</h3><p>Rashford has returned to Manchester United's first-team plans and is back among the club's attacking options.</p><a class="btn" href="sports.html">Read Rashford's Story →</a></div></article></div></section>'''
+
+          if 'id="sports-spotlight"' not in html:
+              hero_end = '</section><section class="section" id="latest">'
+              html = html.replace(hero_end, '</section>' + spotlight + '<section class="section" id="latest">', 1)
+
+          css = '.sports-spotlight{margin-top:10px}.sports-spotlight .section-head{margin-bottom:18px}.sports-spotlight-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:22px}.spotlight-card{background:#fff;border:2px solid var(--navy);border-top:5px solid var(--red);border-radius:12px;overflow:hidden;box-shadow:0 6px 18px #00000018}.spotlight-card img{width:100%;height:280px;object-fit:cover;display:block}.spotlight-body{padding:22px}.spotlight-body h3{font:700 30px/1.12 Georgia;margin:8px 0 12px}.spotlight-body p{color:#46515c;font-size:15px;line-height:1.65}@media(max-width:700px){.sports-spotlight-grid{grid-template-columns:1fr}.spotlight-card img{height:240px}.spotlight-body h3{font-size:25px}}'
+          if '.sports-spotlight{' not in html.split('</style>',1)[0]:
+              html = html.replace('.sports-feature{border-top:4px solid var(--red)}', '.sports-feature{border-top:4px solid var(--red)}' + css, 1)
 
           p.write_text(html, encoding='utf-8')
           PY
@@ -87,5 +85,5 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add index.html
           git diff --cached --quiet && echo "No homepage changes needed" && exit 0
-          git commit -m "Polish homepage sports features"
+          git commit -m "Add homepage sports spotlight"
           git push
