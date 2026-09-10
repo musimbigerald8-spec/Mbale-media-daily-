@@ -1,0 +1,73 @@
+name: Refresh Mbale Media news photos
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  refresh-photos:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout site
+        uses: actions/checkout@v4
+
+      - name: Add current news photos
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          p = Path('index.html')
+          html = p.read_text(encoding='utf-8')
+
+          photos = {
+              "Two retired UPDF generals detained as intelligence probe widens": (
+                  "https://www.kigalitoday.com/IMG/png/major_general_abel_kandiho.png",
+                  "Retired Major General Abel Kandiho of Uganda's UPDF"
+              ),
+              "Coffee seedlings dry up in Katakwi as farmers question planting timing": (
+                  "https://newvision-media.s3.amazonaws.com/cms/b5fa16dc-5033-49ed-85e8-c02da9f8b217.jpg",
+                  "Coffee seedlings in a Ugandan nursery"
+              ),
+              "Bukedea traders demand clearer cattle-market charges": (
+                  "https://www.monitor.co.ug/resource/blob/4608546/a5a255870afed1f4da1800cde95623e1/reg02pix-data.jpg",
+                  "Ugandan cattle market"
+              ),
+              "Joshua Cheptegei returns to Uganda's national athletics programme": (
+                  "https://sportal365images.com/process/smp-images-production/ringier.africa/03082024/9ebd024d-8c88-41fe-9e06-c05566a03549.jpeg?operations=fit%281200%3A630%29",
+                  "Joshua Cheptegei celebrating for Uganda"
+              ),
+              "Uganda and African Union discuss stronger action on food insecurity": (
+                  "https://au.int/sites/default/files/styles/full/public/pressreleases/44368-CAADP-CP.jpeg?itok=q1o3aHs0",
+                  "African Union agriculture and food security summit in Kampala"
+              ),
+              "Mbale police officers urged to strengthen dialogue and discipline": (
+                  "https://dailyexpress.co.ug/wp-content/uploads/2025/05/Mbale-Northern-Division-Appeals-for-Police-Patrol-Vehicle.jpg",
+                  "Police officers and community members in Mbale"
+              ),
+          }
+
+          for title, (url, alt) in photos.items():
+              pattern = r'(<article class="story">)(?=<div class="story-body">)(.*?<h3>' + re.escape(title) + r'</h3>)'
+              replacement = r'\1<img src="' + url + r'" alt="' + alt + r'">\2'
+              html, n = re.subn(pattern, replacement, html, count=1, flags=re.S)
+              if n:
+                  print('Added photo:', title)
+              else:
+                  print('Skipped/already updated:', title)
+
+          p.write_text(html, encoding='utf-8')
+          PY
+
+      - name: Commit photo updates
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git diff --cached --quiet && echo "No photo changes needed" && exit 0
+          git commit -m "Update Mbale Media news photos"
+          git push
