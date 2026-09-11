@@ -5,3 +5,4 @@ Disallow: /dashboard.html
 Disallow: /search.html
 Disallow: /share.html
 Sitemap: https://musimbigerald8-spec.github.io/Mbale-media-daily-/sitemap.xml
+Sitemap: https://musimbigerald8-spec.github.io/Mbale-media-daily-/rss.xml
