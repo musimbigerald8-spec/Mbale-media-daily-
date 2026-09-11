@@ -1,0 +1,44 @@
+name: Add search bar
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  add-search:
+    if: github.event.head_commit.message != 'Add homepage search bar'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Add search bar to homepage
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+          if 'id="siteSearch"' not in s:
+              css = '''\n.search-wrap{background:#fff;padding:14px 5%;border-bottom:1px solid var(--line)}.search-box{max-width:760px;margin:auto;display:flex;gap:8px}.search-box input{flex:1;padding:13px 15px;border:2px solid var(--navy);border-radius:7px;font-size:15px;outline:none}.search-box input:focus{border-color:var(--red)}.search-box button{background:var(--red);color:#fff;border:0;border-radius:7px;padding:13px 18px;font-weight:900;cursor:pointer}.search-results{max-width:1200px;margin:0 auto;padding:0 5%}.search-result{display:none;background:#fff;border:1px solid var(--line);border-radius:8px;padding:14px;margin-top:8px}.search-result a{font-weight:800;color:var(--navy);text-decoration:none}.search-empty{display:none;max-width:760px;margin:8px auto 0;color:var(--muted);font-size:13px}@media(max-width:800px){.search-wrap{padding:10px 16px}.search-box{gap:6px}.search-box input{min-width:0}.search-box button{padding:13px 14px}}\n'''
+              s = s.replace('</style>', css + '</style>', 1)
+              marker = '<div class="ticker"><strong>UPDATED</strong>'
+              start = s.find(marker)
+              end = s.find('</div>', start)
+              insert = '''<div class="search-wrap" id="siteSearch"><form class="search-box" id="searchForm"><input id="searchInput" type="search" placeholder="Search Mbale Media Daily..." aria-label="Search Mbale Media Daily"><button type="submit">Search</button></form><div class="search-empty" id="searchEmpty">No matching stories found. Try another keyword.</div></div><div class="search-results" id="searchResults"></div>\n'''
+              s = s[:end+6] + '\n' + insert + s[end+6:]
+              js = '''\n<script>\n(function(){var input=document.getElementById('searchInput'),form=document.getElementById('searchForm'),empty=document.getElementById('searchEmpty'),results=document.getElementById('searchResults');if(!input)return;var cards=Array.prototype.slice.call(document.querySelectorAll('.story,.spotlight-card'));function run(){var q=input.value.trim().toLowerCase();results.innerHTML='';if(!q){empty.style.display='none';return}var found=0;cards.forEach(function(card){var text=card.innerText.toLowerCase();if(text.indexOf(q)!==-1){var copy=card.cloneNode(true);copy.style.display='block';var img=copy.querySelector('img');if(img)img.style.maxHeight='150px';results.appendChild(copy);found++;}});empty.style.display=found?'none':'block';results.style.paddingBottom=found?'14px':'0'}form.addEventListener('submit',function(e){e.preventDefault();run();results.scrollIntoView({behavior:'smooth',block:'start'})});input.addEventListener('input',run)})();\n</script>\n'''
+              s = s.replace('</body>', js + '</body>', 1)
+              p.write_text(s, encoding='utf-8')
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "Add homepage search bar" || exit 0
+          git push
+      - name: Remove one-time workflow
+        if: success()
+        run: |
+          git rm .github/workflows/add-search-bar.yml || true
+          git commit -m "Remove one-time search workflow" || exit 0
+          git push || true
