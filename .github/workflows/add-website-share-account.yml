@@ -1,0 +1,41 @@
+name: Add website share and account link
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/add-website-share-account.yml'
+permissions:
+  contents: write
+jobs:
+  update-site:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch homepage
+        shell: python
+        run: |
+          from pathlib import Path
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+          nav = '<a href="about.html">CEO Profile</a>'
+          account = '<a href="account.html">Account</a>'
+          if account not in s:
+              s = s.replace(nav, nav + account, 1)
+          share_css = '.site-share{display:inline-flex;align-items:center;gap:8px;background:var(--red);color:#fff;border:0;border-radius:7px;padding:12px 18px;font-weight:900;cursor:pointer;text-decoration:none;margin-top:10px}.share-status{font-size:12px;color:var(--muted);margin-top:8px;min-height:16px}'
+          if '.site-share{' not in s:
+              s = s.replace('</style>', share_css + '</style>', 1)
+          share_block = '''<div class="share-site-box"><button class="site-share" id="shareSite" type="button">↗ Share Mbale Media Daily</button><div class="share-status" id="shareStatus" aria-live="polite"></div></div>'''
+          if 'id="shareSite"' not in s:
+              marker = '<a class="btn" href="#latest">Read Today\'s Top Stories ↓</a>'
+              s = s.replace(marker, marker + share_block, 1)
+          share_script = '''<script>const shareSite=document.getElementById('shareSite');const shareStatus=document.getElementById('shareStatus');if(shareSite){const shareData={title:'Mbale Media Daily',text:'Read the latest news from Mbale, Eastern Uganda, Uganda and the world.',url:'https://musimbigerald8-spec.github.io/Mbale-media-daily-/'};shareSite.addEventListener('click',async()=>{try{if(navigator.share&&(navigator.canShare?navigator.canShare(shareData):true)){await navigator.share(shareData);shareStatus.textContent='Thanks for sharing Mbale Media Daily.'}else if(navigator.clipboard){await navigator.clipboard.writeText(shareData.url);shareStatus.textContent='Website link copied. You can paste it anywhere.'}else{shareStatus.textContent=shareData.url}}catch(err){if(err&&err.name==='AbortError')return;try{await navigator.clipboard.writeText(shareData.url);shareStatus.textContent='Website link copied. You can paste it anywhere.'}catch(e){shareStatus.textContent=shareData.url}}});}</script>'''
+          if 'const shareSite=document.getElementById' not in s:
+              s = s.replace('</body>', share_script + '</body>', 1)
+          p.write_text(s, encoding='utf-8')
+      - name: Commit homepage changes
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          git diff --cached --quiet || git commit -m 'Add website share button and account link'
+          git push
