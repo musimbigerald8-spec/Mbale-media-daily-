@@ -1,0 +1,43 @@
+name: Install uploaded Mbale Media logo
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  install-logo:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Put uploaded logo into homepage header
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          s = p.read_text()
+          old = '<div class="logo">MBALE <b>MEDIA</b> DAILY</div>'
+          new = '<img class="site-logo" src="assets/mbale-media-daily-logo.png" alt="Mbale Media Daily logo">'
+          if old in s:
+              s = s.replace(old, new, 1)
+          css = '.site-logo{width:min(290px,100%);height:auto;display:block;object-fit:contain}.mast-inner{display:flex;flex-direction:column;align-items:flex-start}.tag{margin-top:6px}@media(max-width:700px){.site-logo{width:240px}}'
+          if '.site-logo{' not in s:
+              s = s.replace('</style>', css + '</style>', 1)
+          p.write_text(s)
+          PY
+      - name: Commit homepage logo update
+        run: |
+          git config user.name "Mbale Media Daily"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git diff --cached --quiet || git commit -m "Display uploaded Mbale Media logo on homepage"
+          git push
+      - name: Remove one-time workflow
+        run: |
+          rm -f .github/workflows/install-uploaded-logo.yml
+          git add .github/workflows/install-uploaded-logo.yml
+          git diff --cached --quiet || git commit -m "Remove one-time logo installation workflow"
+          git push
