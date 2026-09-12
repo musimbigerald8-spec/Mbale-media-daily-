@@ -1,0 +1,74 @@
+name: Improve AdSense readiness
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  improve-site:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Improve homepage and article pages
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+
+          root = Path('.')
+
+          # Homepage: strengthen publisher identity, editorial transparency and navigation.
+          p = root / 'index.html'
+          if p.exists():
+              s = p.read_text(encoding='utf-8')
+              if 'name="author"' not in s:
+                  s = s.replace('<meta name="robots"', '<meta name="author" content="Mbale Media Daily"><meta name="robots"', 1)
+              if 'id="editorial-standards"' not in s:
+                  block = '''\n<section class="section" id="editorial-standards"><div class="about-box"><h2>Our Editorial Standards</h2><p><strong>Mbale Media Daily</strong> publishes original reporting and clearly attributed news summaries covering Mbale, Eastern Uganda, Uganda and international developments. We distinguish reported facts from allegations, identify important sources and avoid presenting disputed claims as established facts.</p><p>We aim to verify information before publication, update stories when significant facts change, and correct material errors promptly. News, opinion, advertising and sponsored material are kept clearly distinguishable.</p><p>For corrections, news tips or editorial questions, contact the newsroom at <a href="contact.html">Contact Mbale Media Daily</a>. Read our <a href="editorial-policy.html">full Editorial Policy</a>, <a href="privacy.html">Privacy Notice</a> and <a href="terms.html">Terms of Use</a>.</p></div></section>\n'''
+                  s = s.replace('<section class="section" id="contact">', block + '<section class="section" id="contact">', 1)
+              marker = '<!-- ADSENSE-QUALITY-FOOTER -->'
+              if marker not in s:
+                  s = s.replace('<footer class="footer">', marker + '<footer class="footer">', 1)
+                  s = s.replace('<a href="#contact">Contact</a></footer>', '<a href="#contact">Contact</a><a href="editorial-policy.html">Editorial Policy</a><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a><a href="advertising.html">Advertising</a></footer>', 1)
+              p.write_text(s, encoding='utf-8')
+
+          # Article pages: make authorship, publication metadata, source attribution,
+          # editorial transparency and navigation consistently visible.
+          for p in sorted(root.glob('article-*.html')):
+              s = p.read_text(encoding='utf-8')
+              title = re.search(r'<h1>(.*?)</h1>|<h2>(.*?)</h2>', s, re.S)
+              title_text = re.sub(r'<[^>]+>', '', (title.group(1) or title.group(2)) if title else p.stem).strip()
+              meta = re.search(r'(<div class="meta">)(.*?)(</div>)', s, re.S)
+              if meta and 'By Mbale Media Daily' not in meta.group(2):
+                  s = s[:meta.start(2)] + meta.group(2).strip() + ' • By Mbale Media Daily' + s[meta.end(2):]
+              elif meta is None and '<article' in s:
+                  s = s.replace('<article', '<div class="meta">By Mbale Media Daily</div><article', 1)
+              if 'id="article-trust"' not in s:
+                  trust = f'''<div id="article-trust" class="article-trust"><strong>Editorial note:</strong> This story is prepared for Mbale Media Daily readers from identified reporting and/or official information. We attribute important claims, distinguish allegations from verified facts, and update or correct material errors when necessary. <a href="editorial-policy.html">Read our Editorial Policy</a>.</div>'''
+                  s = s.replace('</article>', trust + '</article>', 1)
+              if '<style>' in s and '.article-trust' not in s:
+                  s = s.replace('</style>', '.article-trust{background:#f8f9fb;border-left:4px solid #e4032e;padding:14px 16px;margin-top:24px;line-height:1.6;font-size:14px;color:#46515c}.article-trust a{color:#071426;font-weight:800}</style>', 1)
+              if '<footer class="site-footer"' not in s:
+                  footer = '''<footer class="site-footer" style="max-width:900px;margin:0 auto;padding:22px 5% 40px;text-align:center;color:#667085;font-size:13px"><a href="index.html">Home</a> · <a href="news.html">News</a> · <a href="today.html">Today</a> · <a href="about.html">About</a> · <a href="contact.html">Contact</a> · <a href="editorial-policy.html">Editorial Policy</a> · <a href="privacy.html">Privacy</a> · <a href="terms.html">Terms</a> · <a href="advertising.html">Advertising</a><br><br>© 2026 Mbale Media Daily. All rights reserved.</footer>'''
+                  s = s.replace('</body>', footer + '</body>', 1)
+              p.write_text(s, encoding='utf-8')
+
+      - name: Commit improvements
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html article-*.html
+          if git diff --cached --quiet; then
+            echo "No changes needed"
+          else
+            git commit -m "Improve editorial transparency and navigation for AdSense readiness"
+            git push
+          fi
