@@ -29,16 +29,13 @@ jobs:
           photo1 = 'https://live.staticflickr.com/65535/55507715970_c2e188b947_c.jpg'
           photo2 = 'https://live.staticflickr.com/65535/55506334282_2cee0ed132_c.jpg'
 
-          # Use the first uploaded photo as the main image.
           s = s.replace('https://sportal365images.com/process/smp-images-production/pulse.ug/13092025/1fa0fe4e-2b75-4812-9079-deaac90c715f.jpeg?operations=autocrop%28700%3A467%29', photo1)
 
-          # Add the second uploaded photo directly into the article, not as an external link.
           marker = '<p class="caption">King Oyo and a Tooro Kingdom ceremony. Photo used for this report.</p>'
           gallery = '''<p class="caption">Photo: Uganda Media Centre. Used in this Mbale Media Daily report.</p>\n<div class="photo-box" id="oyo-photo-2"><img class="lead-photo" src="%s" alt="Mourners and officials during the Tooro Kingdom burial ceremonies" loading="lazy"><p class="caption">Mourners and officials during the Tooro Kingdom burial ceremonies. Photo: Uganda Media Centre.</p></div>''' % photo2
           if marker in s:
               s = s.replace(marker, marker + '\n' + gallery, 1)
 
-          # Add gallery styling if it is not already present.
           s = s.replace('.article-trust{', '.photo-box{background:#f8f9fb;border:1px solid #e5e7eb;border-radius:8px;padding:20px;margin-top:28px}.photo-box .lead-photo{margin:0}.photo-box .caption{margin:8px 0 0}.article-trust{', 1)
           p.write_text(s)
           PY
