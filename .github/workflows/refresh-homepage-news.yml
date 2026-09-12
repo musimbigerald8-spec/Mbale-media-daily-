@@ -14,38 +14,74 @@ jobs:
     steps:
       - name: Check out site
         uses: actions/checkout@v4
-      - name: Refresh homepage headlines
+      - name: Refresh homepage headlines and sections
         shell: python
         run: |
           from pathlib import Path
+          import re
           p = Path('index.html')
           s = p.read_text(encoding='utf-8')
-          replacements = {
-            'September 11, 2026 • Latest reporting from Mbale, Eastern Uganda, Uganda and the world.': 'September 12, 2026 • Latest reporting from Mbale, Eastern Uganda, Uganda and the world.',
-            'TOP STORIES — SEPTEMBER 11, 2026': 'TOP STORIES — SEPTEMBER 12, 2026',
-            'Tooro succession dispute deepens after new king is selected': 'King Oyo laid to rest as Tooro bids farewell',
-            'The royal succession dispute has intensified after the clan selected Prince Edward Rukidi Kijanangoma while members of the late King Oyo Nyimba\'s family challenge the decision.': 'Tooro Kingdom is bidding farewell to King Oyo Nyimba Kabamba Iguru Rukidi IV as his burial takes place in Fort Portal today, September 12, 2026.',
-            'Eastern Uganda communities remain in focus': 'Government land inventory drive reaches Eastern Uganda',
-            'Local authorities, businesses and communities continue to drive development, services and economic activity across the region.': 'Leaders in Bugisu, Teso and Bukedi are being urged to help curb land grabbing and encroachment as government inventories public land.',
-            'Coffee farmers face pressure from dry conditions': 'Uganda explores direct coffee sales to Nigeria',
-            'Dry conditions are affecting coffee seedlings and farmers in parts of Eastern Uganda as growers monitor weather and protect young crops.': 'Uganda is exploring direct coffee sales to Nigeria as it seeks stronger export opportunities and fewer middlemen.',
-            'SC Villa beat Express 2–0 in Kampala derby': 'Uganda face Kenya in Africa Continental Cup',
-            'Uganda beat Kenya by 64 runs in Africa Continental Cup': 'Uganda face Kenya in Africa Continental Cup',
-            'SC Villa moved to third place after a 2–0 victory over Express, with Patrick Kakande and Andrew Otim on the scoresheet.': 'Uganda entered the Kenya match after wins over Sierra Leone, Botswana and Rwanda in Kigali.',
-            'Uganda secured a 64-run victory over Kenya in the Africa Continental Cup in Kigali.': 'Uganda entered the Kenya match after wins over Sierra Leone, Botswana and Rwanda in Kigali.',
-            'September 10, 2026 • Sports Desk': 'September 12, 2026 • Sports Desk',
-            'Mbale businesses prepare for World Tourism Day opportunities': 'Mbale businesses prepare for World Tourism Day opportunities',
-            'Eastern Uganda • Agriculture': 'Eastern Uganda • Government Land',
-            'September 7, 2026 • Eastern Uganda': 'September 11, 2026 • Eastern Uganda',
-            'Eastern Uganda seeks to revive cotton farming as production declines': 'Government land inventory drive reaches Eastern Uganda',
-            'Storm and Kakira rivalry takes centre stage': 'Uganda face Kenya in Africa Continental Cup',
-            'The Eastern Region Sevens race continues after Kakira beat Storm in the Umukuka Sevens semifinal and went on to win the final.': 'Uganda entered the Kenya match after wins over Sierra Leone, Botswana and Rwanda in Kigali.',
-            'Cricket Cranes make strong start in Continental Cup': 'Premier League weekend brings seven matches',
-            'Uganda opened its campaign with a commanding win over Sierra Leone, with major contributions from Musemeza and Olipa.': 'Saturday\'s Premier League programme includes Liverpool vs Fulham, Tottenham vs Everton and Sunderland vs Arsenal.',
-            'September 11, 2026 • Global Desk': 'September 11–12, 2026 • Global Desk'
-          }
-          for old, new in replacements.items():
-              s = s.replace(old, new)
+
+          # Remove accidental duplicate CSS declarations without changing the design.
+          s = re.sub(r'(aspect-ratio:16/9;){2,}', 'aspect-ratio:16/9;', s)
+
+          # Keep the weekly date current.
+          s = s.replace('UPDATED</strong> September 12, 2026', 'UPDATED</strong> September 13, 2026')
+          s = s.replace('September 12, 2026 • Latest reporting from Mbale, Eastern Uganda, Uganda and the world.', 'September 13, 2026 • New week briefing — latest verified developments through September 12.')
+          s = s.replace('TOP STORIES — SEPTEMBER 12, 2026', 'TOP STORIES — WEEK OF SEPTEMBER 13, 2026')
+
+          def replace_section(doc, section_id, replacement):
+              pattern = rf'<section class="section" id="{re.escape(section_id)}">.*?</section>'
+              out, n = re.subn(pattern, replacement, doc, count=1, flags=re.S)
+              if n != 1:
+                  raise SystemExit(f'Could not locate section: {section_id}')
+              return out
+
+          latest = '''<section class="section" id="latest"><div class="section-head"><h2>TOP STORIES — WEEK OF SEPTEMBER 13, 2026</h2><p class="tagline">Fresh, clearly attributed headlines selected for Mbale Media Daily readers</p></div><div class="news-grid">
+          <article class="story wide"><img decoding="async" src="https://sportal365images.com/process/smp-images-production/pulse.ug/13092025/1fa0fe4e-2b75-4812-9079-deaac90c715f.jpeg?operations=autocrop%28700%3A467%29" alt="Tooro Kingdom ceremony" loading="eager"><div class="story-body"><div class="kicker">National • Tooro Kingdom</div><h3>Tooro declares new king as King Oyo is laid to rest</h3><p>Prince Edward Rukidi Kijanangoma was formally declared the new Tooro monarch during King Oyo's final send-off on September 12. The succession had been disputed for days.</p><div class="meta">September 12, 2026 • Source: Pulse Uganda</div><a class="btn" href="article-tooro-succession-latest.html">Read Full Story →</a></div></article>
+          <article class="story"><img decoding="async" src="https://www.mbalecity.go.ug/sites/default/files/2023-05/mb2.jpg" alt="Mbale City" loading="lazy"><div class="story-body"><div class="kicker">Eastern Uganda • Local</div><h3>Mbale keeps local enterprise and tourism in focus</h3><p>Local businesses and community groups continue to position Mbale as a gateway for tourism, services and investment in Eastern Uganda.</p><div class="meta">September 2026 • Mbale Media Daily</div><a class="btn" href="#mbale">Mbale Desk →</a></div></article>
+          <article class="story"><img decoding="async" src="https://www.mbalecity.go.ug/sites/default/files/2023-05/mb2.jpg" alt="Uganda national affairs" loading="lazy"><div class="story-body"><div class="kicker">National • Kampala</div><h3>KCCA to review City Square hotel and mall proposal</h3><p>President Museveni directed the Kampala minister to review a proposal for a solar-powered hotel, shopping mall and business complex at City Square.</p><div class="meta">September 11, 2026 • Source: Pulse Uganda</div><a class="btn" href="#national">National Desk →</a></div></article>
+          <article class="story"><img decoding="async" src="assets/sports-spotlight.svg" alt="Uganda cricket sports spotlight" loading="lazy"><div class="story-body"><div class="kicker">Sports • Cricket</div><h3>Cricket Cranes make it two wins in Kigali</h3><p>Uganda's cricket team recorded a second victory in Kigali as preparations and competition continue on the regional and continental stage.</p><div class="meta">September 12, 2026 • Source: Daily Monitor</div><a class="btn" href="#sports">Sports Desk →</a></div></article>
+          <article class="story"><img decoding="async" src="https://www.pulse.ug/_next/image?url=https%3A%2F%2Fimages.pulse.com.gh%2Fimages%2F2026%2F09%2F11%2Fjoshua-baraka-1757600034.jpg&w=1200&q=75" alt="Joshua Baraka" loading="lazy"><div class="story-body"><div class="kicker">Entertainment • Mbale</div><h3>Joshua Baraka takes B’rakaland tour to Mbale</h3><p>The Ugandan music star brought his regional tour to Mbale, connecting with Eastern Uganda fans as he builds toward his Kampala concert.</p><div class="meta">September 11–12, 2026 • Source: Pulse Uganda</div><a class="btn" href="#entertainment">Entertainment Desk →</a></div></article>
+          <article class="story"><div class="story-body"><div class="kicker">Global • Energy & Trade</div><h3>Red Sea tensions keep pressure on oil and shipping</h3><p>Escalating fighting around the Red Sea and attacks on energy infrastructure are increasing concerns over shipping routes, oil supply and inflation.</p><div class="meta">September 12, 2026 • Sources: Reuters / AP</div><a class="btn" href="#global">Global Desk →</a></div></article>
+          </div></section>'''
+
+          mbale = '''<section class="section" id="mbale"><div class="section-head"><h2>Mbale & Eastern Uganda</h2><p class="tagline">Local stories first • new week briefing</p></div><div class="news-grid">
+          <article class="story"><img decoding="async" src="https://www.mbalecity.go.ug/sites/default/files/2023-05/mb2.jpg" alt="Mbale City" loading="lazy"><div class="story-body"><div class="kicker">Mbale • Tourism & Business</div><h3>Mbale businesses look to tourism and visitor activity</h3><p>Local enterprise remains central to Mbale's growth as businesses prepare for tourism-related opportunities and increased visitor activity.</p><div class="meta">September 2026 • Mbale Desk</div></div></article>
+          <article class="story"><img decoding="async" src="https://newvision-media.s3.amazonaws.com/cms/b5fa16dc-5033-49ed-85e8-c02da9f8b217.jpg" alt="Coffee seedlings in Uganda" loading="lazy"><div class="story-body"><div class="kicker">Eastern Uganda • Agriculture</div><h3>Coffee and farm resilience remain key Eastern Uganda priorities</h3><p>Farmers and value-chain actors continue to focus on stronger production, markets and resilience as the new season develops.</p><div class="meta">September 2026 • Eastern Desk</div></div></article>
+          <article class="story"><img decoding="async" src="https://www.mbalecity.go.ug/sites/default/files/2023-05/mb2.jpg" alt="Eastern Uganda community" loading="lazy"><div class="story-body"><div class="kicker">Eastern Uganda • Community</div><h3>Community reporting remains at the heart of the Eastern Desk</h3><p>Mbale Media Daily will continue prioritising verified stories on services, roads, education, agriculture, business and community life across the region.</p><div class="meta">Week of September 13, 2026 • Mbale Media Daily</div></div></article>
+          </div></section>'''
+
+          national = '''<section class="section" id="national"><div class="section-head"><h2>National News</h2><p class="tagline">Uganda's biggest verified developments</p></div><div class="news-grid">
+          <article class="story"><img decoding="async" src="https://sportal365images.com/process/smp-images-production/pulse.ug/13092025/1fa0fe4e-2b75-4812-9079-deaac90c715f.jpeg?operations=autocrop%28700%3A467%29" alt="Tooro Kingdom ceremony" loading="lazy"><div class="story-body"><div class="kicker">Tooro Kingdom</div><h3>Prince Edward Rukidi Kijanangoma declared new Tooro king</h3><p>The Babiito clan leadership declared the new monarch during King Oyo's final send-off in Fort Portal on September 12.</p><a class="btn" href="article-tooro-succession-latest.html">Read Story →</a></div></article>
+          <article class="story"><div class="story-body"><div class="kicker">National • Business</div><h3>KCCA to assess proposed City Square development</h3><p>The proposal includes a solar-powered hotel, shopping mall and business complex, with officials asked to review the plan and report back.</p><div class="meta">September 11, 2026 • Source: Pulse Uganda</div></div></article>
+          <article class="story"><div class="story-body"><div class="kicker">National • Climate</div><h3>Uganda watches climate and rainfall risks</h3><p>Climate resilience, farming conditions and preparedness remain important issues as communities plan for changing rainfall patterns.</p><div class="meta">September 2026 • National Desk</div></div></article>
+          </div></section>'''
+
+          sports = '''<section class="section" id="sports"><div class="section-head"><h2>Sports</h2><p class="tagline">Uganda, Eastern Uganda and international sport</p></div><div class="news-grid">
+          <article class="story"><img decoding="async" src="assets/sports-spotlight.svg" alt="Uganda cricket sports spotlight" loading="lazy"><div class="story-body"><div class="kicker">Uganda • Cricket</div><h3>Baguma and Obuya fire Cricket Cranes to a second win</h3><p>Uganda's cricket side continued its strong run with another victory in Kigali.</p><div class="meta">September 12, 2026 • Source: Daily Monitor</div></div></article>
+          <article class="story"><img decoding="async" src="assets/sports-spotlight.svg" alt="Uganda football sports spotlight" loading="lazy"><div class="story-body"><div class="kicker">Uganda • Football</div><h3>New-look Cranes begin preparations for AFCON qualifiers</h3><p>Uganda's national football setup is turning attention toward the next stage of AFCON preparation and qualification.</p><div class="meta">September 2026 • Sports Desk</div></div></article>
+          <article class="story"><img decoding="async" src="assets/sports-spotlight.svg" alt="Uganda basketball sports spotlight" loading="lazy"><div class="story-body"><div class="kicker">Uganda • Basketball</div><h3>City Oilers part ways with coach Andrew Tendo</h3><p>The record National Basketball League champions have ended their coaching relationship with Andrew Tendo.</p><div class="meta">September 2026 • Source: NTV Uganda</div></div></article>
+          </div></section>'''
+
+          entertainment = '''<section class="section" id="entertainment"><div class="section-head"><h2>Entertainment</h2><p class="tagline">Music, concerts, nightlife, culture and Uganda's creative community</p></div><div class="news-grid">
+          <article class="story"><img decoding="async" src="https://www.pulse.ug/_next/image?url=https%3A%2F%2Fimages.pulse.com.gh%2Fimages%2F2026%2F09%2F11%2Fjoshua-baraka-1757600034.jpg&w=1200&q=75" alt="Joshua Baraka" loading="lazy"><div class="story-body"><div class="kicker">Entertainment • Mbale</div><h3>Joshua Baraka brings B’rakaland EA Tour to Mbale</h3><p>Baraka's regional tour reached Mbale as he connected with fans and shared the story behind his music journey.</p><div class="meta">September 11, 2026 • Source: Pulse Uganda</div></div></article>
+          <article class="story"><div class="story-body"><div class="kicker">Music • Kampala</div><h3>Mesach Semakula prepares for 50 Years of Greatness concert</h3><p>The veteran Ugandan musician is preparing a major concert celebrating five decades of his music journey.</p><div class="meta">September 11, 2026 • Source: Pulse Uganda</div></div></article>
+          <article class="story"><div class="story-body"><div class="kicker">Creative Economy</div><h3>Uganda's artists and creative businesses push for bigger opportunities</h3><p>Music, fashion, events and cultural tourism continue to create opportunities for young Ugandan creatives and businesses.</p><div class="meta">September 2026 • Entertainment Desk</div></div></article>
+          </div></section>'''
+
+          global_news = '''<section class="section" id="global"><div class="section-head"><h2>Global News</h2><p class="tagline">International developments shaping markets, trade and communities</p></div><div class="news-grid">
+          <article class="story wide"><div class="story-body"><div class="kicker">World • Energy & Shipping</div><h3>Red Sea tensions raise fresh concerns for global oil and trade</h3><p>Houthi advances around the Red Sea and attacks affecting Saudi energy infrastructure are putting additional pressure on shipping routes, oil supply and global inflation.</p><div class="meta">September 12, 2026 • Sources: Reuters / AP</div></div></article>
+          <article class="story"><div class="story-body"><div class="kicker">World • Markets</div><h3>Wall Street rebounds while oil remains elevated</h3><p>US stocks rose on Friday while oil prices eased from a weekly peak, although energy markets remained sensitive to Middle East supply risks.</p><div class="meta">September 11, 2026 • Source: Reuters</div></div></article>
+          <article class="story"><div class="story-body"><div class="kicker">Africa • Migration</div><h3>Nigeria raises concern over anti-migrant violence in South Africa</h3><p>Nigeria has raised concerns after two Nigerian nationals were reported killed amid renewed anti-migrant tensions in South Africa.</p><div class="meta">September 12, 2026 • Source: AP</div></div></article>
+          </div></section>'''
+
+          s = replace_section(s, 'latest', latest)
+          s = replace_section(s, 'mbale', mbale)
+          s = replace_section(s, 'national', national)
+          s = replace_section(s, 'sports', sports)
+          s = replace_section(s, 'entertainment', entertainment)
+          s = replace_section(s, 'global', global_news)
           p.write_text(s, encoding='utf-8')
 
       - name: Add uploaded Tooro burial photos
@@ -71,5 +107,5 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add index.html article-tooro-succession-latest.html
-          git diff --cached --quiet || git commit -m '[auto-news] Refresh homepage and add Tooro burial photos'
+          git diff --cached --quiet || git commit -m '[auto-news] Refresh homepage sections for Sept 13 2026'
           git push
