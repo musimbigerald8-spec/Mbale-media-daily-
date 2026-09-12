@@ -1,0 +1,44 @@
+name: Add Media Kit navigation link
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  update-navigation:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Add Media Kit to homepage navigation
+        shell: python
+        run: |
+          from pathlib import Path
+          path = Path('index.html')
+          text = path.read_text(encoding='utf-8')
+          old = '<a href="about.html">CEO Profile</a>'
+          new = '<a href="about.html">CEO Profile</a><a href="media-kit.html">Media Kit</a>'
+          if 'href="media-kit.html"' not in text and old in text:
+              text = text.replace(old, new, 1)
+              path.write_text(text, encoding='utf-8')
+          else:
+              print('Media Kit link already present or navigation pattern not found.')
+
+      - name: Commit navigation update
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          if git diff --cached --quiet; then
+            echo "No changes needed"
+          else
+            git commit -m "Add Media Kit to site navigation"
+            git push
+          fi
