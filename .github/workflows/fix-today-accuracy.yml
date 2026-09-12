@@ -1,0 +1,38 @@
+name: Fix today's factual corrections
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  correct:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Correct outdated sports wording
+        shell: python
+        run: |
+          from pathlib import Path
+          p = Path('index.html')
+          if p.exists():
+              s = p.read_text(encoding='utf-8')
+              s = s.replace('Uganda beat Kenya by 64 runs in Africa Continental Cup', 'Uganda face Kenya in Africa Continental Cup')
+              s = s.replace('The Cricket Cranes secured a 64-run regional victory over Kenya in Kigali on September 12.', 'The Cricket Cranes entered the Kenya match after wins over Sierra Leone, Botswana and Rwanda in Kigali.')
+              p.write_text(s, encoding='utf-8')
+      - name: Commit correction
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          if git diff --cached --quiet; then
+            echo "No changes needed"
+          else
+            git commit -m "Correct current sports headline on homepage"
+            git push
+          fi
