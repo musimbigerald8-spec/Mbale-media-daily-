@@ -1,0 +1,54 @@
+name: Refresh homepage news
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  refresh-homepage:
+    if: ${{ !contains(github.event.head_commit.message, '[auto-news]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out site
+        uses: actions/checkout@v4
+      - name: Refresh homepage headlines
+        shell: python
+        run: |
+          from pathlib import Path
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+          replacements = {
+            'September 11, 2026 • Latest reporting from Mbale, Eastern Uganda, Uganda and the world.': 'September 12, 2026 • Latest reporting from Mbale, Eastern Uganda, Uganda and the world.',
+            'TOP STORIES — SEPTEMBER 11, 2026': 'TOP STORIES — SEPTEMBER 12, 2026',
+            'Tooro succession dispute deepens after new king is selected': 'Tooro confirms successor as King Oyo is buried today',
+            'The royal succession dispute has intensified after the clan selected Prince Edward Rukidi Kijanangoma while members of the late King Oyo Nyimba\'s family challenge the decision.': 'Tooro Kingdom is preparing to bury King Oyo Nyimba as Prince Edward Rukidi Kijanangoma\'s succession was confirmed on Friday after days of dispute.',
+            'Eastern Uganda communities remain in focus': 'Government land inventory drive reaches Eastern Uganda',
+            'Local authorities, businesses and communities continue to drive development, services and economic activity across the region.': 'Leaders in Bugisu, Teso and Bukedi are being urged to help curb land grabbing and encroachment as government inventories public land.',
+            'Coffee farmers face pressure from dry conditions': 'Uganda explores direct coffee sales to Nigeria',
+            'Dry conditions are affecting coffee seedlings and farmers in parts of Eastern Uganda as growers monitor weather and protect young crops.': 'Uganda is exploring direct coffee sales to Nigeria as it seeks stronger export opportunities and fewer middlemen.',
+            'SC Villa beat Express 2–0 in Kampala derby': 'Uganda beat Kenya by 64 runs in Africa Continental Cup',
+            'SC Villa moved to third place after a 2–0 victory over Express, with Patrick Kakande and Andrew Otim on the scoresheet.': 'Uganda secured a 64-run victory over Kenya in the Africa Continental Cup in Kigali.',
+            'September 10, 2026 • Sports Desk': 'September 12, 2026 • Sports Desk',
+            'Mbale businesses prepare for World Tourism Day opportunities': 'Mbale businesses prepare for World Tourism Day opportunities',
+            'Eastern Uganda • Agriculture': 'Eastern Uganda • Government Land',
+            'September 7, 2026 • Eastern Uganda': 'September 11, 2026 • Eastern Uganda',
+            'Eastern Uganda seeks to revive cotton farming as production declines': 'Government land inventory drive reaches Eastern Uganda',
+            'Storm and Kakira rivalry takes centre stage': 'Uganda beat Kenya by 64 runs in Africa Continental Cup',
+            'The Eastern Region Sevens race continues after Kakira beat Storm in the Umukuka Sevens semifinal and went on to win the final.': 'The Cricket Cranes secured a 64-run regional victory over Kenya in Kigali on September 12.',
+            'Cricket Cranes make strong start in Continental Cup': 'Premier League weekend brings seven matches',
+            'Uganda opened its campaign with a commanding win over Sierra Leone, with major contributions from Musemeza and Olipa.': 'Saturday\'s Premier League programme includes Liverpool vs Fulham, Tottenham vs Everton and Sunderland vs Arsenal.',
+            'September 11, 2026 • Global Desk': 'September 11–12, 2026 • Global Desk'
+          }
+          for old, new in replacements.items():
+              s = s.replace(old, new)
+          p.write_text(s, encoding='utf-8')
+      - name: Commit homepage refresh
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          git diff --cached --quiet || git commit -m '[auto-news] Refresh homepage headlines'
+          git push
