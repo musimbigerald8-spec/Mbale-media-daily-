@@ -23,21 +23,23 @@ jobs:
           replacements = {
             'September 11, 2026 • Latest reporting from Mbale, Eastern Uganda, Uganda and the world.': 'September 12, 2026 • Latest reporting from Mbale, Eastern Uganda, Uganda and the world.',
             'TOP STORIES — SEPTEMBER 11, 2026': 'TOP STORIES — SEPTEMBER 12, 2026',
-            'Tooro succession dispute deepens after new king is selected': 'Tooro confirms successor as King Oyo is buried today',
-            'The royal succession dispute has intensified after the clan selected Prince Edward Rukidi Kijanangoma while members of the late King Oyo Nyimba\'s family challenge the decision.': 'Tooro Kingdom is preparing to bury King Oyo Nyimba as Prince Edward Rukidi Kijanangoma\'s succession was confirmed on Friday after days of dispute.',
+            'Tooro succession dispute deepens after new king is selected': 'King Oyo laid to rest as Tooro bids farewell',
+            'The royal succession dispute has intensified after the clan selected Prince Edward Rukidi Kijanangoma while members of the late King Oyo Nyimba\'s family challenge the decision.': 'Tooro Kingdom is bidding farewell to King Oyo Nyimba Kabamba Iguru Rukidi IV as his burial takes place in Fort Portal today, September 12, 2026.',
             'Eastern Uganda communities remain in focus': 'Government land inventory drive reaches Eastern Uganda',
             'Local authorities, businesses and communities continue to drive development, services and economic activity across the region.': 'Leaders in Bugisu, Teso and Bukedi are being urged to help curb land grabbing and encroachment as government inventories public land.',
             'Coffee farmers face pressure from dry conditions': 'Uganda explores direct coffee sales to Nigeria',
             'Dry conditions are affecting coffee seedlings and farmers in parts of Eastern Uganda as growers monitor weather and protect young crops.': 'Uganda is exploring direct coffee sales to Nigeria as it seeks stronger export opportunities and fewer middlemen.',
-            'SC Villa beat Express 2–0 in Kampala derby': 'Uganda beat Kenya by 64 runs in Africa Continental Cup',
-            'SC Villa moved to third place after a 2–0 victory over Express, with Patrick Kakande and Andrew Otim on the scoresheet.': 'Uganda secured a 64-run victory over Kenya in the Africa Continental Cup in Kigali.',
+            'SC Villa beat Express 2–0 in Kampala derby': 'Uganda face Kenya in Africa Continental Cup',
+            'Uganda beat Kenya by 64 runs in Africa Continental Cup': 'Uganda face Kenya in Africa Continental Cup',
+            'SC Villa moved to third place after a 2–0 victory over Express, with Patrick Kakande and Andrew Otim on the scoresheet.': 'Uganda entered the Kenya match after wins over Sierra Leone, Botswana and Rwanda in Kigali.',
+            'Uganda secured a 64-run victory over Kenya in the Africa Continental Cup in Kigali.': 'Uganda entered the Kenya match after wins over Sierra Leone, Botswana and Rwanda in Kigali.',
             'September 10, 2026 • Sports Desk': 'September 12, 2026 • Sports Desk',
             'Mbale businesses prepare for World Tourism Day opportunities': 'Mbale businesses prepare for World Tourism Day opportunities',
             'Eastern Uganda • Agriculture': 'Eastern Uganda • Government Land',
             'September 7, 2026 • Eastern Uganda': 'September 11, 2026 • Eastern Uganda',
             'Eastern Uganda seeks to revive cotton farming as production declines': 'Government land inventory drive reaches Eastern Uganda',
-            'Storm and Kakira rivalry takes centre stage': 'Uganda beat Kenya by 64 runs in Africa Continental Cup',
-            'The Eastern Region Sevens race continues after Kakira beat Storm in the Umukuka Sevens semifinal and went on to win the final.': 'The Cricket Cranes secured a 64-run regional victory over Kenya in Kigali on September 12.',
+            'Storm and Kakira rivalry takes centre stage': 'Uganda face Kenya in Africa Continental Cup',
+            'The Eastern Region Sevens race continues after Kakira beat Storm in the Umukuka Sevens semifinal and went on to win the final.': 'Uganda entered the Kenya match after wins over Sierra Leone, Botswana and Rwanda in Kigali.',
             'Cricket Cranes make strong start in Continental Cup': 'Premier League weekend brings seven matches',
             'Uganda opened its campaign with a commanding win over Sierra Leone, with major contributions from Musemeza and Olipa.': 'Saturday\'s Premier League programme includes Liverpool vs Fulham, Tottenham vs Everton and Sunderland vs Arsenal.',
             'September 11, 2026 • Global Desk': 'September 11–12, 2026 • Global Desk'
@@ -45,10 +47,29 @@ jobs:
           for old, new in replacements.items():
               s = s.replace(old, new)
           p.write_text(s, encoding='utf-8')
-      - name: Commit homepage refresh
+
+      - name: Add uploaded Tooro burial photos
+        shell: python
+        run: |
+          from pathlib import Path
+          p = Path('article-tooro-succession-latest.html')
+          s = p.read_text(encoding='utf-8')
+          if 'id="oyo-photo-2"' not in s:
+              photo1 = 'https://live.staticflickr.com/65535/55507715970_c2e188b947_c.jpg'
+              photo2 = 'https://live.staticflickr.com/65535/55506334282_2cee0ed132_c.jpg'
+              old = 'https://sportal365images.com/process/smp-images-production/pulse.ug/13092025/1fa0fe4e-2b75-4812-9079-deaac90c715f.jpeg?operations=autocrop%28700%3A467%29'
+              s = s.replace(old, photo1)
+              marker = '<p class="caption">King Oyo and a Tooro Kingdom ceremony. Photo used for this report.</p>'
+              gallery = '''<p class="caption">Photo: Uganda Media Centre. Used in this Mbale Media Daily report.</p>\n<div class="photo-box" id="oyo-photo-2"><img class="lead-photo" src="%s" alt="Mourners and officials during the Tooro Kingdom burial ceremonies" loading="lazy"><p class="caption">Mourners and officials during the Tooro Kingdom burial ceremonies. Photo: Uganda Media Centre.</p></div>''' % photo2
+              if marker in s:
+                  s = s.replace(marker, marker + '\n' + gallery, 1)
+              s = s.replace('.article-trust{', '.photo-box{background:#f8f9fb;border:1px solid #e5e7eb;border-radius:8px;padding:20px;margin-top:28px}.photo-box .lead-photo{margin:0}.photo-box .caption{margin:8px 0 0}.article-trust{', 1)
+              p.write_text(s, encoding='utf-8')
+
+      - name: Commit homepage and photo updates
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add index.html
-          git diff --cached --quiet || git commit -m '[auto-news] Refresh homepage headlines'
+          git add index.html article-tooro-succession-latest.html
+          git diff --cached --quiet || git commit -m '[auto-news] Refresh homepage and add Tooro burial photos'
           git push
