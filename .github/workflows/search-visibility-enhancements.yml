@@ -1,0 +1,79 @@
+name: Search visibility enhancements
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  enhance:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout site
+        uses: actions/checkout@v4
+
+      - name: Add breadcrumb markup and preferred-source link
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from html import unescape
+          from urllib.parse import quote
+          import json, re
+
+          base = 'https://musimbigerald8-spec.github.io/'
+          changed = []
+
+          for path in Path('.').glob('article-*.html'):
+              text = path.read_text(encoding='utf-8')
+              original = text
+
+              title_match = re.search(r'<title>(.*?)</title>', text, re.I | re.S)
+              desc_match = re.search(r'<meta[^>]+name=[\"\']description[\"\'][^>]+content=[\"\'](.*?)[\"\']', text, re.I | re.S)
+              title = unescape(title_match.group(1).strip()) if title_match else path.stem.replace('-', ' ').title()
+              description = unescape(desc_match.group(1).strip()) if desc_match else ''
+              url = base + path.name
+
+              if 'application/ld+json' not in text or 'BreadcrumbList' not in text:
+                  data = {
+                      '@context': 'https://schema.org',
+                      '@type': 'BreadcrumbList',
+                      'itemListElement': [
+                          {'@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': base},
+                          {'@type': 'ListItem', 'position': 2, 'name': title, 'item': url}
+                      ]
+                  }
+                  if description:
+                      data['description'] = description
+                  script = '<script type="application/ld+json">' + json.dumps(data, ensure_ascii=False, separators=(',', ':')) + '</script>'
+                  text = text.replace('</head>', script + '</head>', 1)
+
+              if 'Add Mbale Media Daily as a preferred source' not in text:
+                  pref = 'https://www.google.com/preferences/source?q=' + quote(base, safe='')
+                  link = '<p class="preferred-source"><a href="' + pref + '">Add Mbale Media Daily as a preferred source on Google</a></p>'
+                  text = text.replace('</footer>', link + '</footer>', 1)
+                  if '</footer>' not in text:
+                      text = text.replace('</body>', link + '</body>', 1)
+
+              if text != original:
+                  path.write_text(text, encoding='utf-8')
+                  changed.append(str(path))
+
+          print('Enhanced:', len(changed), 'article pages')
+          print('\n'.join(changed))
+          PY
+
+      - name: Commit enhancements
+        run: |
+          git config user.name "Mbale Media Daily Search Bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add 'article-*.html'
+          if git diff --cached --quiet; then
+            echo "No changes needed."
+          else
+            git commit -m "Improve article search visibility and source following"
+            git push
+          fi
