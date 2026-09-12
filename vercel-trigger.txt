@@ -1,0 +1,1 @@
+Vercel deployment trigger for Mbale Media Daily. 2026-09-13.
