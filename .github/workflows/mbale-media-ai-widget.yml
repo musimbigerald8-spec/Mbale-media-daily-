@@ -1,0 +1,48 @@
+name: Inject Mbale Media AI widget
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  inject:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout site
+        uses: actions/checkout@v4
+
+      - name: Add Mbale Media AI script
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          tag = '<script src="assets/mbale-media-ai.js" defer></script>'
+          changed = []
+          for path in Path('.').rglob('*.html'):
+              if '.git' in path.parts:
+                  continue
+              text = path.read_text(encoding='utf-8')
+              if 'assets/mbale-media-ai.js' in text:
+                  continue
+              if '</body>' in text:
+                  text = text.replace('</body>', tag + '\n</body>', 1)
+                  path.write_text(text, encoding='utf-8')
+                  changed.append(str(path))
+          print('Injected widget into', len(changed), 'HTML pages')
+          PY
+
+      - name: Commit widget injection
+        run: |
+          git config user.name "Mbale Media Daily AI Bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add '*.html'
+          if git diff --cached --quiet; then
+            echo "No widget injection changes needed."
+          else
+            git commit -m "Add Mbale Media AI chat widget"
+            git push
+          fi
