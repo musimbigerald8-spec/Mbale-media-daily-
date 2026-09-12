@@ -1,0 +1,75 @@
+name: Improve performance and accessibility
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  optimize-site:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Optimize images and mobile contrast
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+
+          for path in Path('.').glob('*.html'):
+              s = path.read_text(encoding='utf-8')
+
+              # Images below the initial viewport should not block the first render.
+              # Keep the site logo eager because it is part of the header; lazy-load
+              # content images and decode them asynchronously.
+              def optimize_img(m):
+                  tag = m.group(0)
+                  if 'class="site-logo"' in tag or "class='site-logo'" in tag:
+                      tag = re.sub(r'\sloading=["\'][^"\']*["\']', '', tag)
+                      tag = re.sub(r'\sdecoding=["\'][^"\']*["\']', '', tag)
+                      tag = tag.replace('<img ', '<img decoding="async" ', 1)
+                      return tag
+                  if 'loading=' not in tag:
+                      tag = tag.replace('<img ', '<img loading="lazy" ', 1)
+                  if 'decoding=' not in tag:
+                      tag = tag.replace('<img ', '<img decoding="async" ', 1)
+                  return tag
+
+              s = re.sub(r'<img\b[^>]*>', optimize_img, s, flags=re.I)
+
+              # Preserve image space to reduce layout shifts on mobile.
+              if '.story img{' in s:
+                  s = s.replace('.story img{width:100%;height:220px;', '.story img{width:100%;height:220px;aspect-ratio:16/9;', 1)
+              if '.spotlight-card img{' in s:
+                  s = s.replace('.spotlight-card img{width:100%;height:230px;', '.spotlight-card img{width:100%;height:230px;aspect-ratio:16/9;', 1)
+
+              # The mobile story-card palette had a lower-contrast text/background
+              # combination. Use a white card and the existing dark text color.
+              s = s.replace('background:#f8edcf;box-shadow:none}.story img', 'background:#fff;box-shadow:none}.story img')
+              s = s.replace('background:#f8edcf;box-shadow:none}.story img,.wide', 'background:#fff;box-shadow:none}.story img,.wide')
+              s = s.replace('color:#5b5143}', 'color:#46515c}')
+
+              # Improve keyboard visibility without changing the visual layout.
+              if 'a:focus-visible' not in s:
+                  s = s.replace('</style>', 'a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid #071426;outline-offset:3px}</style>', 1)
+
+              path.write_text(s, encoding='utf-8')
+
+      - name: Commit optimization
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add '*.html'
+          if git diff --cached --quiet; then
+            echo "No changes needed"
+          else
+            git commit -m "Optimize mobile images and accessibility contrast"
+            git push
+          fi
