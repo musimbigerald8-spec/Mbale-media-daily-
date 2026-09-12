@@ -16,28 +16,32 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Embed burial photos in article
+      - name: Embed uploaded burial photos in article
         run: |
           python3 - <<'PY'
           from pathlib import Path
+          import re
           p = Path('article-tooro-succession-latest.html')
-          s = p.read_text()
-          if 'id="oyo-photo-2"' in s:
-              print('Photos already added; nothing to do.')
-              raise SystemExit(0)
+          s = p.read_text(encoding='utf-8')
 
           photo1 = 'https://live.staticflickr.com/65535/55507715970_c2e188b947_c.jpg'
           photo2 = 'https://live.staticflickr.com/65535/55506334282_2cee0ed132_c.jpg'
 
-          s = s.replace('https://sportal365images.com/process/smp-images-production/pulse.ug/13092025/1fa0fe4e-2b75-4812-9079-deaac90c715f.jpeg?operations=autocrop%28700%3A467%29', photo1)
+          old = 'https://sportal365images.com/process/smp-images-production/pulse.ug/13092025/1fa0fe4e-2b75-4812-9079-deaac90c715f.jpeg?operations=autocrop%28700%3A467%29'
+          s = s.replace(old, photo1)
 
-          marker = '<p class="caption">King Oyo and a Tooro Kingdom ceremony. Photo used for this report.</p>'
-          gallery = '''<p class="caption">Photo: Uganda Media Centre. Used in this Mbale Media Daily report.</p>\n<div class="photo-box" id="oyo-photo-2"><img class="lead-photo" src="%s" alt="Mourners and officials during the Tooro Kingdom burial ceremonies" loading="lazy"><p class="caption">Mourners and officials during the Tooro Kingdom burial ceremonies. Photo: Uganda Media Centre.</p></div>''' % photo2
-          if marker in s:
-              s = s.replace(marker, marker + '\n' + gallery, 1)
+          start = s.find('<h2>Official funeral photographs</h2>')
+          end = s.find('<h2>The succession dispute</h2>')
+          if start != -1 and end != -1:
+              section = '''<h2>Official burial photographs</h2>
+          <p>Mbale Media Daily is publishing the uploaded photographs from the Tooro burial coverage directly in this story, with credit to the Uganda Media Centre.</p>
+          <div class="photo-box" id="oyo-photo-1"><img class="lead-photo" src="%s" alt="Tooro Kingdom mourning ceremony" loading="lazy"><p class="caption">Tooro Kingdom mourning ceremony. Photo: Uganda Media Centre.</p></div>
+          <div class="photo-box" id="oyo-photo-2"><img class="lead-photo" src="%s" alt="Mourners and officials during the Tooro Kingdom burial ceremonies" loading="lazy"><p class="caption">Mourners and officials during the Tooro Kingdom burial ceremonies. Photo: Uganda Media Centre.</p></div>
+          ''' % (photo1, photo2)
+              s = s[:start] + section + s[end:]
 
-          s = s.replace('.article-trust{', '.photo-box{background:#f8f9fb;border:1px solid #e5e7eb;border-radius:8px;padding:20px;margin-top:28px}.photo-box .lead-photo{margin:0}.photo-box .caption{margin:8px 0 0}.article-trust{', 1)
-          p.write_text(s)
+          s = s.replace('This image is retained from the earlier report; see the official Uganda Media Centre gallery below for burial and funeral photographs.', 'Photo: Uganda Media Centre.')
+          p.write_text(s, encoding='utf-8')
           PY
 
       - name: Commit website update
@@ -48,6 +52,6 @@ jobs:
           if git diff --cached --quiet; then
             echo "No changes to commit."
           else
-            git commit -m "Use uploaded Tooro burial photos in King Oyo story"
+            git commit -m "Publish uploaded Tooro burial photos"
             git push
           fi
