@@ -1,0 +1,46 @@
+name: Update Sports - Arsenal vs Sunderland
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-sports:
+    if: ${{ !contains(github.event.head_commit.message, '[sports-update]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out site
+        uses: actions/checkout@v4
+      - name: Add latest Arsenal result
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+          p = Path('index.html')
+          html = p.read_text(encoding='utf-8')
+          sports = '''<section class="section" id="sports"><div class="section-head"><h2>Sports</h2><p class="tagline">Uganda, Eastern Uganda and international sport</p></div><div class="news-grid">
+          <article class="story"><div class="story-body"><div class="kicker">Premier League • Arsenal</div><h3>Arsenal beat Sunderland 2–0 to maintain perfect Premier League start</h3><p>Arsenal defeated Sunderland 2–0 at the Stadium of Light on September 12. Bruno Guimarães scored the opener after David Raya saved Enzo Le Fée's penalty, before Bukayo Saka sealed the win from the spot in stoppage time.</p><div class="meta">September 12, 2026 • Source: Reuters</div></div></article>
+          <article class="story"><img decoding="async" src="assets/sports-spotlight.svg" alt="Uganda cricket sports spotlight" loading="lazy"><div class="story-body"><div class="kicker">Uganda • Cricket</div><h3>Cricket Cranes make it two wins in Kigali</h3><p>Uganda's cricket side continued its strong run with another victory in Kigali.</p><div class="meta">September 12, 2026 • Source: Daily Monitor</div></div></article>
+          <article class="story"><img decoding="async" src="assets/sports-spotlight.svg" alt="Uganda • Basketball" loading="lazy"><div class="story-body"><div class="kicker">Uganda • Basketball</div><h3>City Oilers part ways with coach Andrew Tendo</h3><p>The record National Basketball League champions have ended their coaching relationship with Andrew Tendo.</p><div class="meta">September 2026 • Source: NTV Uganda</div></div></article>
+          <article class="story"><img decoding="async" src="assets/sports-spotlight.svg" alt="Uganda football sports spotlight" loading="lazy"><div class="story-body"><div class="kicker">Uganda • Football</div><h3>Uganda's Cranes continue preparations for the next international tests</h3><p>Uganda's national football setup remains focused on preparation and competitive fixtures as the international calendar develops.</p><div class="meta">September 2026 • Sports Desk</div></div></article>
+          </div></section>'''
+          pattern = r'<section class="section" id="sports">.*?</section>'
+          html, n = re.subn(pattern, sports, html, count=1, flags=re.S)
+          if n != 1:
+              raise SystemExit('Sports section not found')
+          p.write_text(html, encoding='utf-8')
+      - name: Commit sports update
+        run: |
+          git config user.name 'Mbale Media Daily Bot'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          if git diff --cached --quiet; then
+            echo 'No sports changes needed'
+          else
+            git commit -m '[sports-update] Add Arsenal Sunderland result'
+            git push
+          fi
