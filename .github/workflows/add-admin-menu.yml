@@ -1,0 +1,49 @@
+name: Add Admin link to navigation
+
+on:
+  push:
+    paths:
+      - '.github/workflows/add-admin-menu.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  add-admin-link:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Add Admin menu link if missing
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          text = p.read_text(encoding='utf-8')
+          link = '<a href="admin.html">Admin</a>'
+          if link not in text:
+              marker = '<a href="account.html">Account</a>'
+              if marker in text:
+                  text = text.replace(marker, marker + link, 1)
+              else:
+                  nav_end = '</nav>'
+                  text = text.replace(nav_end, link + nav_end, 1)
+              p.write_text(text, encoding='utf-8')
+              print('Admin link added.')
+          else:
+              print('Admin link already present.')
+          PY
+
+      - name: Commit homepage navigation update
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          if git diff --cached --quiet; then
+            echo 'No homepage change needed.'
+          else
+            git commit -m 'Add Admin link to homepage menu'
+            git push
+          fi
