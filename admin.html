@@ -36,4 +36,5 @@ window.editStory=async function(id){const r=await client.from('news').select('*'
 window.deleteStory=async function(id){if(!confirm('Delete this story permanently?'))return;const r=await client.from('news').delete().eq('id',id);if(r.error){alert(r.error.message);return}loadStories();};
 $('loginBtn').addEventListener('click',login);$('password').addEventListener('keydown',e=>{if(e.key==='Enter')login()});$('saveBtn').addEventListener('click',save);$('clearBtn').addEventListener('click',clearForm);$('logoutBtn').addEventListener('click',logout);start();
 })();
-</script></body></html>
+</script><script src="assets/mbale-media-ai.js" defer></script>
+</body></html>
