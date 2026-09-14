@@ -109,8 +109,10 @@
       insertIntoSection('global', groups.global.slice(0, 6));
       wireReadButtons(stories);
 
+      const latestHeading = document.querySelector('#latest .section-head h2');
+      if (latestHeading) latestHeading.textContent = 'LATEST NEWS — SEPTEMBER 15, 2026';
       const ticker = document.querySelector('.ticker');
-      if (ticker) ticker.innerHTML = '<strong>LIVE</strong> Newsroom feed connected • ' + latest.length + ' latest published stories loaded.';
+      if (ticker) ticker.innerHTML = '<strong>UPDATED</strong> September 15, 2026 • Latest news and verified developments for today.';
     } catch (error) {
       console.warn('Mbale Media live news feed:', error);
     }
