@@ -1,0 +1,52 @@
+name: SEO article links
+
+on:
+  workflow_run:
+    workflows: ["Refresh homepage news"]
+    types: [completed]
+
+permissions:
+  contents: write
+
+jobs:
+  add-crawlable-article-links:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out latest main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Add crawlable latest-story links
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+          section = '''<!-- MBMD-SEO-ARTICLE-LINKS -->
+          <section class="section" id="latest-full-stories">
+            <div class="section-head"><h2>Latest Full Stories</h2><p class="tagline">Read the complete reports from Mbale Media Daily</p></div>
+            <div class="news-grid">
+              <article class="story"><div class="story-body"><div class="kicker">Education • Uganda</div><h3>Uganda schools reopen today for third term</h3><p>Schools following the national curriculum begin third term on September 14, 2026.</p><a class="btn" href="article-uganda-schools-third-term.html">Read Full Story →</a></div></article>
+              <article class="story"><div class="story-body"><div class="kicker">Health • Uganda</div><h3>Government orders mandatory 21-day quarantine for students travelling from DRC</h3><p>Read the full Mbale Media Daily health report and public-health context.</p><a class="btn" href="article-drc-student-quarantine.html">Read Full Story →</a></div></article>
+              <article class="story"><div class="story-body"><div class="kicker">National • Tooro Kingdom</div><h3>Tooro succession and King Oyo's final send-off</h3><p>Follow the dedicated report on the Tooro succession.</p><a class="btn" href="article-tooro-succession-latest.html">Read Full Story →</a></div></article>
+              <article class="story"><div class="story-body"><div class="kicker">Sport • Uganda</div><h3>Uganda cricket and regional sports coverage</h3><p>Read the dedicated Uganda cricket report.</p><a class="btn" href="article-uganda-kenya-cricket-2026.html">Read Full Story →</a></div></article>
+              <article class="story"><div class="story-body"><div class="kicker">Mbale • Eastern Uganda</div><h3>Mbale tourism and local business</h3><p>Read the dedicated Mbale tourism report.</p><a class="btn" href="article-mbale-tourism.html">Read Full Story →</a></div></article>
+              <article class="story"><div class="story-body"><div class="kicker">News Archive</div><h3>Browse all published articles</h3><p>Find more full stories across Mbale, Uganda, sports and global news.</p><a class="btn" href="articles.html">All Articles →</a></div></article>
+            </div>
+          </section>'''
+          if '<!-- MBMD-SEO-ARTICLE-LINKS -->' in s:
+              s = re.sub(r'<!-- MBMD-SEO-ARTICLE-LINKS -->.*?</section>', section, s, count=1, flags=re.S)
+          else:
+              s = s.replace('</main>', section + '\n</main>', 1)
+          p.write_text(s, encoding='utf-8')
+      - name: Commit SEO link improvements
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git diff --cached --quiet && exit 0
+          git commit -m "[auto-news] Add crawlable article links for SEO"
+          git push origin main
