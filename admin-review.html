@@ -48,5 +48,6 @@ window.changes=async function(id){if(!admin(user))return;const note=prompt('What
 $('loginBtn').onclick=login;$('password').onkeydown=e=>{if(e.key==='Enter')login()};$('logout').onclick=async()=>{await db.auth.signOut();user=null;showLogin('Signed out.')};start();
 })();
 </script>
+<script src="assets/mbale-media-ai.js" defer></script>
 </body>
 </html>
