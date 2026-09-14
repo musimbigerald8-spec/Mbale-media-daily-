@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mbale Media • Admin Review</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+body{margin:0;background:#f4f6f8;font-family:Arial,sans-serif;color:#17202a}.top{background:#071426;color:#fff;padding:18px;font-weight:900}.wrap{max-width:900px;margin:auto;padding:16px}.card{background:#fff;border:1px solid #dfe3e8;border-radius:14px;padding:20px;margin:16px 0}.hide{display:none}.field{margin:12px 0}.field label{display:block;font-weight:800;margin-bottom:6px}.field input{width:100%;padding:13px;border:1px solid #c8d0d8;border-radius:8px;box-sizing:border-box;font-size:16px}.btn{border:0;border-radius:8px;padding:12px 15px;font-weight:900;color:#fff;cursor:pointer;margin:4px 4px 4px 0}.dark{background:#071426}.green{background:#087a35}.orange{background:#b45f06}.red{background:#9d1125}.gray{background:#52606d}.status{font-weight:800;margin-top:12px}.ok{color:#087a35}.err{color:#b00020}.story{border:1px solid #dfe3e8;border-radius:12px;padding:16px;margin:14px 0}.story h3{margin:0 0 8px}.meta{color:#667085;font-size:14px}.excerpt{margin:12px 0;line-height:1.5}.badge{display:inline-block;padding:5px 9px;border-radius:20px;font-size:12px;font-weight:900}.pending{background:#fff1cc;color:#8a5700}.changes{background:#ffe2e7;color:#9d1125}.published{background:#dff6e7;color:#087a35}.notice{background:#fff7df;border:1px solid #f1d38a;padding:14px;border-radius:10px;font-weight:800}.count{font-size:24px;font-weight:900}.actions{margin-top:12px}.review{background:#fff7df;border-left:4px solid #b45f06;padding:10px;margin-top:10px}
+</style>
+</head>
+<body>
+<div class="top">🔔 MBALE MEDIA • ADMIN REVIEW</div>
+<main class="wrap">
+<section id="login" class="card">
+<h2>Administrator Sign In</h2>
+<div class="field"><label>Email</label><input id="email" type="email" autocomplete="username"></div>
+<div class="field"><label>Password</label><input id="password" type="password" autocomplete="current-password"></div>
+<button id="loginBtn" class="btn dark">Sign in</button>
+<div id="loginStatus" class="status"></div>
+</section>
+<section id="app" class="hide">
+<div class="card">
+<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><div><h1 style="margin:0">Pending Review</h1><p style="margin:6px 0;color:#667085">Journalist articles waiting for your approval.</p></div><button id="logout" class="btn red">Sign out</button></div>
+<div class="notice"><span class="count" id="count">0</span><br>article(s) waiting for review.</div>
+</div>
+<div class="card"><h2>🔔 Articles Awaiting Approval</h2><div id="list">Loading…</div></div>
+</section>
+</main>
+<script>
+(function(){
+'use strict';
+const URL='https://dwbgcaxwemrwheybdpya.supabase.co';
+const KEY='sb_publishable_WkkWUJF8ONyX4oS2nvGNFw_jdAob8M8';
+const ADMIN='81148dcd-10b8-4f85-a2b0-635fc7c250cf';
+let db,user;
+const $=id=>document.getElementById(id);
+function msg(el,text,good){el.textContent=text;el.className='status '+(good?'ok':'err')}
+function admin(u){return !!u&&u.id===ADMIN}
+function showLogin(text){$('login').classList.remove('hide');$('app').classList.add('hide');if(text)msg($('loginStatus'),text,false)}
+function showApp(){if(!admin(user))return showLogin('Administrator authorization required.');$('login').classList.add('hide');$('app').classList.remove('hide');load()}
+async function start(){db=window.supabase.createClient(URL,KEY);const r=await db.auth.getSession();user=r.data.session?.user||null;if(admin(user))showApp();else showLogin(user?'This account is not authorized.':'');db.auth.onAuthStateChange((_e,s)=>{user=s?.user||null;if(admin(user))showApp();else showLogin(user?'This account is not authorized.':'')})}
+async function login(){const email=$('email').value.trim(),password=$('password').value;if(!email||!password)return msg($('loginStatus'),'Enter your administrator email and password.',false);$('loginBtn').disabled=true;try{const r=await db.auth.signInWithPassword({email,password});if(r.error)throw r.error;user=r.data.user;if(!admin(user)){await db.auth.signOut();user=null;throw new Error('Access denied. This account is not the Mbale Media administrator.')}showApp()}catch(e){msg($('loginStatus'),e.message||'Sign-in failed.',false)}finally{$('loginBtn').disabled=false}}
+async function load(){if(!admin(user))return;$('list').textContent='Loading…';const r=await db.from('news').select('*').eq('approval_status','pending').is('deleted_at',null).order('submitted_at',{ascending:false});if(r.error){$('list').textContent='Could not load submissions: '+r.error.message;return}const rows=r.data||[];$('count').textContent=rows.length;if(!rows.length){$('list').innerHTML='<p>🎉 No journalist submissions are waiting for review.</p>';return}$('list').innerHTML=rows.map(s=>{const d=s.submitted_at?new Date(s.submitted_at).toLocaleString():(s.created_at?new Date(s.created_at).toLocaleString():'');return '<article class="story"><h3>'+esc(s.title)+' <span class="badge pending">PENDING</span></h3><div class="meta">'+esc(s.category||'Latest')+' • By '+esc(s.author||'Unknown')+' • Submitted '+esc(d)+'</div>'+(s.excerpt?'<div class="excerpt"><strong>Summary:</strong> '+esc(s.excerpt)+'</div>':'')+'<div><strong>Full story:</strong><br>'+esc(s.content||'')+'</div>'+(s.image_url?'<p><a href="'+esc(s.image_url)+'" target="_blank" rel="noopener">View article image</a></p>':'')+'<div class="actions"><button class="btn green" onclick="approve('+s.id+')">✅ Approve & Publish</button><button class="btn orange" onclick="changes('+s.id+')">✏️ Request Changes</button></div></article>'}).join('')}
+function esc(s){return String(s??'').replace(/[&<>\"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[m]))}
+window.approve=async function(id){if(!admin(user))return;if(!confirm('Approve this article and publish it on Mbale Media?'))return;const r=await db.from('news').update({approval_status:'published',published:true,reviewed_at:new Date().toISOString(),reviewer_id:user.id,review_notes:null,updated_at:new Date().toISOString()}).eq('id',id);if(r.error)return alert(r.error.message);load()}
+window.changes=async function(id){if(!admin(user))return;const note=prompt('What should the journalist change?');if(note===null)return;if(!note.trim())return alert('Please enter a review note.');const r=await db.from('news').update({approval_status:'changes_requested',published:false,reviewed_at:new Date().toISOString(),reviewer_id:user.id,review_notes:note.trim(),updated_at:new Date().toISOString()}).eq('id',id);if(r.error)return alert(r.error.message);load()}
+$('loginBtn').onclick=login;$('password').onkeydown=e=>{if(e.key==='Enter')login()};$('logout').onclick=async()=>{await db.auth.signOut();user=null;showLogin('Signed out.')};start();
+})();
+</script>
+</body>
+</html>
