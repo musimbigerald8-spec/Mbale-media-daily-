@@ -1,1 +1,2 @@
 Mbale Media main menu repair trigger — September 15, 2026
+Force redeploy and verify the Journalist menu link.
