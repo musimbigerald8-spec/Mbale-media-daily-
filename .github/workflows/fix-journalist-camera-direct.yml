@@ -1,0 +1,34 @@
+name: Fix Journalist Camera Directly
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: write
+jobs:
+  fix:
+    if: ${{ !contains(github.event.head_commit.message, '[direct-camera-fix]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Add camera UI directly to journalist page
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('journalist.html')
+          s=p.read_text()
+          marker='<input id="image_file" type="file" accept="image/jpeg,image/png,image/webp,image/gif" capture="environment">'
+          button='<div id="cameraControls" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:9px"><button id="takePhotoBtn" type="button" class="btn dark">📷 Take Photo</button><button id="stopCameraBtn" type="button" class="btn dark" style="display:none">✕ Close Camera</button></div><div id="cameraBox" style="display:none;margin-top:12px"><video id="cameraVideo" autoplay playsinline muted style="width:100%;max-height:420px;background:#111;border-radius:10px;object-fit:cover"></video><button id="capturePhotoBtn" type="button" class="btn" style="margin-top:9px">📸 Capture Photo</button><p id="cameraStatus" class="filehint"></p></div>'
+          if 'id="takePhotoBtn"' not in s:
+              s=s.replace(marker, marker+button)
+          js_marker="$('image_file').addEventListener('change',()=>{"
+          camera_js="""let cameraStream=null;async function openCamera(){const box=$('cameraBox'),video=$('cameraVideo'),msg=$('cameraStatus');if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){msg.textContent='Camera access is not supported by this browser. Use Choose Image instead.';box.style.display='block';return}try{cameraStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'}},audio:false});video.srcObject=cameraStream;box.style.display='block';$('takePhotoBtn').style.display='none';$('stopCameraBtn').style.display='inline-block';msg.textContent='Camera ready. Tap Capture Photo.'}catch(e){box.style.display='block';msg.textContent='Camera permission was denied or unavailable. Please allow camera access, or use Choose Image.'}}function closeCamera(){if(cameraStream){cameraStream.getTracks().forEach(t=>t.stop());cameraStream=null}if($('cameraVideo'))$('cameraVideo').srcObject=null;$('cameraBox').style.display='none';$('takePhotoBtn').style.display='inline-block';$('stopCameraBtn').style.display='none'}$('takePhotoBtn').addEventListener('click',openCamera);$('stopCameraBtn').addEventListener('click',closeCamera);$('capturePhotoBtn').addEventListener('click',()=>{const v=$('cameraVideo');if(!cameraStream||!v.videoWidth)return;const c=document.createElement('canvas');c.width=v.videoWidth;c.height=v.videoHeight;c.getContext('2d').drawImage(v,0,0,c.width,c.height);c.toBlob(blob=>{if(!blob)return;const file=new File([blob],'mbale-media-photo-'+Date.now()+'.jpg',{type:'image/jpeg'});const dt=new DataTransfer();dt.items.add(file);$('image_file').files=dt.files;$('image_file').dispatchEvent(new Event('change',{bubbles:true}));closeCamera()},'image/jpeg',.9)});window.addEventListener('beforeunload',closeCamera);"""
+          if 'async function openCamera()' not in s:
+              s=s.replace(js_marker, camera_js+js_marker)
+          p.write_text(s)
+          PY
+      - name: Commit direct camera fix
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add journalist.html
+          git diff --cached --quiet || (git commit -m "Fix journalist camera UI [direct-camera-fix]" && git push)
