@@ -22,6 +22,8 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid #0714
 <div class="field"><label>Email *</label><input id="email" type="email" required autocomplete="email" placeholder="you@example.com"></div>
 <div class="field"><label>Password *</label><input id="password" type="password" required minlength="6" autocomplete="new-password" placeholder="At least 6 characters"></div>
 <button id="signupBtn" class="btn" type="submit">Create Journalist Account</button>
+<div style="display:flex;align-items:center;gap:10px;margin:16px 0;color:#667085;font-weight:800"><span style="height:1px;background:#dfe3e8;flex:1"></span>OR<span style="height:1px;background:#dfe3e8;flex:1"></span></div>
+<button id="googleBtn" class="btn dark" type="button">Continue with Google</button>
 </form>
 <div id="status" class="status"></div>
 <p style="margin-top:20px"><a href="journalist.html">← Back to Journalist Sign In</a></p>
@@ -33,8 +35,15 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid #0714
 (function(){
 'use strict';
 const client=window.supabase.createClient('https://dwbgcaxwemrwheybdpya.supabase.co','sb_publishable_WkkWUJF8ONyX4oS2nvGNFw_jdAob8M8');
-const form=document.getElementById('signup'),btn=document.getElementById('signupBtn'),status=document.getElementById('status');
+const form=document.getElementById('signup'),btn=document.getElementById('signupBtn'),googleBtn=document.getElementById('googleBtn'),status=document.getElementById('status');
 function msg(t,ok){status.textContent=t;status.className='status '+(ok?'ok':'err')}
+googleBtn.addEventListener('click',async function(){
+ googleBtn.disabled=true;googleBtn.textContent='Opening Google…';msg('Connecting to Google…',true);
+ try{
+  const r=await client.auth.signInWithOAuth({provider:'google',options:{redirectTo:location.origin+'/journalist.html'}});
+  if(r.error)throw r.error;
+ }catch(e){msg(e.message||'Google sign-in could not start. Please try again.',false);googleBtn.disabled=false;googleBtn.textContent='Continue with Google'}
+});
 form.addEventListener('submit',async function(e){
  e.preventDefault();
  const name=document.getElementById('name').value.trim(),email=document.getElementById('email').value.trim(),password=document.getElementById('password').value;
