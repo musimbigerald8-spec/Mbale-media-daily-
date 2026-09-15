@@ -1,7 +1,7 @@
 {
   "rewrites": [
-    { "source": "/admin.html", "destination": "/admin-dashboard.html" },
-    { "source": "/admin", "destination": "/admin-dashboard.html" },
+    { "source": "/admin.html", "destination": "/admin-hq.html" },
+    { "source": "/admin", "destination": "/admin-hq.html" },
     { "source": "/careers", "destination": "/careers.html" },
     { "source": "/editors", "destination": "/editor.html" },
     { "source": "/careers-admin", "destination": "/careers-admin.html" }
