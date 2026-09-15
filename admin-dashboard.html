@@ -65,4 +65,5 @@ $('loginBtn').onclick=async function(){const email=$('email').value.trim(),passw
 $('logout').onclick=async()=>{await client.auth.signOut();currentUser=null;showLogin('Signed out successfully.')};$('save').onclick=save;$('clear').onclick=clearForm;$('refresh').onclick=()=>load();$('pubSearch').oninput=()=>renderView();document.querySelectorAll('[data-refresh]').forEach(b=>b.onclick=()=>load());document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>go(b.dataset.view));$('hamb').onclick=()=>{$('sidebar').classList.add('open');$('overlay').classList.add('open')};$('overlay').onclick=closeMenu;
 (async function(){try{client=window.supabase.createClient(PROJECT_URL,PUBLISHABLE_KEY);const r=await client.auth.getSession();currentUser=r.data.session?.user||null;if(isAdmin(currentUser))showDash();client.auth.onAuthStateChange((_e,s)=>{currentUser=s?.user||null;if(isAdmin(currentUser))showDash();else showLogin()})}catch(e){stat($('loginStatus'),e.message||'Connection error.',false)}})();
 })();
-</script></body></html>
+</script><script src="assets/mbale-media-ai.js" defer></script>
+</body></html>
