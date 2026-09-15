@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#111827">
+<title>Mbale Media • Fingerprint Sign-in</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:linear-gradient(135deg,#071426,#312e81);font-family:Arial,sans-serif;color:#172033;display:flex;align-items:center;justify-content:center;padding:20px}.card{width:100%;max-width:430px;background:#fff;border-radius:20px;padding:28px;box-shadow:0 20px 60px #0006;text-align:center}.logo{width:82px;height:82px;object-fit:contain}.field{text-align:left;margin:14px 0}.field label{display:block;font-weight:800;margin-bottom:6px}.field input{width:100%;padding:13px;border:1px solid #cbd3dc;border-radius:9px;font-size:16px}.btn{width:100%;border:0;border-radius:10px;padding:13px 16px;color:#fff;font-weight:900;font-size:16px;cursor:pointer;margin-top:8px}.passkey{background:linear-gradient(135deg,#2563eb,#7c3aed)}.password{background:#172033}.green{background:linear-gradient(135deg,#16a34a,#15803d)}.gray{background:#64748b}.btn:disabled{opacity:.6}.status{margin-top:14px;white-space:pre-wrap;font-weight:700;line-height:1.45}.ok{color:#087a35}.err{color:#b00020}.note{color:#667085;font-size:13px;line-height:1.5}.hide{display:none}.divider{display:flex;align-items:center;gap:10px;color:#98a2b3;margin:18px 0}.divider:before,.divider:after{content:"";height:1px;background:#e2e8f0;flex:1}.small{font-size:12px;color:#667085;margin-top:16px}
+</style>
+</head>
+<body>
+<div class="card">
+<img class="logo" src="https://musimbigerald8-spec.github.io/assets/mbale-media-daily-logo.png?v=10" alt="Mbale Media">
+<h1>🔐 Mbale Media Admin</h1>
+<p class="note">Use your phone fingerprint, face unlock, device PIN, or another passkey method to access the newsroom.</p>
+<button id="passkeyBtn" class="btn passkey">👆 Sign in with fingerprint / passkey</button>
+<div class="divider">First-time setup</div>
+<div id="setupBox">
+<p class="note">Sign in with your administrator password once to register this device for fingerprint/passkey sign-in.</p>
+<div class="field"><label>Administrator Email</label><input id="email" type="email" autocomplete="username"></div>
+<div class="field"><label>Password</label><input id="password" type="password" autocomplete="current-password"></div>
+<button id="passwordBtn" class="btn password">Sign in with Password</button>
+<button id="registerBtn" class="btn green hide">👆 Register fingerprint / passkey on this device</button>
+</div>
+<div id="status" class="status"></div>
+<p class="small">Password sign-in remains available as a backup.</p>
+</div>
+<script>
+(function(){'use strict';
+const PROJECT_URL='https://dwbgcaxwemrwheybdpya.supabase.co';
+const PUBLISHABLE_KEY='sb_publishable_WkkWUJF8ONyX4oS2nvGNFw_jdAob8M8';
+const ADMIN_UID='81148dcd-10b8-4f85-a2b0-635fc7c250cf';
+const DASHBOARD='admin-dashboard.html';
+const client=window.supabase.createClient(PROJECT_URL,PUBLISHABLE_KEY,{auth:{experimental:{passkey:true}}});
+const $=id=>document.getElementById(id);
+function status(msg,good){$('status').textContent=msg;$('status').className='status '+(good?'ok':'err')}
+function supported(){return window.isSecureContext&&!!window.PublicKeyCredential}
+function go(user){if(!user||user.id!==ADMIN_UID){status('Access denied. This account is not the Mbale Media administrator.',false);return false}location.href=DASHBOARD;return true}
+async function signInPasskey(){if(!supported()){status('This browser/device does not support passkeys here. Use the latest Chrome over HTTPS, or use password sign-in.',false);return}$('passkeyBtn').disabled=true;$('passkeyBtn').textContent='Waiting for fingerprint…';try{const r=await client.auth.signInWithPasskey();if(r.error)throw r.error;if(!go(r.data.user))await client.auth.signOut()}catch(e){status(e.message||'Fingerprint/passkey sign-in failed. If this is your first time, use password sign-in and register this device.',false)}finally{$('passkeyBtn').disabled=false;$('passkeyBtn').textContent='👆 Sign in with fingerprint / passkey'}}
+async function passwordSignIn(){const email=$('email').value.trim(),password=$('password').value;if(!email||!password)return status('Enter the administrator email and password.',false);$('passwordBtn').disabled=true;$('passwordBtn').textContent='Signing in…';try{const r=await client.auth.signInWithPassword({email,password});if(r.error)throw r.error;if(r.data.user?.id!==ADMIN_UID){await client.auth.signOut();throw new Error('Access denied. This account is not the Mbale Media administrator.')}status('Password verified. Now register this device for fingerprint/passkey sign-in.',true);$('registerBtn').classList.remove('hide');$('setupBox').querySelectorAll('input,.password').forEach(x=>x.disabled=true)}catch(e){status(e.message||'Password sign-in failed.',false)}finally{$('passwordBtn').disabled=false;$('passwordBtn').textContent='Sign in with Password'}}
+async function register(){if(!supported())return status('Passkeys are not supported by this browser/device.',false);const r0=await client.auth.getUser();if(!r0.data.user||r0.data.user.id!==ADMIN_UID)return status('Please sign in with the administrator password first.',false);$('registerBtn').disabled=true;$('registerBtn').textContent='Registering fingerprint…';try{const r=await client.auth.registerPasskey();if(r.error)throw r.error;status('Fingerprint/passkey registered successfully. You can now use the blue button above for future sign-ins.',true);$('registerBtn').classList.add('hide')}catch(e){status(e.message||'Could not register the passkey. Check that Passkeys are enabled for the Supabase project.',false)}finally{$('registerBtn').disabled=false;$('registerBtn').textContent='👆 Register fingerprint / passkey on this device'}}
+$('passkeyBtn').onclick=signInPasskey;$('passwordBtn').onclick=passwordSignIn;$('registerBtn').onclick=register;
+})();
+</script>
+</body>
+</html>
