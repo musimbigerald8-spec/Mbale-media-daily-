@@ -1,0 +1,31 @@
+name: Link homepage to latest news
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  patch-home:
+    if: "!contains(github.event.head_commit.message, 'Link homepage to latest news')"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Update homepage news link
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          s = p.read_text()
+          s = s.replace('<a href="#latest">Latest News</a>', '<a href="latest-news.html">Latest News</a>', 1)
+          s = s.replace('September 13, 2026 • New week briefing — latest verified developments through September 12.', 'September 15, 2026 • Fresh Uganda, Mbale, sports, Africa and global reporting.', 1)
+          s = s.replace('<a class="btn" href="#latest">Read Today\'s Top Stories ↓</a>', '<a class="btn" href="latest-news.html">Read Today\'s Top Stories ↓</a>', 1)
+          p.write_text(s)
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git diff --cached --quiet || git commit -m "Link homepage to latest news"
+          git push
