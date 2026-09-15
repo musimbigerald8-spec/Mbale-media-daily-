@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Patch Admin HQ
+      - name: Patch Admin HQ and homepage
         run: |
           python3 - <<'PY'
           from pathlib import Path
@@ -43,11 +43,18 @@ jobs:
           if events in s:
               s=s.replace(events,events+"$('addEditor').addEventListener('click',addEditor);$('refreshEditors').addEventListener('click',loadEditors);$('refreshCareers').addEventListener('click',loadCareers);document.addEventListener('click',e=>{const d=e.target.closest('[data-deactivate-editor]');if(d)deactivateEditor(d.dataset.deactivateEditor);const r=e.target.closest('[data-career-status]');if(r)setCareerStatus(r.dataset.careerId,r.dataset.careerStatus);const c=e.target.closest('[data-certificate]');if(c)awardCertificate(c.dataset.certificate)});",1)
           p.write_text(s)
+
+          home=Path('index.html')
+          h=home.read_text()
+          h=h.replace('<a href="#latest">Latest News</a>','<a href="latest-news.html">Latest News</a>',1)
+          h=h.replace('<a class="btn" href="#latest">Read Today\'s Top Stories ↓</a>','<a class="btn" href="latest-news.html">Read Today\'s Top Stories ↓</a>',1)
+          h=h.replace('September 13, 2026 • New week briefing — latest verified developments through September 12.','September 15, 2026 • Fresh Uganda, Mbale, sports, Africa and global reporting.',1)
+          home.write_text(h)
           PY
-      - name: Commit Admin HQ patch
+      - name: Commit Admin HQ and homepage patch
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add admin-dashboard.html
-          git diff --cached --quiet || git commit -m "Add Editors and Career Applications to Admin HQ"
+          git add admin-dashboard.html index.html
+          git diff --cached --quiet || git commit -m "Update Admin HQ and latest news homepage"
           git push
