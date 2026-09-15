@@ -12,18 +12,15 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Add admin passkey and settings buttons
+      - name: Add permanent passkey links
         run: |
           python3 - <<'PY'
           from pathlib import Path
           p=Path('admin-dashboard.html')
           s=p.read_text(encoding='utf-8')
-          passkey='<div style="text-align:center;margin:12px auto;max-width:430px"><a href="admin-passkey.html" style="display:block;text-decoration:none;text-align:center;background:linear-gradient(135deg,#2563eb,#7c3aed);color:#fff;padding:13px 16px;border-radius:10px;font-weight:900;box-shadow:0 6px 16px #2563eb33">👆 Set Up Fingerprint / Passkey</a></div>'
-          settings='<div style="text-align:center;margin:12px auto;max-width:430px"><a href="https://supabase.com/dashboard/project/dwbgcaxwemrwheybdpya/auth/passkeys" target="_blank" rel="noopener" style="display:block;text-decoration:none;text-align:center;background:linear-gradient(135deg,#0f766e,#0891b2);color:#fff;padding:13px 16px;border-radius:10px;font-weight:900;box-shadow:0 6px 16px #0891b233">⚙️ Passkey Settings</a></div>'
+          settings='<div id="passkeySettingsLink" style="text-align:center;margin:12px auto;max-width:430px"><a href="https://supabase.com/dashboard/project/dwbgcaxwemrwheybdpya/auth/passkeys" target="_blank" rel="noopener" style="display:block;text-decoration:none;text-align:center;background:linear-gradient(135deg,#0f766e,#0891b2);color:#fff;padding:13px 16px;border-radius:10px;font-weight:900;box-shadow:0 6px 16px #0891b233">⚙️ Passkey Settings</a></div>'
           needle='<div id="loginView" class="wrap">'
-          if 'Set Up Fingerprint / Passkey' not in s and needle in s:
-              s=s.replace(needle, passkey+needle, 1)
-          if 'Passkey Settings' not in s and needle in s:
+          if 'id="passkeySettingsLink"' not in s and needle in s:
               s=s.replace(needle, settings+needle, 1)
           p.write_text(s,encoding='utf-8')
           PY
@@ -32,5 +29,9 @@ jobs:
           git config user.name 'Mbale Media Bot'
           git config user.email 'actions@users.noreply.github.com'
           git add admin-dashboard.html
-          git diff --cached --quiet || git commit -m 'Add passkey settings button to admin dashboard [skip ci]'
-          git push
+          if ! git diff --cached --quiet; then
+            git commit -m 'Add permanent Passkey Settings button [skip ci]'
+            git push
+          else
+            echo 'Passkey Settings button already present.'
+          fi
