@@ -1,0 +1,44 @@
+name: Improve Admin Dashboard
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: write
+jobs:
+  improve:
+    if: ${{ !contains(github.event.head_commit.message, '[admin-dashboard-fix]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Add admin dashboard improvements
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('admin.html')
+          s=p.read_text()
+          css='''<style id="admin-enhancements">.admin-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}.admin-stat{background:#fff;border:1px solid #dfe3e8;border-radius:12px;padding:14px}.admin-stat b{display:block;font-size:25px;margin-top:5px}.admin-stat small{color:#667085;font-weight:800}.refresh-row{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap}.refresh-btn{background:#071426;color:#fff;border:0;border-radius:7px;padding:9px 13px;font-weight:900;cursor:pointer}@media(max-width:700px){.admin-stats{grid-template-columns:repeat(2,1fr)}.admin-stat b{font-size:21px}}@media(max-width:430px){.admin-stats{grid-template-columns:1fr 1fr}.tabs{overflow-x:auto;flex-wrap:nowrap}.tab{white-space:nowrap}}</style>'''
+          if 'id="admin-enhancements"' not in s:
+              s=s.replace('</head>',css+'</head>')
+          marker='<div class="card"><h2>📰 Story Manager</h2>'
+          stats='''<div class="admin-stats"><div class="admin-stat"><small>⏳ Pending Review</small><b id="statPending">0</b></div><div class="admin-stat"><small>✏️ Changes Requested</small><b id="statChanges">0</b></div><div class="admin-stat"><small>📰 Published</small><b id="statPublished">0</b></div><div class="admin-stat"><small>♻️ Recycle Bin</small><b id="statTrash">0</b></div></div>'''
+          if 'id="statPending"' not in s:
+              s=s.replace(marker,stats+marker)
+          marker2='<div class="search"><input id="search" placeholder="Search headlines, categories or authors…"></div>'
+          refresh='''<div class="refresh-row"><strong id="viewTitle">Active Stories</strong><button id="refreshStoriesBtn" class="refresh-btn" type="button">🔄 Refresh Stories</button></div>'''
+          if 'id="refreshStoriesBtn"' not in s:
+              s=s.replace(marker2,refresh+marker2)
+          js_marker='function renderStories(){'
+          js='''function updateAdminStats(){const active=allStories.filter(s=>!s.deleted_at);$('statPending').textContent=active.filter(s=>s.approval_status==='pending').length;$('statChanges').textContent=active.filter(s=>s.approval_status==='changes_requested').length;$('statPublished').textContent=active.filter(s=>!s.deleted_at&&(s.approval_status==='published'||(!s.approval_status&&s.published))).length;$('statTrash').textContent=allStories.filter(s=>!!s.deleted_at).length;$('pendingCount').textContent=active.filter(s=>s.approval_status==='pending').length}function updateViewTitle(){const names={active:'Active Stories',pending:'Pending Review',changes:'Changes Requested',trash:'Recycle Bin'};$('viewTitle').textContent=names[view]||'Story Manager'}'''
+          if 'function updateAdminStats()' not in s:
+              s=s.replace(js_marker,js+js_marker)
+          s=s.replace("const pending=rows.filter(s=>!s.deleted_at&&s.approval_status==='pending').length;$('pendingCount').textContent=pending;", "const pending=rows.filter(s=>!s.deleted_at&&s.approval_status==='pending').length;$('pendingCount').textContent=pending;updateAdminStats();updateViewTitle();")
+          if 'refreshStoriesBtn' in s and "$('refreshStoriesBtn').addEventListener" not in s:
+              s=s.replace("window.approveStory=async function(id){", "$('refreshStoriesBtn').addEventListener('click',()=>loadStories());$('pendingTab').addEventListener('click',()=>{view='pending';document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));$('pendingTab').classList.add('active');updateViewTitle();renderStories()});$('changesTab').addEventListener('click',()=>{view='changes';document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));$('changesTab').classList.add('active');updateViewTitle();renderStories()});$('activeTab').addEventListener('click',()=>{view='active';document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));$('activeTab').classList.add('active');updateViewTitle();renderStories()});$('trashTab').addEventListener('click',()=>{view='trash';document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));$('trashTab').classList.add('active');updateViewTitle();renderStories()});window.approveStory=async function(id){")
+          p.write_text(s)
+          PY
+      - name: Commit admin improvements
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add admin.html
+          git diff --cached --quiet || (git commit -m "Improve admin dashboard [admin-dashboard-fix]" && git push)
