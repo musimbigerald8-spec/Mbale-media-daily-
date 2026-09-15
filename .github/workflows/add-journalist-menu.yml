@@ -13,19 +13,22 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Add Journalist link if missing
+      - name: Keep Journalist link stable
         run: |
           python3 - <<'PY'
           from pathlib import Path
           p = Path('index.html')
           s = p.read_text(encoding='utf-8')
-          link = '<a href="journalist.html">📰 Journalist</a>'
-          if link not in s:
-              marker = '<a href="admin.html">Admin</a>'
-              if marker not in s:
-                  raise SystemExit('Admin menu link not found; stopping safely.')
-              s = s.replace(marker, marker + link, 1)
-              p.write_text(s, encoding='utf-8')
+          s = s.replace('<a href="journalist.html?v=20260915">📰 Journalist</a>', '<a href="journalist.html">📰 Journalist</a>')
+          s = s.replace('<a href="./journalist.html">📰 Journalist</a>', '<a href="journalist.html">📰 Journalist</a>')
+          s = s.replace('<a href="/journalist.html">📰 Journalist</a>', '<a href="journalist.html">📰 Journalist</a>')
+          if '<a href="journalist.html">📰 Journalist</a>' not in s:
+              marker = '<a href="admin-dashboard.html">Admin</a>'
+              if marker in s:
+                  s = s.replace(marker, marker + '<a href="journalist.html">📰 Journalist</a>', 1)
+              else:
+                  raise SystemExit('Admin dashboard link not found; stopping safely.')
+          p.write_text(s, encoding='utf-8')
           PY
 
       - name: Commit menu change safely
@@ -36,8 +39,8 @@ jobs:
           git rebase origin/main
           git add index.html
           if git diff --cached --quiet; then
-            echo "Journalist link already present."
+            echo "Journalist link already stable."
           else
-            git commit -m "Add Journalist to main menu"
+            git commit -m "Keep Journalist in main menu"
             git push origin HEAD:main
           fi
