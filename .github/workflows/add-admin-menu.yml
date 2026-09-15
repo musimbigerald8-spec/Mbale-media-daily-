@@ -16,25 +16,26 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Add Admin menu link if missing
+      - name: Repair Admin menu link
         run: |
           python - <<'PY'
           from pathlib import Path
           p = Path('index.html')
           text = p.read_text(encoding='utf-8')
-          link = '<a href="admin.html">Admin</a>'
-          if link not in text:
+          text = text.replace('<a href="admin.html">Admin</a>', '<a href="admin-dashboard.html">Admin</a>')
+          text = text.replace('<a href="./admin.html">Admin</a>', '<a href="./admin-dashboard.html">Admin</a>')
+          text = text.replace('<a href="/admin.html">Admin</a>', '<a href="/admin-dashboard.html">Admin</a>')
+          if '<a href="admin-dashboard.html">Admin</a>' not in text:
               marker = '<a href="account.html">Account</a>'
               if marker in text:
-                  text = text.replace(marker, marker + link, 1)
+                  text = text.replace(marker, marker + '<a href="admin-dashboard.html">Admin</a>', 1)
               else:
-                  nav_end = '</nav>'
-                  text = text.replace(nav_end, link + nav_end, 1)
-              p.write_text(text, encoding='utf-8')
-              print('Admin link added.')
-          else:
-              print('Admin link already present.')
+                  text = text.replace('</nav>', '<a href="admin-dashboard.html">Admin</a></nav>', 1)
+          p.write_text(text, encoding='utf-8')
           PY
+
+      - name: Verify Admin link
+        run: grep -q '<a href="admin-dashboard.html">Admin</a>' index.html
 
       - name: Commit homepage navigation update
         run: |
@@ -42,8 +43,8 @@ jobs:
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add index.html
           if git diff --cached --quiet; then
-            echo 'No homepage change needed.'
+            echo 'Admin link already correct.'
           else
-            git commit -m 'Add Admin link to homepage menu'
+            git commit -m 'Route Admin menu to new dashboard'
             git push
           fi
