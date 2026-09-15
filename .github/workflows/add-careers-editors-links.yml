@@ -1,0 +1,41 @@
+name: Add Careers and Editors links
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'admin-dashboard.html'
+      - '.github/workflows/add-careers-editors-links.yml'
+permissions:
+  contents: write
+jobs:
+  patch-links:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Add navigation links
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text()
+          marker='<!-- MBMD-CAREERS-EDITORS-LINKS -->'
+          block='''<!-- MBMD-CAREERS-EDITORS-LINKS --><div style="position:fixed;right:14px;bottom:14px;z-index:9999;display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end"><a href="careers" style="background:#071426;color:#fff;padding:10px 13px;border-radius:8px;text-decoration:none;font-weight:800;box-shadow:0 4px 14px #0004">💼 Careers</a><a href="editors" style="background:#e4032e;color:#fff;padding:10px 13px;border-radius:8px;text-decoration:none;font-weight:800;box-shadow:0 4px 14px #0004">✍️ Editors</a></div>'''
+          if marker not in s:
+              s=s.replace('</body>',block+'</body>')
+              p.write_text(s)
+          p=Path('admin-dashboard.html')
+          s=p.read_text()
+          marker='<!-- MBMD-CAREER-APPLICATIONS-LINK -->'
+          block='''<!-- MBMD-CAREER-APPLICATIONS-LINK --><div style="position:fixed;right:18px;bottom:18px;z-index:9999"><a href="careers-admin.html" style="display:inline-block;background:#15803d;color:#fff;padding:12px 16px;border-radius:9px;text-decoration:none;font-weight:900;box-shadow:0 5px 16px #0004">💼 Career Applications</a></div>'''
+          if marker not in s:
+              s=s.replace('</body>',block+'</body>')
+              p.write_text(s)
+          PY
+      - name: Commit changes
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html admin-dashboard.html
+          git diff --cached --quiet || git commit -m 'Add Careers and Editors links'
+          git push
