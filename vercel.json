@@ -1,6 +1,8 @@
 {
   "rewrites": [
     { "source": "/admin.html", "destination": "/admin-dashboard.html" },
-    { "source": "/admin", "destination": "/admin-dashboard.html" }
+    { "source": "/admin", "destination": "/admin-dashboard.html" },
+    { "source": "/careers", "destination": "/careers.html" },
+    { "source": "/editors", "destination": "/editor.html" }
   ]
 }
