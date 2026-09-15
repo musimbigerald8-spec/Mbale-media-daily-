@@ -1,0 +1,41 @@
+name: Style Mbale Media Admin Dashboard
+on:
+  push:
+    paths:
+      - admin-style-trigger.txt
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  style:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Apply premium colorful admin theme
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          p = Path('admin-dashboard.html')
+          s = p.read_text(encoding='utf-8')
+          s = re.sub(r':root\{[^}]*\}', ':root{--nav:#111827;--red:#e11d48;--bg:#f5f7fb;--card:#fff;--text:#172033;--muted:#667085;--line:#e2e8f0;--green:#16a34a;--orange:#f59e0b;--blue:#2563eb;--purple:#7c3aed;--cyan:#0891b2}', s, count=1)
+          s = s.replace('.sidebar{position:fixed;inset:0 auto 0 0;width:250px;background:var(--nav);', '.sidebar{position:fixed;inset:0 auto 0 0;width:250px;background:linear-gradient(180deg,#111827 0%,#172554 52%,#312e81 100%);')
+          s = s.replace('.navbtn:hover,.navbtn.active{background:#13243b;color:#fff}', '.navbtn:hover,.navbtn.active{background:linear-gradient(90deg,#2563eb,#7c3aed);color:#fff;box-shadow:0 5px 16px #0003}')
+          s = s.replace('.navbtn .count{float:right;background:#e4032e;', '.navbtn .count{float:right;background:#f43f5e;')
+          s = s.replace('.topbar{height:68px;background:#fff;', '.topbar{height:68px;background:linear-gradient(90deg,#ffffff,#f8faff);')
+          s = s.replace('.stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px}', '.stat{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;box-shadow:0 8px 24px #17203312;position:relative;overflow:hidden}.stat:before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:linear-gradient(180deg,#2563eb,#7c3aed)}')
+          s = s.replace('.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:21px;margin-bottom:20px}', '.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:21px;margin-bottom:20px;box-shadow:0 8px 28px #1720330d}')
+          s = s.replace('.btn{border:0;border-radius:8px;padding:11px 15px;color:#fff;background:var(--red);', '.btn{border:0;border-radius:9px;padding:11px 15px;color:#fff;background:linear-gradient(135deg,#e11d48,#be123c);box-shadow:0 5px 12px #e11d4830;')
+          s = s.replace('.btn.dark{background:var(--nav)}.btn.green{background:var(--green)}.btn.orange{background:var(--orange)}', '.btn.dark{background:linear-gradient(135deg,#1e293b,#334155)}.btn.green{background:linear-gradient(135deg,#16a34a,#15803d)}.btn.orange{background:linear-gradient(135deg,#f59e0b,#d97706)}')
+          s = s.replace('.btn.gray{background:#52606d}.btn.danger{background:#9d1125}', '.btn.gray{background:#64748b}.btn.danger{background:linear-gradient(135deg,#dc2626,#991b1b)}')
+          p.write_text(s, encoding='utf-8')
+          PY
+      - name: Commit dashboard styling
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add admin-dashboard.html
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "Give admin dashboard a premium colorful theme"
+          git push
