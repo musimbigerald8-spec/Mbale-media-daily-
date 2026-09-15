@@ -1,0 +1,35 @@
+name: Add admin passkey link
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Add passkey button if missing
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('admin-dashboard.html')
+          s=p.read_text(encoding='utf-8')
+          marker='<a href="admin-passkey.html"'
+          if marker not in s:
+              needle='<div id="loginView" class="wrap">'
+              insert='<div style="text-align:center;margin:12px auto;max-width:430px"><a href="admin-passkey.html" style="display:block;text-decoration:none;text-align:center;background:linear-gradient(135deg,#2563eb,#7c3aed);color:#fff;padding:13px 16px;border-radius:10px;font-weight:900;box-shadow:0 6px 16px #2563eb33">👆 Set Up Fingerprint / Passkey</a></div>'
+              if needle not in s: raise SystemExit('login marker not found')
+              s=s.replace(needle, insert+needle, 1)
+              p.write_text(s,encoding='utf-8')
+          PY
+      - name: Commit dashboard update
+        run: |
+          git config user.name 'Mbale Media Bot'
+          git config user.email 'actions@users.noreply.github.com'
+          git add admin-dashboard.html
+          git diff --cached --quiet || git commit -m 'Show fingerprint passkey setup on admin login [skip ci]'
+          git push
