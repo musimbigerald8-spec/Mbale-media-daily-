@@ -1,0 +1,82 @@
+name: Add Google Sign-In to Journalist Portal
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Add Google sign-in
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          # Signup page
+          p = Path('journalist-account.html')
+          s = p.read_text(encoding='utf-8')
+          old = '<button id="signupBtn" class="btn" type="submit">Create Journalist Account</button>'
+          new = '''<button id="signupBtn" class="btn" type="submit">Create Journalist Account</button>\n<div style="display:flex;align-items:center;gap:10px;margin:16px 0;color:#667085;font-weight:800"><span style="height:1px;background:#dfe3e8;flex:1"></span>OR<span style="height:1px;background:#dfe3e8;flex:1"></span></div>\n<button id="googleBtn" class="btn dark" type="button">Continue with Google</button>'''
+          if 'id="googleBtn"' not in s:
+              if old not in s:
+                  raise SystemExit('Signup button not found')
+              s = s.replace(old, new, 1)
+          marker = "const form=document.getElementById('signup'),btn=document.getElementById('signupBtn'),status=document.getElementById('status');"
+          replacement = "const form=document.getElementById('signup'),btn=document.getElementById('signupBtn'),googleBtn=document.getElementById('googleBtn'),status=document.getElementById('status');"
+          s = s.replace(marker, replacement, 1)
+          hook = "form.addEventListener('submit',async function(e){"
+          google_code = '''googleBtn.addEventListener('click',async function(){\n googleBtn.disabled=true;googleBtn.textContent='Opening Google…';msg('Connecting to Google…',true);\n try{\n  const r=await client.auth.signInWithOAuth({provider:'google',options:{redirectTo:location.origin+'/journalist.html'}});\n  if(r.error)throw r.error;\n }catch(e){msg(e.message||'Google sign-in could not start. Please try again.',false);googleBtn.disabled=false;googleBtn.textContent='Continue with Google'}\n});\n\n'''
+          if 'signInWithOAuth({provider:\'google\'' not in s:
+              if hook not in s:
+                  raise SystemExit('Signup form hook not found')
+              s = s.replace(hook, google_code + hook, 1)
+          p.write_text(s, encoding='utf-8')
+
+          # Sign-in page
+          p = Path('journalist.html')
+          s = p.read_text(encoding='utf-8')
+          old = '<button id="loginBtn" class="btn">Sign In</button>'
+          new = '''<button id="loginBtn" class="btn">Sign In</button>\n<div style="display:flex;align-items:center;gap:10px;margin:16px 0;color:#667085;font-weight:800"><span style="height:1px;background:#dfe3e8;flex:1"></span>OR<span style="height:1px;background:#dfe3e8;flex:1"></span></div>\n<button id="googleLoginBtn" class="btn dark" type="button">Continue with Google</button>'''
+          if 'id="googleLoginBtn"' not in s:
+              if old not in s:
+                  raise SystemExit('Login button not found')
+              s = s.replace(old, new, 1)
+          marker = "const PROJECT_URL='https://dwbgcaxwemrwheybdpya.supabase.co',PUBLISHABLE_KEY='sb_publishable_WkkWUJF8ONyX4oS2nvGNFw_jdAob8M8',IMAGE_BUCKET='news-images';"
+          replacement = "const PROJECT_URL='https://dwbgcaxwemrwheybdpya.supabase.co',PUBLISHABLE_KEY='sb_publishable_WkkWUJF8ONyX4oS2nvGNFw_jdAob8M8',IMAGE_BUCKET='news-images';"
+          if marker not in s:
+              raise SystemExit('Supabase config marker not found')
+          hook = "async function login(){"
+          google_code = '''async function googleLogin(){\n const btn=$('googleLoginBtn');btn.disabled=true;btn.textContent='Opening Google…';status($('loginStatus'),'Connecting to Google…',true);\n try{\n  const r=await client.auth.signInWithOAuth({provider:'google',options:{redirectTo:location.origin+'/journalist.html'}});\n  if(r.error)throw r.error;\n }catch(e){status($('loginStatus'),e.message||'Google sign-in could not start. Please try again.',false);btn.disabled=false;btn.textContent='Continue with Google'}\n}\n\n'''
+          if 'async function googleLogin()' not in s:
+              if hook not in s:
+                  raise SystemExit('Login function hook not found')
+              s = s.replace(hook, google_code + hook, 1)
+          event_marker = "$('loginBtn').addEventListener('click',login);"
+          if "$('googleLoginBtn').addEventListener('click',googleLogin);" not in s:
+              if event_marker not in s:
+                  raise SystemExit('Login event marker not found')
+              s = s.replace(event_marker, event_marker+"$('googleLoginBtn').addEventListener('click',googleLogin);", 1)
+          p.write_text(s, encoding='utf-8')
+          PY
+
+      - name: Commit changes
+        run: |
+          git config user.name 'Mbale Media Bot'
+          git config user.email 'actions@users.noreply.github.com'
+          git add journalist.html journalist-account.html
+          if git diff --cached --quiet; then
+            echo 'No changes needed.'
+          else
+            git commit -m 'Add Continue with Google for journalists [skip ci]'
+            git push
+          fi
