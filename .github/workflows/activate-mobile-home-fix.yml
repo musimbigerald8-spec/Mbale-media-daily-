@@ -7,6 +7,7 @@ on:
       - 'assets/menu-fix.js'
       - 'assets/menu-fix-v2.js'
       - 'assets/mobile-interaction-fix.js'
+      - 'assets/article-link-fix.js'
       - '.github/workflows/activate-mobile-home-fix.yml'
 
 permissions:
@@ -19,56 +20,40 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Activate mobile fixes across all deployments
+      - name: Activate mobile fixes and story links across all deployments
         run: |
           python3 - <<'PY'
           from pathlib import Path
           p = Path('index.html')
           s = p.read_text(encoding='utf-8')
-          for name in ('mobile-home-fix.js','menu-fix.js','menu-fix-v2.js','mobile-interaction-fix.js'):
-              s = s.replace(f'<script src="assets/{name}" defer></script>', '')
-              s = s.replace(f'<script src="assets/{name}?v=20260916" defer></script>', '')
-          for name in ('mobile-home-fix.js','menu-fix.js','menu-fix-v2.js','mobile-interaction-fix.js'):
-              tag = f'<script src="assets/{name}?v=20260916-2" defer></script>'
-              marker = '<script src="assets/mbale-media-ai.js" defer></script>'
+          names=('mobile-home-fix.js','menu-fix.js','menu-fix-v2.js','mobile-interaction-fix.js','article-link-fix.js')
+          for name in names:
+              s=s.replace(f'<script src="assets/{name}" defer></script>','')
+              s=s.replace(f'<script src="assets/{name}?v=20260916" defer></script>','')
+              s=s.replace(f'<script src="assets/{name}?v=20260916-2" defer></script>','')
+          marker='<script src="assets/mbale-media-ai.js" defer></script>'
+          for name in names:
+              tag=f'<script src="assets/{name}?v=20260916-3" defer></script>'
               if tag not in s:
-                  if marker in s:
-                      s = s.replace(marker, marker + tag, 1)
-                  else:
-                      s = s.replace('</body>', tag + '</body>', 1)
-          s = s.replace('<a href="journalist.html">Journalist</a>', '')
-          s = s.replace('<a href="editor.html">Editor Desk</a>', '')
-          s = s.replace('<a class="side-link" href="journalist.html">Journalist Desk <span>→</span></a>', '')
-          s = s.replace('<a class="side-link" href="editor.html">Editor Desk <span>→</span></a>', '')
-          start = s.find('<!-- MBMD-CAREERS-EDITORS-LINKS -->')
-          if start != -1:
-              end = s.find('<script src="assets/mbale-media-ai.js"', start)
-              if end != -1:
-                  s = s[:start] + s[end:]
-          p.write_text(s, encoding='utf-8')
-          js = Path('assets/mbale-media-ai.js')
-          j = js.read_text(encoding='utf-8')
-          marker = '/* MBMD-KAMPALA-HERO-PATCH */'
-          patch = r'''/* MBMD-KAMPALA-HERO-PATCH */
-(function(){
-  function patchKampalaHero(){
-    var hero=document.querySelector('.featured'); if(!hero)return;
-    var src='https://upload.wikimedia.org/wikipedia/commons/0/0c/KampalaSkyline.jpg';
-    hero.style.backgroundImage="url('"+src+"')"; hero.style.backgroundSize='cover'; hero.style.backgroundPosition='center center';
-    var media=hero.querySelector('video');
-    if(media){media.poster=src;media.style.backgroundImage="url('"+src+"')";media.style.backgroundSize='cover';media.style.backgroundPosition='center center';}
-    var img=hero.querySelector('img');
-    if(img){img.src=src;img.alt='Kampala City skyline, Uganda';img.loading='eager';}
-  }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',patchKampalaHero,{once:true});else patchKampalaHero();
-})();
+                  s=s.replace(marker,marker+tag,1) if marker in s else s.replace('</body>',tag+'</body>',1)
+          s=s.replace('<a href="journalist.html">Journalist</a>','').replace('<a href="editor.html">Editor Desk</a>','')
+          s=s.replace('<a class="side-link" href="journalist.html">Journalist Desk <span>→</span></a>','').replace('<a class="side-link" href="editor.html">Editor Desk <span>→</span></a>','')
+          start=s.find('<!-- MBMD-CAREERS-EDITORS-LINKS -->')
+          if start!=-1:
+              end=s.find('<script src="assets/mbale-media-ai.js"',start)
+              if end!=-1:s=s[:start]+s[end:]
+          p.write_text(s,encoding='utf-8')
+          js=Path('assets/mbale-media-ai.js');j=js.read_text(encoding='utf-8')
+          marker='/* MBMD-KAMPALA-HERO-PATCH */'
+          patch=r'''/* MBMD-KAMPALA-HERO-PATCH */
+(function(){function patchKampalaHero(){var hero=document.querySelector('.featured');if(!hero)return;var src='https://upload.wikimedia.org/wikipedia/commons/0/0c/KampalaSkyline.jpg';hero.style.backgroundImage="url('"+src+"')";hero.style.backgroundSize='cover';hero.style.backgroundPosition='center center';var media=hero.querySelector('video');if(media){media.poster=src;media.style.backgroundImage="url('"+src+"')";media.style.backgroundSize='cover';media.style.backgroundPosition='center center'}var img=hero.querySelector('img');if(img){img.src=src;img.alt='Kampala City skyline, Uganda';img.loading='eager'}}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',patchKampalaHero,{once:true});else patchKampalaHero()})();
 '''
-          if marker not in j: js.write_text(j + '\n' + patch, encoding='utf-8')
+          if marker not in j:js.write_text(j+'\n'+patch,encoding='utf-8')
           PY
-      - name: Commit changes
+      - name: Commit generated homepage
         run: |
           git config user.name 'Mbale Media Daily'
           git config user.email 'mbale-media-daily@users.noreply.github.com'
           git add index.html assets/mbale-media-ai.js
-          git diff --cached --quiet || git commit -m 'Activate mobile interaction and continuous breaking ticker'
+          git diff --cached --quiet || git commit -m 'Link full top stories and activate mobile fixes'
           git push
