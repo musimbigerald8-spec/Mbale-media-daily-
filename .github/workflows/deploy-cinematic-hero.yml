@@ -1,0 +1,41 @@
+name: Deploy cinematic Mbale hero
+on:
+  push:
+    paths:
+      - '.github/trigger-video-fix'
+permissions:
+  contents: write
+jobs:
+  deploy-video:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Restore MP4 and patch homepage
+        shell: bash
+        run: |
+          set -euo pipefail
+          base64 -d assets/mbale-media-cinematic.b64 > assets/mbale-media-cinematic.mp4
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text()
+          old='''<article class="featured"><img decoding="async" src="https://www.mbalecity.go.ug/sites/default/files/2023-05/mb2.jpg" alt="Mbale City" loading="eager">'''
+          new='''<article class="featured"><video autoplay muted loop playsinline preload="auto" aria-label="Cinematic view of Mbale City clock tower"><source src="assets/mbale-media-cinematic.mp4" type="video/mp4"></video>'''
+          if old in s:
+              s=s.replace(old,new,1)
+          start=s.find("<script>\n(async()=>{const featured=document.querySelector('.featured');")
+          if start!=-1:
+              end=s.find("</script>",start)
+              if end!=-1:
+                  s=s[:start]+s[end+9:]
+          p.write_text(s)
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add assets/mbale-media-cinematic.mp4 index.html
+          if git diff --cached --quiet; then
+            echo 'No changes to commit'
+          else
+            git commit -m 'Fix cinematic Mbale homepage hero'
+            git push
+          fi
