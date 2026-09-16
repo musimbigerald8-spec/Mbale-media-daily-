@@ -1,35 +1,89 @@
 name: Hide private admin link
+
 on:
   push:
     branches: [main]
   workflow_dispatch:
+
 permissions:
   contents: write
+
 jobs:
   patch-public-nav:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Remove ADMIN from public navigation
+      - name: Fix mobile layout and public navigation
+        shell: python
         run: |
-          python - <<'PY'
           from pathlib import Path
-          p=Path('assets/mbale-media-ai.js')
-          if not p.exists():
-              raise SystemExit(0)
-          s=p.read_text()
-          old=s
-          s=s.replace("['admin-dashboard.html','ADMIN'],","")
-          s=s.replace("<a href=\"admin-dashboard.html\" style=\"background:#e4032e;color:#fff;font-weight:900;padding-left:10px\">ADMIN</a>","")
-          p.write_text(s)
-          print('changed:', s != old)
-          PY
-          if git diff --quiet; then
-            echo "No public admin link found."
-            exit 0
-          fi
+          import re
+
+          # Fix the homepage mobile grid. The homepage redesign uses !important,
+          # so its mobile media rule must explicitly reset the hero to one column.
+          p = Path('assets/mbale-media-ai.js')
+          if p.exists():
+              s = p.read_text(encoding='utf-8')
+              s = s.replace(
+                  '@media(max-width:850px){.topbar{height:60px!important}.container{padding-top:12px!important}.featured{height:360px!important}.hero{gap:10px!important}}',
+                  '@media(max-width:850px){.topbar{height:60px!important}.container{padding-top:12px!important}.featured{height:360px!important}.hero{grid-template-columns:1fr!important;gap:10px!important}}'
+              )
+
+              # Keep the newsroom-only Journalist/Editor links out of public nav.
+              s = s.replace(",['journalist.html?v='+new Date().toISOString().slice(0,10).replace(/-/g,''),'Journalist'],['editor.html','Editor Desk']", "")
+              s = s.replace(
+                  '<a href="network.html">Our Network</a><a href="journalist.html">Journalist</a><a href="editor.html">Editor Desk</a>',
+                  '<a href="network.html">Our Network</a>'
+              )
+              s = s.replace("['admin-dashboard.html','ADMIN'],", "")
+              s = s.replace('<a href="admin-dashboard.html" style="background:#e4032e;color:#fff;font-weight:900;padding-left:10px">ADMIN</a>', '')
+              p.write_text(s, encoding='utf-8')
+
+          # Remove newsroom-only links and floating editor controls from homepage.
+          h = Path('index.html')
+          if h.exists():
+              s = h.read_text(encoding='utf-8')
+              s = s.replace('<a href="journalist.html">Journalist</a>', '')
+              s = s.replace('<a href="editor.html">Editor Desk</a>', '')
+              s = re.sub(
+                  r'<!-- MBMD-CAREERS-EDITORS-LINKS -->.*?</div><script src="assets/mbale-media-ai\.js" defer></script>',
+                  '<script src="assets/mbale-media-ai.js" defer></script>',
+                  s,
+                  flags=re.S
+              )
+
+              css = '''<style id="mbmd-final-mobile-fix">
+          @media (max-width:850px){
+            html,body{width:100%;max-width:100%;overflow-x:hidden!important}
+            .topbar-inner{width:100%!important;max-width:100%!important;min-width:0!important}
+            .brand{min-width:0!important;max-width:calc(100% - 70px)!important}
+            .brand-name{font-size:19px!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+            .container{width:100%!important;max-width:100%!important;min-width:0!important;padding-left:0!important;padding-right:0!important;overflow:hidden!important}
+            .hero{display:grid!important;grid-template-columns:minmax(0,1fr)!important;width:100%!important;max-width:100%!important;min-width:0!important;gap:10px!important}
+            .featured{width:100%!important;min-width:0!important;height:360px!important}
+            .featured-content{left:18px!important;right:18px!important;max-width:calc(100% - 36px)!important}
+            .featured h1{font-size:31px!important;max-width:100%!important;overflow-wrap:anywhere!important}
+            .featured p{max-width:100%!important}
+            .side-stories{display:grid!important;grid-template-rows:auto auto!important;width:100%!important;min-width:0!important;gap:10px!important}
+            .side-story{width:100%!important;min-width:0!important;grid-template-columns:105px minmax(0,1fr)!important}
+            .side-copy{min-width:0!important;overflow:hidden!important}
+            .side-copy h2,.side-copy p{overflow-wrap:anywhere!important}
+            .trending,.news-grid,.split{max-width:100%!important;min-width:0!important}
+            .footer{width:100%!important;max-width:100%!important;overflow:hidden!important}
+          }
+          </style>'''
+              if 'id="mbmd-final-mobile-fix"' not in s:
+                  s = s.replace('</head>', css + '</head>')
+              h.write_text(s, encoding='utf-8')
+
+      - name: Commit changes
+        run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add assets/mbale-media-ai.js
-          git commit -m "Remove private admin link from public navigation"
+          git add index.html assets/mbale-media-ai.js
+          if git diff --cached --quiet; then
+            echo "No changes needed."
+            exit 0
+          fi
+          git commit -m "Fix mobile homepage layout and public navigation"
           git push
