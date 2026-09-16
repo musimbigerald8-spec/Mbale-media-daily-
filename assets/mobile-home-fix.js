@@ -15,13 +15,15 @@
         .brand-name{min-width:0!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;font-size:18px!important}
         .tools{flex:0 0 auto!important;gap:6px!important}
         .tools button,.tools a{min-width:38px!important;min-height:38px!important}
-        .ticker{width:100%!important;max-width:100vw!important;overflow:hidden!important;border-radius:0!important}
-        .ticker-label{flex:0 0 auto!important;z-index:2!important;padding:0 9px!important}
-        .ticker-track{min-width:max-content!important}
+        .ticker{width:100%!important;max-width:100vw!important;overflow:hidden!important;border-radius:0!important;display:flex!important}
+        .ticker-label{flex:0 0 112px!important;width:112px!important;min-width:112px!important;z-index:3!important;padding:0 9px!important;overflow:hidden!important}
+        .ticker-track{min-width:0!important;flex:1 1 auto!important;width:calc(100% - 112px)!important;max-width:calc(100% - 112px)!important;overflow:hidden!important;animation:none!important;padding-left:10px!important;gap:0!important}
+        .ticker-track span{display:none!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important}
+        .ticker-track span:first-child{display:block!important;min-width:0!important;max-width:100%!important}
         .container{width:100%!important;max-width:100%!important;overflow:hidden!important;padding-left:12px!important;padding-right:12px!important}
         .hero{display:grid!important;grid-template-columns:minmax(0,1fr)!important;width:100%!important;max-width:100%!important;gap:12px!important}
-        .featured{width:100%!important;max-width:100%!important;height:390px!important;min-width:0!important;border-radius:14px!important;overflow:hidden!important;box-shadow:0 10px 30px rgba(0,0,0,.28)!important}
-        .featured img{width:100%!important;height:100%!important;object-fit:cover!important;object-position:center center!important;filter:saturate(1.08) contrast(1.03)!important}
+        .featured{width:100%!important;max-width:100%!important;height:390px!important;min-width:0!important;border-radius:14px!important;overflow:hidden!important;box-shadow:0 10px 30px rgba(0,0,0,.28)!important;background-image:url('https://commons.wikimedia.org/wiki/Special:Redirect/file/KampalaSkyline.jpg')!important;background-size:cover!important;background-position:center center!important;background-repeat:no-repeat!important}
+        .featured img{width:100%!important;height:100%!important;object-fit:cover!important;object-position:center center!important;filter:saturate(1.08) contrast(1.03)!important;position:relative!important;z-index:0!important}
         .featured:after{background:linear-gradient(180deg,rgba(0,0,0,.02) 12%,rgba(0,0,0,.08) 38%,rgba(0,0,0,.78) 100%)!important}
         .featured-content{left:18px!important;right:18px!important;bottom:18px!important;max-width:calc(100% - 36px)!important;overflow:hidden!important}
         .featured .category{display:inline-block!important;background:rgba(228,3,46,.94)!important;color:#fff!important;border-radius:999px!important;padding:5px 9px!important;font-size:10px!important;font-weight:900!important;letter-spacing:.35px!important;margin-bottom:8px!important}
