@@ -17,9 +17,8 @@
         .tools button,.tools a{min-width:38px!important;min-height:38px!important}
         .ticker{width:100%!important;max-width:100vw!important;overflow:hidden!important;border-radius:0!important;display:flex!important}
         .ticker-label{flex:0 0 112px!important;width:112px!important;min-width:112px!important;z-index:3!important;padding:0 9px!important;overflow:hidden!important}
-        .ticker-track{min-width:0!important;flex:1 1 auto!important;width:calc(100% - 112px)!important;max-width:calc(100% - 112px)!important;overflow:hidden!important;animation:none!important;padding-left:10px!important;gap:0!important}
-        .ticker-track span{display:none!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important}
-        .ticker-track span:first-child{display:block!important;min-width:0!important;max-width:100%!important}
+        .ticker-track{min-width:0!important;flex:1 1 auto!important;width:calc(100% - 112px)!important;max-width:calc(100% - 112px)!important;overflow:hidden!important;animation:ticker 24s linear infinite!important;padding-left:10px!important;gap:55px!important}
+        .ticker-track span{display:inline-block!important;overflow:visible!important;text-overflow:clip!important;white-space:nowrap!important;min-width:max-content!important}
         .container{width:100%!important;max-width:100%!important;overflow:hidden!important;padding-left:12px!important;padding-right:12px!important}
         .hero{display:grid!important;grid-template-columns:minmax(0,1fr)!important;width:100%!important;max-width:100%!important;gap:12px!important}
         .featured{width:100%!important;max-width:100%!important;height:390px!important;min-width:0!important;border-radius:14px!important;overflow:hidden!important;box-shadow:0 10px 30px rgba(0,0,0,.28)!important;background:#101619 url('https://upload.wikimedia.org/wikipedia/commons/0/0c/KampalaSkyline.jpg') center center/cover no-repeat!important}
