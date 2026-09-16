@@ -1,0 +1,35 @@
+name: Hide private admin link
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  patch-public-nav:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Remove ADMIN from public navigation
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('assets/mbale-media-ai.js')
+          if not p.exists():
+              raise SystemExit(0)
+          s=p.read_text()
+          old=s
+          s=s.replace("['admin-dashboard.html','ADMIN'],","")
+          s=s.replace("<a href=\"admin-dashboard.html\" style=\"background:#e4032e;color:#fff;font-weight:900;padding-left:10px\">ADMIN</a>","")
+          p.write_text(s)
+          print('changed:', s != old)
+          PY
+          if git diff --quiet; then
+            echo "No public admin link found."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/mbale-media-ai.js
+          git commit -m "Remove private admin link from public navigation"
+          git push
