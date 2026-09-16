@@ -22,7 +22,7 @@
         .ticker-track span:first-child{display:block!important;min-width:0!important;max-width:100%!important}
         .container{width:100%!important;max-width:100%!important;overflow:hidden!important;padding-left:12px!important;padding-right:12px!important}
         .hero{display:grid!important;grid-template-columns:minmax(0,1fr)!important;width:100%!important;max-width:100%!important;gap:12px!important}
-        .featured{width:100%!important;max-width:100%!important;height:390px!important;min-width:0!important;border-radius:14px!important;overflow:hidden!important;box-shadow:0 10px 30px rgba(0,0,0,.28)!important;background-image:url('https://commons.wikimedia.org/wiki/Special:Redirect/file/KampalaSkyline.jpg')!important;background-size:cover!important;background-position:center center!important;background-repeat:no-repeat!important}
+        .featured{width:100%!important;max-width:100%!important;height:390px!important;min-width:0!important;border-radius:14px!important;overflow:hidden!important;box-shadow:0 10px 30px rgba(0,0,0,.28)!important;background:#101619 url('https://upload.wikimedia.org/wikipedia/commons/0/0c/KampalaSkyline.jpg') center center/cover no-repeat!important}
         .featured img{width:100%!important;height:100%!important;object-fit:cover!important;object-position:center center!important;filter:saturate(1.08) contrast(1.03)!important;position:relative!important;z-index:0!important}
         .featured:after{background:linear-gradient(180deg,rgba(0,0,0,.02) 12%,rgba(0,0,0,.08) 38%,rgba(0,0,0,.78) 100%)!important}
         .featured-content{left:18px!important;right:18px!important;bottom:18px!important;max-width:calc(100% - 36px)!important;overflow:hidden!important}
@@ -49,31 +49,30 @@
     `;
     document.head.appendChild(style);
 
-    // Make the Kampala City hero image explicit and reliable on mobile.
+    // Use a stable Wikimedia upload URL so the Kampala image works on both GitHub Pages and Vercel.
     const hero=document.querySelector('.featured');
     if(hero){
       const img=hero.querySelector('img');
+      const kampala='https://upload.wikimedia.org/wikipedia/commons/0/0c/KampalaSkyline.jpg';
       if(img){
-        const kampala='https://commons.wikimedia.org/wiki/Special:Redirect/file/KampalaSkyline.jpg';
         img.src=kampala;
         img.alt='Kampala City skyline, Uganda';
         img.loading='eager';
         img.decoding='async';
         img.style.objectFit='cover';
         img.style.objectPosition='center center';
-        img.onerror=function(){
-          if(this.dataset.kampalaFallback)return;
-          this.dataset.kampalaFallback='1';
-          this.src='https://commons.wikimedia.org/wiki/Special:Redirect/file/Kampala_skyline.jpg';
-        };
+        img.onerror=function(){this.style.display='none';};
       }
+      hero.style.backgroundImage="url('"+kampala+"')";
+      hero.style.backgroundPosition='center center';
+      hero.style.backgroundSize='cover';
+      hero.style.backgroundRepeat='no-repeat';
       const cat=hero.querySelector('.category');
       if(cat)cat.textContent='Kampala City • Uganda';
       const h=hero.querySelector('h1');
       if(h)h.textContent="Kampala City — Uganda's Capital in Focus";
     }
 
-    // The public site should not expose private newsroom controls.
     document.querySelectorAll('a[href="journalist.html"],a[href^="journalist.html?"],a[href="editor.html"],a[href="editors"],a[href="careers"]').forEach(a=>a.remove());
     document.querySelectorAll('.main-nav a').forEach(a=>{if(/journalist|editor desk/i.test(a.textContent))a.remove()});
     const floating=document.getElementById('mbmd-public-private-links');
