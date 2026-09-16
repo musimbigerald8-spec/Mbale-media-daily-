@@ -6,6 +6,7 @@ on:
       - 'assets/mobile-home-fix.js'
       - 'assets/menu-fix.js'
       - 'assets/menu-fix-v2.js'
+      - 'assets/mobile-interaction-fix.js'
       - '.github/workflows/activate-mobile-home-fix.yml'
 
 permissions:
@@ -24,10 +25,11 @@ jobs:
           from pathlib import Path
           p = Path('index.html')
           s = p.read_text(encoding='utf-8')
-          for name in ('mobile-home-fix.js','menu-fix.js','menu-fix-v2.js'):
+          for name in ('mobile-home-fix.js','menu-fix.js','menu-fix-v2.js','mobile-interaction-fix.js'):
               s = s.replace(f'<script src="assets/{name}" defer></script>', '')
-          for name in ('mobile-home-fix.js','menu-fix.js','menu-fix-v2.js'):
-              tag = f'<script src="assets/{name}?v=20260916" defer></script>'
+              s = s.replace(f'<script src="assets/{name}?v=20260916" defer></script>', '')
+          for name in ('mobile-home-fix.js','menu-fix.js','menu-fix-v2.js','mobile-interaction-fix.js'):
+              tag = f'<script src="assets/{name}?v=20260916-2" defer></script>'
               marker = '<script src="assets/mbale-media-ai.js" defer></script>'
               if tag not in s:
                   if marker in s:
@@ -68,5 +70,5 @@ jobs:
           git config user.name 'Mbale Media Daily'
           git config user.email 'mbale-media-daily@users.noreply.github.com'
           git add index.html assets/mbale-media-ai.js
-          git diff --cached --quiet || git commit -m 'Harden mobile menu and continuous breaking ticker'
+          git diff --cached --quiet || git commit -m 'Activate mobile interaction and continuous breaking ticker'
           git push
