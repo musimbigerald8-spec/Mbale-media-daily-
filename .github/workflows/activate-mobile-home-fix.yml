@@ -1,0 +1,51 @@
+name: Activate mobile homepage fix
+
+on:
+  push:
+    paths:
+      - 'assets/mobile-home-fix.js'
+      - '.github/workflows/activate-mobile-home-fix.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  activate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Inject mobile fix and remove private public links
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+          tag = '<script src="assets/mobile-home-fix.js" defer></script>'
+          if tag not in s:
+              marker = '<script src="assets/mbale-media-ai.js" defer></script>'
+              if marker in s:
+                  s = s.replace(marker, marker + tag, 1)
+              else:
+                  s = s.replace('</body>', tag + '</body>', 1)
+          # Remove the known public links to private newsroom pages.
+          s = s.replace('<a href="journalist.html">Journalist</a>', '')
+          s = s.replace('<a href="editor.html">Editor Desk</a>', '')
+          s = s.replace('<a class="side-link" href="journalist.html">Journalist Desk <span>→</span></a>', '')
+          s = s.replace('<a class="side-link" href="editor.html">Editor Desk <span>→</span></a>', '')
+          start = s.find('<!-- MBMD-CAREERS-EDITORS-LINKS -->')
+          if start != -1:
+              end = s.find('<script src="assets/mbale-media-ai.js"', start)
+              if end != -1:
+                  s = s[:start] + s[end:]
+          p.write_text(s, encoding='utf-8')
+          PY
+
+      - name: Commit changes
+        run: |
+          git config user.name 'Mbale Media Daily'
+          git config user.email 'mbale-media-daily@users.noreply.github.com'
+          git add index.html
+          git diff --cached --quiet || git commit -m 'Activate mobile homepage layout fix'
+          git push
