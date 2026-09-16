@@ -5,5 +5,6 @@ Disallow: /dashboard.html
 Disallow: /search.html
 Disallow: /share.html
 Disallow: /newsroom-admin.html
+Disallow: /administrator-dashboard.html
 
 Sitemap: https://musimbigerald8-spec.github.io/sitemap.xml
