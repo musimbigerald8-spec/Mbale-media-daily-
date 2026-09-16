@@ -16,6 +16,7 @@ function updateHomepageChrome(){
  if(nav){
   const routes=[
    ['index.html#home','Home'],
+   ['admin-dashboard.html','ADMIN'],
    ['latest-news.html','Latest News'],
    ['index.html#mbale','Mbale'],
    ['index.html#national','Uganda'],
@@ -28,16 +29,18 @@ function updateHomepageChrome(){
    ['audio.html','Radio / Audio'],
    ['network.html','Our Network'],
    ['journalist.html?v='+new Date().toISOString().slice(0,10).replace(/-/g,''),'Journalist'],
-   ['editor.html','Editor Desk'],
-   ['admin-dashboard.html','Admin']
+   ['editor.html','Editor Desk']
   ];
-  nav.innerHTML=routes.map(([href,label])=>'<a href="'+href+'">'+label+'</a>').join('');
+  nav.innerHTML=routes.map(([href,label])=>'<a href="'+href+'" class="'+(label==='ADMIN'?'admin-menu-link':'')+'">'+label+'</a>').join('');
   const current=location.pathname.split('/').pop()||'index.html';
   nav.querySelectorAll('a').forEach(a=>{
    const u=new URL(a.href,location.href);
    if((u.pathname.split('/').pop()||'index.html')===current && !u.hash)a.classList.add('active');
-   a.addEventListener('click',()=>{const menu=document.getElementById('mainNav');menu.classList.remove('open')});
+   a.addEventListener('click',()=>nav.classList.remove('open'));
   });
+  const style=document.createElement('style');
+  style.textContent='.nav a.admin-menu-link{background:#e4032e!important;color:#fff!important;font-weight:900!important;border-radius:5px;margin:7px 8px;padding:10px 16px;text-align:center}.nav a.admin-menu-link:hover{background:#b80025!important}.nav a.admin-menu-link.active{background:#b80025!important}@media(max-width:800px){.nav a.admin-menu-link{margin:0;border-radius:0;padding:17px 22px;background:#e4032e!important;border-top:0!important;border-bottom:1px solid #ffffff33;text-align:left;font-size:16px!important}}';
+  document.head.appendChild(style);
  }
 }
 function card(s){const d=s.created_at?new Date(s.created_at).toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'}):'';const image=s.image_url?'<img src="'+esc(s.image_url)+'" alt="'+esc(s.title)+'" loading="lazy" style="width:100%;height:220px;object-fit:cover;display:block;background:#dfe5ec">':'';return '<article class="story mbmd-live-story" data-news-id="'+esc(s.id)+'">'+image+'<div class="story-body"><div class="kicker">'+esc(s.category||'News')+(s.breaking?' • BREAKING':'')+'</div><h3>'+esc(s.title)+'</h3><p>'+esc(s.excerpt||(s.content||'').slice(0,240))+'</p><div class="meta">'+esc(s.author||'Mbale Media')+(d?' • '+esc(d):'')+'</div><button class="btn mbmd-read" type="button">Read Full Story →</button></div></article>'}
