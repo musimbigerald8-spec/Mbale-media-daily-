@@ -5,6 +5,7 @@ on:
     paths:
       - 'assets/mobile-home-fix.js'
       - 'assets/menu-fix.js'
+      - 'assets/menu-fix-v2.js'
       - '.github/workflows/activate-mobile-home-fix.yml'
 
 permissions:
@@ -21,12 +22,9 @@ jobs:
         run: |
           python3 - <<'PY'
           from pathlib import Path
-
           p = Path('index.html')
           s = p.read_text(encoding='utf-8')
-
-          # Ensure both mobile fixes are loaded by the public homepage.
-          for name in ('mobile-home-fix.js', 'menu-fix.js'):
+          for name in ('mobile-home-fix.js', 'menu-fix.js', 'menu-fix-v2.js'):
               tag = f'<script src="assets/{name}" defer></script>'
               if tag not in s:
                   marker = '<script src="assets/mbale-media-ai.js" defer></script>'
@@ -34,8 +32,6 @@ jobs:
                       s = s.replace(marker, marker + tag, 1)
                   else:
                       s = s.replace('</body>', tag + '</body>', 1)
-
-          # Remove known public links to private newsroom pages.
           s = s.replace('<a href="journalist.html">Journalist</a>', '')
           s = s.replace('<a href="editor.html">Editor Desk</a>', '')
           s = s.replace('<a class="side-link" href="journalist.html">Journalist Desk <span>→</span></a>', '')
@@ -46,41 +42,29 @@ jobs:
               if end != -1:
                   s = s[:start] + s[end:]
           p.write_text(s, encoding='utf-8')
-
-          # Make the Kampala hero image work even when the original hero is a video.
           js = Path('assets/mbale-media-ai.js')
           j = js.read_text(encoding='utf-8')
           marker = '/* MBMD-KAMPALA-HERO-PATCH */'
           patch = r'''/* MBMD-KAMPALA-HERO-PATCH */
 (function(){
   function patchKampalaHero(){
-    var hero=document.querySelector('.featured');
-    if(!hero)return;
+    var hero=document.querySelector('.featured'); if(!hero)return;
     var src='https://upload.wikimedia.org/wikipedia/commons/0/0c/KampalaSkyline.jpg';
-    hero.style.backgroundImage="url('"+src+"')";
-    hero.style.backgroundSize='cover';
-    hero.style.backgroundPosition='center center';
+    hero.style.backgroundImage="url('"+src+"')"; hero.style.backgroundSize='cover'; hero.style.backgroundPosition='center center';
     var media=hero.querySelector('video');
-    if(media){
-      media.poster=src;
-      media.style.backgroundImage="url('"+src+"')";
-      media.style.backgroundSize='cover';
-      media.style.backgroundPosition='center center';
-    }
+    if(media){media.poster=src;media.style.backgroundImage="url('"+src+"')";media.style.backgroundSize='cover';media.style.backgroundPosition='center center';}
     var img=hero.querySelector('img');
     if(img){img.src=src;img.alt='Kampala City skyline, Uganda';img.loading='eager';}
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',patchKampalaHero,{once:true});else patchKampalaHero();
 })();
 '''
-          if marker not in j:
-              js.write_text(j + '\n' + patch, encoding='utf-8')
+          if marker not in j: js.write_text(j + '\n' + patch, encoding='utf-8')
           PY
-
       - name: Commit changes
         run: |
           git config user.name 'Mbale Media Daily'
           git config user.email 'mbale-media-daily@users.noreply.github.com'
           git add index.html assets/mbale-media-ai.js
-          git diff --cached --quiet || git commit -m 'Activate mobile menu and Kampala hero fixes'
+          git diff --cached --quiet || git commit -m 'Activate mobile menu v2 and Kampala hero fixes'
           git push
