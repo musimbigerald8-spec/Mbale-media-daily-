@@ -39,6 +39,16 @@
     sec.innerHTML='<div style="padding:15px 17px;border-bottom:1px solid #20282d;display:flex;justify-content:space-between;gap:12px;align-items:center"><h2 style="margin:0;font:800 23px Georgia,serif;color:#fff">Latest Updates</h2><span style="font-size:10px;color:#ff766d;font-weight:800">16 SEP 2026</span></div><div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr))">'+stories.slice(0,6).map(function(s){return '<article style="padding:15px 16px;border-bottom:1px solid #20282d"><div style="font-size:9px;color:#ff766d;font-weight:900;letter-spacing:.7px">'+esc(s.cat)+'</div><h3 style="margin:6px 0 7px;font:700 16px/1.22 Georgia,serif;color:#fff">'+esc(s.title)+'</h3><p style="margin:0;color:#9aa4aa;font-size:11px;line-height:1.45">'+esc(s.lead)+'</p><div style="margin-top:9px;color:#6f7b82;font-size:9px">'+esc(s.source)+'</div></article>';}).join('')+'</div>';
     hero.parentNode.insertBefore(sec,hero.nextSibling);
   }
+  function injectEastlinkAd(){
+    if(document.getElementById('mbmd-eastlink-ad'))return;
+    var ticker=document.querySelector('.ticker');
+    if(!ticker)return;
+    var ad=document.createElement('section');
+    ad.id='mbmd-eastlink-ad';
+    ad.setAttribute('aria-label','Advertisement — Eastlink Training Institute');
+    ad.innerHTML='<style>#mbmd-eastlink-ad{width:100%;max-width:1180px;margin:18px auto;box-sizing:border-box;padding:0 12px;font-family:Arial,sans-serif}#mbmd-eastlink-ad .ad-card{display:grid;grid-template-columns:minmax(280px,430px) 1fr;align-items:center;border:2px solid #174ea6;border-radius:14px;background:#fff;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,.18)}#mbmd-eastlink-ad .ad-label{grid-column:1/-1;background:#174ea6;color:#fff;font-weight:800;font-size:12px;letter-spacing:1px;text-align:center;padding:7px}#mbmd-eastlink-ad .ad-poster{display:block;width:100%;height:auto;max-height:620px;object-fit:contain;padding:10px;box-sizing:border-box}#mbmd-eastlink-ad .ad-copy{padding:20px 24px;color:#14202a}#mbmd-eastlink-ad h2{margin:0 0 5px;font-size:28px;color:#174ea6;text-transform:uppercase}#mbmd-eastlink-ad p{font-size:15px;line-height:1.5;margin:8px 0}#mbmd-eastlink-ad .ad-location{font-size:13px;font-weight:700}#mbmd-eastlink-ad .ad-actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:14px}#mbmd-eastlink-ad .ad-actions a{background:#e31b23;color:#fff;text-decoration:none;font-weight:800;border-radius:8px;padding:11px 13px}#mbmd-eastlink-ad .ad-actions a.alt{background:#174ea6}@media(max-width:700px){#mbmd-eastlink-ad{padding:0 6px;margin:12px auto}#mbmd-eastlink-ad .ad-card{display:block;border-radius:10px}#mbmd-eastlink-ad .ad-poster{padding:7px;max-height:none}#mbmd-eastlink-ad .ad-copy{padding:15px}#mbmd-eastlink-ad h2{font-size:22px}#mbmd-eastlink-ad p{font-size:14px}#mbmd-eastlink-ad .ad-actions{display:grid;grid-template-columns:1fr}#mbmd-eastlink-ad .ad-actions a{text-align:center}}</style><div class="ad-card"><div class="ad-label">ADVERTISEMENT</div><a href="tel:+256768363821" aria-label="Call Eastlink Training Institute"><img class="ad-poster" src="assets/eastlink-ad.jpg" alt="Eastlink Training Institute — Apply Now"></a><div class="ad-copy"><h2>Eastlink Training Institute</h2><p><strong>Powering Employability</strong></p><p>Certificate &amp; Diploma courses in Tailoring, Hairdressing &amp; Beauty, Information Technology, Journalism &amp; Media Studies, Business Administration &amp; Management, Tourism &amp; Hospitality, Records &amp; Information Management, Public Relations, Electrical Installations and Public Administration.</p><p><strong>UVTAB examined • Hostels available</strong></p><p class="ad-location">Mbale City, Kumi Road in Namakwekwe, behind Total Petrol Station next to Mbale Church of Christ.</p><div class="ad-actions"><a href="tel:+256768363821">APPLY / CALL</a><a class="alt" href="tel:+256200904854">+256 200 904 854</a></div></div></div>';
+    ticker.parentNode.insertBefore(ad,ticker.nextSibling);
+  }
   function latestPage(){
     var head=document.querySelector('.head p'); if(head)head.textContent='LATEST NEWS • WEDNESDAY SEPTEMBER 16, 2026';
     var ed=document.querySelector('.edition');
@@ -62,7 +72,7 @@
     });
   }
   function init(){
-    if(document.querySelector('.featured'))homepage();
+    if(document.querySelector('.featured')){homepage();injectEastlinkAd();}
     if(document.querySelector('.article'))latestPage();
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
