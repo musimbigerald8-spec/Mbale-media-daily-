@@ -24,7 +24,26 @@
 @media(max-width:850px){.topbar{height:60px}.topbar-inner{padding:0 14px}.brand img{width:38px;height:38px}.brand-name{font-size:19px}.main-nav{display:none}.tools{margin-left:auto}.nav-mobile{display:block;background:#0a0f12;border-top:1px solid #151a1d}.nav-mobile button{width:100%;padding:12px 15px;text-align:left;background:none;border:0;color:#fff;font-weight:800}.nav-links{display:none;padding:0 15px 12px}.nav-links.open{display:grid;grid-template-columns:1fr 1fr}.nav-links a{padding:10px 0;color:#b8c0c5;text-decoration:none;font-size:12px}.ticker{height:32px}.ticker-label{padding:0 14px}.container{padding:14px 0 45px}.hero{grid-template-columns:1fr;gap:10px}.featured{height:360px;border-radius:0}.featured-content{left:18px;right:18px;bottom:18px}.featured h1{font-size:31px}.side-stories{gap:10px}.side-story{grid-template-columns:105px 1fr;min-height:145px;border-radius:0}.side-story img{width:105px;min-height:145px}.side-copy{padding:13px 12px 12px 0}.side-copy h2{font-size:16px}.trending{padding:13px 14px 16px;margin-bottom:25px}.section-head{padding:0 14px}.section-head h2{font-size:22px}.news-grid{grid-template-columns:1fr;gap:10px}.card{border-radius:0}.card img{height:220px}.card-body{padding:16px 18px}.split{grid-template-columns:1fr;gap:10px}.list-panel,.side-panel{border-radius:0}.network-banner{margin:25px 14px 0;display:block}.network-banner .btn{margin-top:14px}.footer-top{grid-template-columns:1fr 1fr;gap:25px}.footer-top>div:first-child{grid-column:1/-1}}
 @media(min-width:851px){.nav-mobile{display:none}}
 a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid #071426;outline-offset:3px}</style>
-</head>
+<style id="mbmd-final-mobile-fix">
+@media (max-width:850px){
+  html,body{width:100%;max-width:100%;overflow-x:hidden!important}
+  .topbar-inner{width:100%!important;max-width:100%!important;min-width:0!important}
+  .brand{min-width:0!important;max-width:calc(100% - 70px)!important}
+  .brand-name{font-size:19px!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+  .container{width:100%!important;max-width:100%!important;min-width:0!important;padding-left:0!important;padding-right:0!important;overflow:hidden!important}
+  .hero{display:grid!important;grid-template-columns:minmax(0,1fr)!important;width:100%!important;max-width:100%!important;min-width:0!important;gap:10px!important}
+  .featured{width:100%!important;min-width:0!important;height:360px!important}
+  .featured-content{left:18px!important;right:18px!important;max-width:calc(100% - 36px)!important}
+  .featured h1{font-size:31px!important;max-width:100%!important;overflow-wrap:anywhere!important}
+  .featured p{max-width:100%!important}
+  .side-stories{display:grid!important;grid-template-rows:auto auto!important;width:100%!important;min-width:0!important;gap:10px!important}
+  .side-story{width:100%!important;min-width:0!important;grid-template-columns:105px minmax(0,1fr)!important}
+  .side-copy{min-width:0!important;overflow:hidden!important}
+  .side-copy h2,.side-copy p{overflow-wrap:anywhere!important}
+  .trending,.news-grid,.split{max-width:100%!important;min-width:0!important}
+  .footer{width:100%!important;max-width:100%!important;overflow:hidden!important}
+}
+</style></head>
 <body>
 <header class="topbar">
   <div class="topbar-inner">
@@ -36,7 +55,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid #0714
     <div class="search-box" id="searchBox"><form id="searchForm"><input id="searchInput" type="search" placeholder="Search Mbale Media Daily..." aria-label="Search"><button>SEARCH</button></form></div>
   </div>
 </header>
-<div class="nav-mobile"><button id="menuToggle">☰ &nbsp; MENU</button><div class="nav-links" id="navLinks"><a href="index.html">Home</a><a href="latest-news.html">Latest News</a><a href="#mbale">Mbale</a><a href="#uganda">Uganda</a><a href="#sports">Sports</a><a href="#culture">Culture</a><a href="#technology">Technology</a><a href="video.html">Videos</a><a href="audio.html">Podcasts</a><a href="network.html">Our Network</a><a href="journalist.html">Journalist</a><a href="editor.html">Editor Desk</a></div></div>
+<div class="nav-mobile"><button id="menuToggle">☰ &nbsp; MENU</button><div class="nav-links" id="navLinks"><a href="index.html">Home</a><a href="latest-news.html">Latest News</a><a href="#mbale">Mbale</a><a href="#uganda">Uganda</a><a href="#sports">Sports</a><a href="#culture">Culture</a><a href="#technology">Technology</a><a href="video.html">Videos</a><a href="audio.html">Podcasts</a><a href="network.html">Our Network</a></div></div>
 <div class="ticker"><div class="ticker-label">BREAKING NEWS</div><div class="ticker-track"><span>Mbale Media Daily brings you the latest news from Eastern Uganda</span><span>Top stories from Mbale, Uganda, Africa and the world</span><span>Every Story Matters</span><span>Mbale Media Daily brings you the latest news from Eastern Uganda</span></div></div>
 <main class="container">
 <section class="hero">
@@ -88,6 +107,6 @@ if(searchForm)searchForm.addEventListener('submit',e=>{e.preventDefault();const 
 const shareData={title:'Mbale Media Daily',text:'News from Mbale, Eastern Uganda and beyond.',url:location.href};
 const themeBtn=document.getElementById('themeBtn');if(themeBtn)themeBtn.addEventListener('click',()=>document.documentElement.classList.toggle('dim'));
 </script>
-<!-- MBMD-CAREERS-EDITORS-LINKS --><div style="position:fixed;right:14px;bottom:14px;z-index:9999;display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end"><a href="careers" style="background:#071426;color:#fff;padding:10px 13px;border-radius:8px;text-decoration:none;font-weight:800;box-shadow:0 4px 14px #0004">💼 Careers</a><a href="editors" style="background:#e4032e;color:#fff;padding:10px 13px;border-radius:8px;text-decoration:none;font-weight:800;box-shadow:0 4px 14px #0004">✍️ Editors</a></div><script src="assets/mbale-media-ai.js" defer></script>
+<script src="assets/mbale-media-ai.js" defer></script>
 </body>
 </html>
