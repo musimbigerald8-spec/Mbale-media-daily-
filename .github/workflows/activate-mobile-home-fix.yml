@@ -6,6 +6,7 @@ on:
       - 'assets/mobile-home-fix.js'
       - 'assets/mobile-interaction-fix.js'
       - 'assets/article-link-fix.js'
+      - 'assets/eastlink-ad.js'
       - '.github/workflows/activate-mobile-home-fix.yml'
 
 permissions:
@@ -18,22 +19,22 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Activate mobile fixes and story links across all deployments
+      - name: Activate mobile fixes, story links and homepage advertisement across all deployments
         run: |
           python3 - <<'PY'
           from pathlib import Path
+          import re
           p = Path('index.html')
           s = p.read_text(encoding='utf-8')
           # Keep exactly one copy of the active scripts. The older menu-fix and menu-fix-v2
           # scripts are deliberately removed because multiple click handlers caused the
           # Android menu to open and immediately close.
-          active=('mobile-home-fix.js','mobile-interaction-fix.js','article-link-fix.js')
+          active=('mobile-home-fix.js','mobile-interaction-fix.js','article-link-fix.js','eastlink-ad.js')
           all_names=active+('menu-fix.js','menu-fix-v2.js')
           for name in all_names:
-              import re
               s=re.sub(r'<script\s+src=["\']assets/'+re.escape(name)+r'(?:\?[^"\']*)?["\']\s+defer\s*></script>','',s)
           marker='<script src="assets/mbale-media-ai.js" defer></script>'
-          tags=''.join(f'<script src="assets/{name}?v=20260916-4" defer></script>' for name in active)
+          tags=''.join(f'<script src="assets/{name}?v=20260916-5" defer></script>' for name in active)
           if marker in s:
               s=s.replace(marker,marker+tags,1)
           elif '</body>' in s:
@@ -57,5 +58,5 @@ jobs:
           git config user.name 'Mbale Media Daily'
           git config user.email 'mbale-media-daily@users.noreply.github.com'
           git add index.html assets/mbale-media-ai.js
-          git diff --cached --quiet || git commit -m 'Fix mobile menu double-toggle'
+          git diff --cached --quiet || git commit -m 'Activate Eastlink advertisement and mobile fixes'
           git push
