@@ -23,18 +23,16 @@ jobs:
         run: |
           python3 - <<'PY'
           from pathlib import Path
-          import re
           p = Path('index.html')
           s = p.read_text(encoding='utf-8')
-          # Keep exactly one copy of the active scripts. The older menu-fix and menu-fix-v2
-          # scripts are deliberately removed because multiple click handlers caused the
-          # Android menu to open and immediately close.
+          # MBMD-AD-ACTIVATION-20260916-6
           active=('mobile-home-fix.js','mobile-interaction-fix.js','article-link-fix.js','eastlink-ad.js')
           all_names=active+('menu-fix.js','menu-fix-v2.js')
           for name in all_names:
+              import re
               s=re.sub(r'<script\s+src=["\']assets/'+re.escape(name)+r'(?:\?[^"\']*)?["\']\s+defer\s*></script>','',s)
           marker='<script src="assets/mbale-media-ai.js" defer></script>'
-          tags=''.join(f'<script src="assets/{name}?v=20260916-5" defer></script>' for name in active)
+          tags=''.join(f'<script src="assets/{name}?v=20260916-6" defer></script>' for name in active)
           if marker in s:
               s=s.replace(marker,marker+tags,1)
           elif '</body>' in s:
