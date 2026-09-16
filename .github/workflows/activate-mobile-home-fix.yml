@@ -16,10 +16,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Inject mobile fix and remove private public links
+      - name: Activate mobile fix across all deployments
         run: |
           python3 - <<'PY'
           from pathlib import Path
+
+          # Ensure the dedicated mobile fix is loaded by the public homepage.
           p = Path('index.html')
           s = p.read_text(encoding='utf-8')
           tag = '<script src="assets/mobile-home-fix.js" defer></script>'
@@ -29,7 +31,7 @@ jobs:
                   s = s.replace(marker, marker + tag, 1)
               else:
                   s = s.replace('</body>', tag + '</body>', 1)
-          # Remove the known public links to private newsroom pages.
+          # Remove known public links to private newsroom pages.
           s = s.replace('<a href="journalist.html">Journalist</a>', '')
           s = s.replace('<a href="editor.html">Editor Desk</a>', '')
           s = s.replace('<a class="side-link" href="journalist.html">Journalist Desk <span>→</span></a>', '')
@@ -40,12 +42,41 @@ jobs:
               if end != -1:
                   s = s[:start] + s[end:]
           p.write_text(s, encoding='utf-8')
+
+          # Make the Kampala hero image work even when the original hero is a video.
+          js = Path('assets/mbale-media-ai.js')
+          j = js.read_text(encoding='utf-8')
+          marker = '/* MBMD-KAMPALA-HERO-PATCH */'
+          patch = r'''/* MBMD-KAMPALA-HERO-PATCH */
+(function(){
+  function patchKampalaHero(){
+    var hero=document.querySelector('.featured');
+    if(!hero)return;
+    var src='https://upload.wikimedia.org/wikipedia/commons/0/0c/KampalaSkyline.jpg';
+    hero.style.backgroundImage="url('"+src+"')";
+    hero.style.backgroundSize='cover';
+    hero.style.backgroundPosition='center center';
+    var media=hero.querySelector('video');
+    if(media){
+      media.poster=src;
+      media.style.backgroundImage="url('"+src+"')";
+      media.style.backgroundSize='cover';
+      media.style.backgroundPosition='center center';
+    }
+    var img=hero.querySelector('img');
+    if(img){img.src=src;img.alt='Kampala City skyline, Uganda';img.loading='eager';}
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',patchKampalaHero,{once:true});else patchKampalaHero();
+})();
+'''
+          if marker not in j:
+              js.write_text(j + '\n' + patch, encoding='utf-8')
           PY
 
       - name: Commit changes
         run: |
           git config user.name 'Mbale Media Daily'
           git config user.email 'mbale-media-daily@users.noreply.github.com'
-          git add index.html
-          git diff --cached --quiet || git commit -m 'Activate mobile homepage layout fix'
+          git add index.html assets/mbale-media-ai.js
+          git diff --cached --quiet || git commit -m 'Fix Kampala hero image across GitHub Pages and Vercel'
           git push
