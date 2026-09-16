@@ -2,11 +2,14 @@
 'use strict';
 var SUPABASE_URL='https://dwbgcaxwemrwheybdpya.supabase.co';
 var SUPABASE_KEY='sb_publishable_WkkWUJF8ONyX4oS2nvGNFw_jdAob8M8';
-function esc(s){return String(s||'').replace(/[&<>\"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','\\':'&#92;','"':'&quot;'}[c]});}
+function esc(s){return String(s||'').replace(/[&<>\\"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','\\':'&#92;','"':'&quot;'}[c]});}
 function card(s){return '<article class="card"><div class="card-body"><div class="category">'+esc(s.category||'NEWS')+'</div><h3>'+esc(s.title)+'</h3><p>'+esc(s.summary||'')+'</p><div class="byline">Mbale Media Daily News Desk • '+new Date(s.created_at).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})+'</div></article>';}
 function setSection(id,title,items){var el=document.getElementById(id);if(!el||!items.length)return;var grid=el.querySelector('.news-grid');if(grid)grid.innerHTML=items.map(card).join('');var h=el.querySelector('.section-head h2');if(h)h.textContent=title;}
 function cleanOldAds(){document.querySelectorAll('.mbmd-ad').forEach(function(e){e.remove();});}
-function ensureEastlinkAd(){if(document.querySelector('.mbmd-eastlink-ad'))return;var old=document.getElementById('mbmd-eastlink-loader');if(old)return;var s=document.createElement('script');s.id='mbmd-eastlink-loader';s.src='assets/eastlink-ad.js?v=20260917';s.async=false;document.body.appendChild(s);}
+/* Eastlink advertising is already supplied by assets/mobile-interaction-fix.js.
+   Do not inject a second Eastlink advert here; duplicate ad systems caused the
+   mobile homepage to show a large blank/duplicate advert before the news. */
+function ensureEastlinkAd(){return true;}
 function repairKampalaImages(){var fallback='https://commons.wikimedia.org/wiki/Special:Redirect/file/KampalaSkyline.jpg';document.querySelectorAll('img').forEach(function(img){var label=((img.alt||'')+' '+(img.src||'')).toLowerCase();if(label.indexOf('kampala')<0&&label.indexOf('skyline')<0)return;if(img.dataset.mbmdKampalaRepair)return;img.dataset.mbmdKampalaRepair='1';img.addEventListener('error',function(){if(img.src!==fallback){img.src=fallback;img.alt='Kampala skyline — Wikimedia Commons';img.title='Kampala skyline — Wikimedia Commons, Omoo, CC BY-SA 3.0';}}, {once:false});});}
 async function load(){try{cleanOldAds();repairKampalaImages();var r=await fetch(SUPABASE_URL+'/rest/v1/news?select=id,title,summary,category,author,created_at,featured,breaking&published=eq.true&approval_status=eq.published&order=created_at.desc&limit=60',{headers:{apikey:SUPABASE_KEY,Authorization:'Bearer '+SUPABASE_KEY}});if(!r.ok)throw new Error('HTTP '+r.status);var all=await r.json();if(!all.length){ensureEastlinkAd();repairKampalaImages();return;}
 var latest=all.slice(0,12),hero=latest[0];
