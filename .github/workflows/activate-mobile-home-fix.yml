@@ -4,8 +4,6 @@ on:
   push:
     paths:
       - 'assets/mobile-home-fix.js'
-      - 'assets/menu-fix.js'
-      - 'assets/menu-fix-v2.js'
       - 'assets/mobile-interaction-fix.js'
       - 'assets/article-link-fix.js'
       - '.github/workflows/activate-mobile-home-fix.yml'
@@ -26,16 +24,20 @@ jobs:
           from pathlib import Path
           p = Path('index.html')
           s = p.read_text(encoding='utf-8')
-          names=('mobile-home-fix.js','menu-fix.js','menu-fix-v2.js','mobile-interaction-fix.js','article-link-fix.js')
-          for name in names:
-              s=s.replace(f'<script src="assets/{name}" defer></script>','')
-              s=s.replace(f'<script src="assets/{name}?v=20260916" defer></script>','')
-              s=s.replace(f'<script src="assets/{name}?v=20260916-2" defer></script>','')
+          # Keep exactly one copy of the active scripts. The older menu-fix and menu-fix-v2
+          # scripts are deliberately removed because multiple click handlers caused the
+          # Android menu to open and immediately close.
+          active=('mobile-home-fix.js','mobile-interaction-fix.js','article-link-fix.js')
+          all_names=active+('menu-fix.js','menu-fix-v2.js')
+          for name in all_names:
+              import re
+              s=re.sub(r'<script\s+src=["\']assets/'+re.escape(name)+r'(?:\?[^"\']*)?["\']\s+defer\s*></script>','',s)
           marker='<script src="assets/mbale-media-ai.js" defer></script>'
-          for name in names:
-              tag=f'<script src="assets/{name}?v=20260916-3" defer></script>'
-              if tag not in s:
-                  s=s.replace(marker,marker+tag,1) if marker in s else s.replace('</body>',tag+'</body>',1)
+          tags=''.join(f'<script src="assets/{name}?v=20260916-4" defer></script>' for name in active)
+          if marker in s:
+              s=s.replace(marker,marker+tags,1)
+          elif '</body>' in s:
+              s=s.replace('</body>',tags+'</body>',1)
           s=s.replace('<a href="journalist.html">Journalist</a>','').replace('<a href="editor.html">Editor Desk</a>','')
           s=s.replace('<a class="side-link" href="journalist.html">Journalist Desk <span>→</span></a>','').replace('<a class="side-link" href="editor.html">Editor Desk <span>→</span></a>','')
           start=s.find('<!-- MBMD-CAREERS-EDITORS-LINKS -->')
@@ -55,5 +57,5 @@ jobs:
           git config user.name 'Mbale Media Daily'
           git config user.email 'mbale-media-daily@users.noreply.github.com'
           git add index.html assets/mbale-media-ai.js
-          git diff --cached --quiet || git commit -m 'Link full top stories and activate mobile fixes'
+          git diff --cached --quiet || git commit -m 'Fix mobile menu double-toggle'
           git push
