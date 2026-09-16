@@ -1,0 +1,89 @@
+name: Apply final mobile layout fix
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  fix-mobile:
+    if: github.event.head_commit.message != 'Apply final mobile layout fix'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Patch homepage and live UI
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+
+          index = Path('index.html')
+          s = index.read_text(encoding='utf-8')
+
+          # Remove newsroom-only links from the public mobile menu.
+          s = s.replace('<a href="journalist.html">Journalist</a>', '')
+          s = s.replace('<a href="editor.html">Editor Desk</a>', '')
+
+          # Remove the floating public Careers/Editors controls from the homepage.
+          s = re.sub(r'<!-- MBMD-CAREERS-EDITORS-LINKS -->.*?</div><script src="assets/mbale-media-ai\.js" defer></script>',
+                      '<script src="assets/mbale-media-ai.js" defer></script>', s, flags=re.S)
+
+          # Add a final, high-priority mobile layout layer.
+          mobile_css = '''<style id="mbmd-final-mobile-fix">
+          @media (max-width:850px){
+            html,body{width:100%;max-width:100%;overflow-x:hidden!important}
+            .topbar-inner{width:100%!important;max-width:100%!important;min-width:0!important}
+            .brand{min-width:0!important;max-width:calc(100% - 70px)!important}
+            .brand img{width:38px!important;height:38px!important;flex:0 0 38px!important}
+            .brand-name{font-size:19px!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+            .tools{flex:0 0 auto!important}
+            .ticker{width:100%!important;max-width:100%!important}
+            .container{width:100%!important;max-width:100%!important;min-width:0!important;padding-left:0!important;padding-right:0!important;overflow:hidden!important}
+            .hero{display:grid!important;grid-template-columns:minmax(0,1fr)!important;width:100%!important;max-width:100%!important;min-width:0!important;gap:10px!important}
+            .featured{width:100%!important;min-width:0!important;height:360px!important}
+            .featured-content{left:18px!important;right:18px!important;max-width:calc(100% - 36px)!important}
+            .featured h1{font-size:31px!important;max-width:100%!important;overflow-wrap:anywhere!important}
+            .featured p{max-width:100%!important}
+            .side-stories{display:grid!important;grid-template-rows:auto auto!important;width:100%!important;min-width:0!important;gap:10px!important}
+            .side-story{width:100%!important;min-width:0!important;grid-template-columns:105px minmax(0,1fr)!important}
+            .side-copy{min-width:0!important;overflow:hidden!important}
+            .side-copy h2,.side-copy p{overflow-wrap:anywhere!important}
+            .trending{max-width:100%!important;min-width:0!important}
+            .news-grid,.split{min-width:0!important;width:100%!important}
+            .footer{width:100%!important;max-width:100%!important;overflow:hidden!important}
+            .footer-top{min-width:0!important}
+          }
+          </style>'''
+          if 'id="mbmd-final-mobile-fix"' not in s:
+              s = s.replace('</head>', mobile_css + '</head>')
+          index.write_text(s, encoding='utf-8')
+
+          js = Path('assets/mbale-media-ai.js')
+          j = js.read_text(encoding='utf-8')
+
+          # The redesign layer used !important on the desktop hero grid, so its
+          # mobile media rule must explicitly reset the grid to one column.
+          j = j.replace('@media(max-width:850px){.topbar{height:60px!important}.container{padding-top:12px!important}.featured{height:360px!important}.hero{gap:10px!important}}',
+                        '@media(max-width:850px){.topbar{height:60px!important}.container{padding-top:12px!important}.featured{height:360px!important}.hero{grid-template-columns:1fr!important;gap:10px!important}}')
+
+          # Keep newsroom-only Journalist/Editor links out of the public navigation.
+          j = j.replace(",[\'journalist.html?v=\'+new Date().toISOString().slice(0,10).replace(/-/g,''),\'Journalist\'],[\'editor.html\',\'Editor Desk\']", "")
+          j = j.replace('<a href="network.html">Our Network</a><a href="journalist.html">Journalist</a><a href="editor.html">Editor Desk</a>',
+                        '<a href="network.html">Our Network</a>')
+          js.write_text(j, encoding='utf-8')
+
+      - name: Commit changes
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html assets/mbale-media-ai.js
+          if git diff --cached --quiet; then
+            echo 'No changes needed.'
+            exit 0
+          fi
+          git commit -m 'Apply final mobile layout fix'
+          git push
