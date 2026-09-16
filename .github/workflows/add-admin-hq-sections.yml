@@ -1,60 +1,41 @@
-name: Add Admin HQ sections
-
+name: Deploy cinematic Mbale hero
 on:
   push:
     branches: [main]
-
 permissions:
   contents: write
-
 jobs:
-  patch-admin:
-    if: !contains(github.event.head_commit.message, 'Add Admin HQ sections')
+  deploy-video:
+    if: ${{ !contains(github.event.head_commit.message, 'Fix cinematic Mbale homepage hero') }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Patch Admin HQ and homepage
+      - name: Restore MP4 and patch homepage
+        shell: bash
         run: |
+          set -euo pipefail
+          base64 -d assets/mbale-media-cinematic.b64 > assets/mbale-media-cinematic.mp4
           python3 - <<'PY'
           from pathlib import Path
-          p=Path('admin-dashboard.html')
+          p=Path('index.html')
           s=p.read_text()
-          sidebar='''  <button class="navbtn" data-view="trash">♻️ Recycle Bin</button>\n  <div class="menu-title">System</div>'''
-          replacement='''  <button class="navbtn" data-view="trash">♻️ Recycle Bin</button>\n  <button class="navbtn" data-view="editors">👥 Editors</button>\n  <button class="navbtn" data-view="careers">📋 Career Applications</button>\n  <div class="menu-title">System</div>'''
-          if 'data-view="editors"' not in s:
-              s=s.replace(sidebar,replacement,1)
-          sections='''<section id="website" class="view"><div class="card"><h2>🌐 Mbale Media Website</h2><p>Open the public newsroom in a new tab.</p><a class="btn" href="index.html" style="display:inline-block;text-decoration:none">Open Website</a></div></section>'''
-          new_sections='''<section id="editors" class="view"><div class="card"><div class="toolbar"><div><h2>👥 Editors Management</h2><p style="color:#667085">Only the administrator can add, reactivate or deactivate newsroom editors.</p></div><button class="btn dark" id="refreshEditors">🔄 Refresh</button></div><div class="grid"><div><h3>Add / Reactivate Editor</h3><div class="field"><label>Registered account email *</label><input id="editorEmail" type="email" placeholder="editor@example.com"></div><div class="field"><label>Editor name</label><input id="editorName" placeholder="Full name"></div><button class="btn" id="addEditor">Add / Reactivate Editor</button><div id="editorStatus" class="status"></div></div><div><h3>Editor Accounts</h3><div id="editorList"></div></div></div></div></section>\n<section id="careers" class="view"><div class="card"><div class="toolbar"><div><h2>📋 Career Applications</h2><p style="color:#667085">Review internship and volunteer applications and manage programme status.</p></div><button class="btn dark" id="refreshCareers">🔄 Refresh</button></div><div id="careerList"></div></div></section>\n'''+sections
-          if 'id="editors" class="view"' not in s:
-              s=s.replace(sections,new_sections,1)
-          old="const titles={overview:'Dashboard Overview',publish:'Publish a Story',pending:'Pending Review',changes:'Changes Requested',published:'Published Stories',trash:'Recycle Bin',website:'Website'};"
-          new="const titles={overview:'Dashboard Overview',publish:'Publish a Story',pending:'Pending Review',changes:'Changes Requested',published:'Published Stories',trash:'Recycle Bin',editors:'Editors Management',careers:'Career Applications',website:'Website'};"
-          s=s.replace(old,new,1)
-          marker="function showDash(){"
-          funcs=r'''\nasync function loadEditors(){const box=$('editorList');box.innerHTML='<div class="empty">Loading editors…</div>';const {data,error}=await client.from('editor_roles').select('user_id,full_name,email,active,created_at,updated_at').order('active',{ascending:false}).order('created_at',{ascending:false});if(error){box.innerHTML='<div class="status err">'+error.message+'</div>';return}if(!data?.length){box.innerHTML='<div class="empty">No editor accounts registered yet.</div>';return}box.innerHTML=data.map(e=>`<div class="story"><h3>${escapeHtml(e.full_name||'Unnamed editor')} <span class="badge ${e.active?'published':'trash'}">${e.active?'ACTIVE':'INACTIVE'}</span></h3><small>${escapeHtml(e.email||'')}</small><div class="actions">${e.active?`<button class="btn danger" data-deactivate-editor="${e.user_id}">Deactivate</button>`:`<button class="btn green" data-reactivate-editor="${e.email||''}">Reactivate</button>`}</div></div>`).join('')}\nasync function addEditor(){const email=$('editorEmail').value.trim().toLowerCase(),name=$('editorName').value.trim();if(!email){stat($('editorStatus'),'Enter the registered editor email.',false);return}const {error}=await client.rpc('admin_add_editor',{p_email:email,p_full_name:name||null});if(error){stat($('editorStatus'),error.message,false);return}stat($('editorStatus'),'Editor added/reactivated successfully.',true);$('editorEmail').value='';$('editorName').value='';loadEditors()}\nasync function deactivateEditor(id){if(!confirm('Deactivate this editor account?'))return;const {error}=await client.rpc('admin_remove_editor',{p_user_id:id});if(error){alert(error.message);return}loadEditors()}\nasync function loadCareers(){const box=$('careerList');box.innerHTML='<div class="empty">Loading applications…</div>';const {data,error}=await client.from('career_applications').select('*').order('created_at',{ascending:false});if(error){box.innerHTML='<div class="status err">'+error.message+'</div>';return}if(!data?.length){box.innerHTML='<div class="empty">No career applications yet.</div>';return}box.innerHTML=data.map(a=>`<div class="story"><h3>${escapeHtml(a.full_name)} <span class="badge ${a.status==='accepted'?'published':a.status==='rejected'?'changes':a.status==='completed'?'published':'pending'}">${escapeHtml(a.status.toUpperCase())}</span></h3><small>${escapeHtml(a.email)} • ${escapeHtml(a.opportunity_type)}</small><p><b>Phone:</b> ${escapeHtml(a.phone||'—')}<br><b>Education:</b> ${escapeHtml(a.education||'—')}<br><b>Skills:</b> ${escapeHtml(a.skills||'—')}</p><p><b>Motivation:</b><br>${escapeHtml(a.motivation||'')}</p><div class="actions"><button class="btn green" data-career-status="accepted" data-career-id="${a.id}">Accept</button><button class="btn danger" data-career-status="rejected" data-career-id="${a.id}">Reject</button><button class="btn dark" data-career-status="completed" data-career-id="${a.id}">Mark Completed</button>${a.status==='completed'&&!a.certificate_awarded?`<button class="btn orange" data-certificate="${a.id}">Award Certificate</button>`:''}${a.certificate_awarded?'<span class="badge published">CERTIFICATE AWARDED</span>':''}</div></div>`).join('')}\nasync function setCareerStatus(id,status){const {error}=await client.from('career_applications').update({status,updated_at:new Date().toISOString()}).eq('id',id);if(error){alert(error.message);return}loadCareers()}\nasync function awardCertificate(id){const {data,error}=await client.from('career_applications').select('status').eq('id',id).single();if(error){alert(error.message);return}if(data.status!=='completed'){alert('A certificate can only be awarded after the application is marked completed.');return}const r=await client.from('career_applications').update({certificate_awarded:true,updated_at:new Date().toISOString()}).eq('id',id);if(r.error){alert(r.error.message);return}loadCareers()}\n'''
-          s=s.replace(marker,funcs+marker,1)
-          end_marker="function renderView(){"
-          inject="function escapeHtml(v){return String(v??'').replace(/[&<>\\\"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','\\\"':'&quot;',\"'\":'&#39;'}[m]))}\n"
-          s=s.replace(end_marker,inject+end_marker,1)
-          old2="if(currentView==='website')return;"
-          new2="if(currentView==='editors'){loadEditors();return}if(currentView==='careers'){loadCareers();return}if(currentView==='website')return;"
-          s=s.replace(old2,new2,1)
-          events="$('refresh').addEventListener('click',load);"
-          if events in s:
-              s=s.replace(events,events+"$('addEditor').addEventListener('click',addEditor);$('refreshEditors').addEventListener('click',loadEditors);$('refreshCareers').addEventListener('click',loadCareers);document.addEventListener('click',e=>{const d=e.target.closest('[data-deactivate-editor]');if(d)deactivateEditor(d.dataset.deactivateEditor);const r=e.target.closest('[data-career-status]');if(r)setCareerStatus(r.dataset.careerId,r.dataset.careerStatus);const c=e.target.closest('[data-certificate]');if(c)awardCertificate(c.dataset.certificate)});",1)
+          old='''<article class="featured"><img decoding="async" src="https://www.mbalecity.go.ug/sites/default/files/2023-05/mb2.jpg" alt="Mbale City" loading="eager">'''
+          new='''<article class="featured"><video autoplay muted loop playsinline preload="auto" aria-label="Cinematic view of Mbale City clock tower"><source src="assets/mbale-media-cinematic.mp4" type="video/mp4"></video>'''
+          if old in s:
+              s=s.replace(old,new,1)
+          start=s.find("<script>\n(async()=>{const featured=document.querySelector('.featured');")
+          if start!=-1:
+              end=s.find("</script>",start)
+              if end!=-1:
+                  s=s[:start]+s[end+9:]
           p.write_text(s)
-
-          home=Path('index.html')
-          h=home.read_text()
-          h=h.replace('<a href="#latest">Latest News</a>','<a href="latest-news.html">Latest News</a>',1)
-          h=h.replace('<a class="btn" href="#latest">Read Today\'s Top Stories ↓</a>','<a class="btn" href="latest-news.html">Read Today\'s Top Stories ↓</a>',1)
-          h=h.replace('September 13, 2026 • New week briefing — latest verified developments through September 12.','September 15, 2026 • Fresh Uganda, Mbale, sports, Africa and global reporting.',1)
-          home.write_text(h)
           PY
-      - name: Commit Admin HQ and homepage patch
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add admin-dashboard.html index.html
-          git diff --cached --quiet || git commit -m "Update Admin HQ and latest news homepage"
-          git push
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add assets/mbale-media-cinematic.mp4 index.html
+          if git diff --cached --quiet; then
+            echo 'No video changes needed'
+          else
+            git commit -m 'Fix cinematic Mbale homepage hero'
+            git push
+          fi
