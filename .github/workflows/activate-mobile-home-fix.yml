@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - 'assets/mobile-home-fix.js'
+      - 'assets/menu-fix.js'
       - '.github/workflows/activate-mobile-home-fix.yml'
 
 permissions:
@@ -16,21 +17,24 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Activate mobile fix across all deployments
+      - name: Activate mobile fixes across all deployments
         run: |
           python3 - <<'PY'
           from pathlib import Path
 
-          # Ensure the dedicated mobile fix is loaded by the public homepage.
           p = Path('index.html')
           s = p.read_text(encoding='utf-8')
-          tag = '<script src="assets/mobile-home-fix.js" defer></script>'
-          if tag not in s:
-              marker = '<script src="assets/mbale-media-ai.js" defer></script>'
-              if marker in s:
-                  s = s.replace(marker, marker + tag, 1)
-              else:
-                  s = s.replace('</body>', tag + '</body>', 1)
+
+          # Ensure both mobile fixes are loaded by the public homepage.
+          for name in ('mobile-home-fix.js', 'menu-fix.js'):
+              tag = f'<script src="assets/{name}" defer></script>'
+              if tag not in s:
+                  marker = '<script src="assets/mbale-media-ai.js" defer></script>'
+                  if marker in s:
+                      s = s.replace(marker, marker + tag, 1)
+                  else:
+                      s = s.replace('</body>', tag + '</body>', 1)
+
           # Remove known public links to private newsroom pages.
           s = s.replace('<a href="journalist.html">Journalist</a>', '')
           s = s.replace('<a href="editor.html">Editor Desk</a>', '')
@@ -78,5 +82,5 @@ jobs:
           git config user.name 'Mbale Media Daily'
           git config user.email 'mbale-media-daily@users.noreply.github.com'
           git add index.html assets/mbale-media-ai.js
-          git diff --cached --quiet || git commit -m 'Fix Kampala hero image across GitHub Pages and Vercel'
+          git diff --cached --quiet || git commit -m 'Activate mobile menu and Kampala hero fixes'
           git push
