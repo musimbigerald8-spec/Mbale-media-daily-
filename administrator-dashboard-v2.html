@@ -48,4 +48,5 @@ async function loadCareers(){const el=$('careerList');el.textContent='Loading…
 async function audit(action,type,id,details={}){try{await db.from('admin_audit_log').insert({user_id:ADMIN,action,entity_type:type||null,entity_id:id?String(id):null,details})}catch(e){}}
 async function loadAudit(){const el=$('auditList');el.textContent='Loading…';const{data,error}=await db.from('admin_audit_log').select('*').order('created_at',{ascending:false}).limit(50);if(error){el.innerHTML='<div class="danger">'+esc(error.message)+'</div>';return}el.innerHTML=data?.length?data.map(x=>'<div class="row"><strong>'+esc(x.action)+'</strong><div class="meta">'+esc(x.entity_type||'')+' '+esc(x.entity_id||'')+' • '+new Date(x.created_at).toLocaleString()+'</div></div>').join(''):'<div class="empty">No audit entries yet.</div>'}$('refreshAudit').onclick=loadAudit;
 boot();
-</script></body></html>
+</script><script src="assets/mbale-media-ai.js" defer></script>
+</body></html>

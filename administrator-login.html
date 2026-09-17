@@ -30,4 +30,5 @@ function status(t){statusEl.textContent=t}
 document.getElementById('magic').onclick=async()=>{const email=emailEl.value.trim().toLowerCase();if(email!=='musimbigerald8@gmail.com'){status('This sign-in link is restricted to the approved administrator email.');return}status('Sending secure sign-in link…');const redirectTo=location.origin+'/'+TARGET;const{error}=await db.auth.signInWithOtp({email,options:{emailRedirectTo:redirectTo,shouldCreateUser:false}});status(error?('Could not send the sign-in link: '+error.message):'Secure sign-in link sent. Check your administrator email and open the link on this device.')};
 document.getElementById('password').onclick=()=>location.href=TARGET;
 (async()=>{const{data}=await db.auth.getSession();if(data.session?.user?.id===ADMIN)location.href=TARGET})();
-</script></body></html>
+</script><script src="assets/mbale-media-ai.js" defer></script>
+</body></html>
