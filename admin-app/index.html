@@ -13,7 +13,7 @@
 <link rel="icon" href="../assets/mbale-media-daily-logo.png">
 <title>Mbale Media Daily Admin</title>
 <style>
-*{box-sizing:border-box}body{margin:0;min-height:100vh;background:#071426;color:#fff;font-family:Arial,sans-serif;display:grid;place-items:center;padding:22px}.card{width:min(460px,100%);background:#fff;color:#17202a;border-radius:22px;padding:30px;box-shadow:0 20px 70px #0007;text-align:center}.logo{width:76px;height:76px;object-fit:contain;margin:0 auto 14px;display:block}.brand{font:900 27px Georgia;margin:0}.brand span{color:#e4032e}.sub{color:#667085;font-size:13px;line-height:1.5;margin:8px 0 22px}.status{background:#f2f5f8;border-radius:12px;padding:13px;font-size:12px;line-height:1.5;margin-bottom:16px}.btn{display:block;width:100%;text-decoration:none;border:0;border-radius:11px;padding:14px;margin-top:9px;background:#e4032e;color:#fff;font-weight:900;font-size:15px;cursor:pointer}.btn.dark{background:#10284a}.btn.light{background:#eef2f6;color:#10284a}.install-help{display:none;text-align:left;background:#f8fafc;border:1px solid #e5e7eb;border-radius:13px;padding:14px;margin-top:12px;color:#344054;font-size:12px;line-height:1.55}.install-help strong{color:#10284a}.note{font-size:11px;color:#667085;line-height:1.6;margin-top:18px}.hide{display:none!important}a:focus-visible,button:focus-visible{outline:3px solid #071426;outline-offset:3px}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:#071426;color:#fff;font-family:Arial,sans-serif;display:grid;place-items:center;padding:22px}.card{width:min(460px,100%);background:#fff;color:#17202a;border-radius:22px;padding:30px;box-shadow:0 20px 70px #0007;text-align:center}.logo{width:76px;height:76px;object-fit:contain;margin:0 auto 14px;display:block}.brand{font:900 27px Georgia;margin:0}.brand span{color:#e4032e}.sub{color:#667085;font-size:13px;line-height:1.5;margin:8px 0 18px}.status{background:#f2f5f8;border-radius:12px;padding:13px;font-size:12px;line-height:1.5;margin-bottom:16px}.installing{display:none;background:#e8f7ee;color:#17633a;border-radius:12px;padding:13px;margin:12px 0;font-size:13px;font-weight:800}.spinner{display:inline-block;width:15px;height:15px;border:2px solid #b7d8c4;border-top-color:#17633a;border-radius:50%;vertical-align:-3px;margin-right:7px;animation:spin .8s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}.btn{display:block;width:100%;text-decoration:none;border:0;border-radius:11px;padding:14px;margin-top:9px;background:#e4032e;color:#fff;font-weight:900;font-size:15px;cursor:pointer}.btn.dark{background:#10284a}.btn.light{background:#eef2f6;color:#10284a}.install-help{display:none;text-align:left;background:#f8fafc;border:1px solid #e5e7eb;border-radius:13px;padding:14px;margin-top:12px;color:#344054;font-size:12px;line-height:1.55}.install-help strong{color:#10284a}.note{font-size:11px;color:#667085;line-height:1.6;margin-top:18px}.hide{display:none!important}a:focus-visible,button:focus-visible{outline:3px solid #071426;outline-offset:3px}
 </style>
 </head>
 <body>
@@ -22,6 +22,7 @@
 <h1 class="brand">MBALE <span>MEDIA</span> ADMIN</h1>
 <p class="sub">Private newsroom control centre</p>
 <div class="status" id="status">Checking your administrator session…</div>
+<div class="installing" id="installing"><span class="spinner"></span><span id="installText">Preparing installation…</span></div>
 <div id="actions" class="hide">
 <a class="btn" href="../administrator-login.html">Open Secure Administrator Login</a>
 <a class="btn dark" href="../administrator-dashboard-v2.html">Open Control Centre</a>
@@ -36,30 +37,15 @@ const DB_URL='https://dwbgcaxwemrwheybdpya.supabase.co';
 const DB_KEY='sb_publishable_WkkWUJF8ONyX4oS2nvGNFw_jdAob8M8';
 const ADMIN='81148dcd-10b8-4f85-a2b0-635fc7c250cf';
 const db=supabase.createClient(DB_URL,DB_KEY);
-const statusEl=document.getElementById('status');
-const actions=document.getElementById('actions');
-const installBtn=document.getElementById('install');
-const help=document.getElementById('installHelp');
-let deferredPrompt=null;
-const ua=navigator.userAgent||'';
-const isIOS=/iPhone|iPad|iPod/i.test(ua)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
-const isAndroid=/Android/i.test(ua);
-const isStandalone=window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone===true;
+const statusEl=document.getElementById('status');const actions=document.getElementById('actions');const installBtn=document.getElementById('install');const help=document.getElementById('installHelp');const installing=document.getElementById('installing');const installText=document.getElementById('installText');
+let deferredPrompt=null;const ua=navigator.userAgent||'';const isIOS=/iPhone|iPad|iPod/i.test(ua)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);const isAndroid=/Android/i.test(ua);const isStandalone=window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone===true;
 function showHelp(html){help.innerHTML=html;help.style.display='block'}
-window.addEventListener('beforeinstallprompt',event=>{event.preventDefault();deferredPrompt=event;installBtn.classList.remove('hide');installBtn.textContent='Install Mbale Admin App'});
-window.addEventListener('appinstalled',()=>{deferredPrompt=null;installBtn.classList.add('hide');showHelp('<strong>Mbale Admin is installed.</strong><br>Open it from your home screen or app launcher.')});
-installBtn.addEventListener('click',async()=>{
- if(deferredPrompt){deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;return}
- if(isIOS){showHelp('<strong>iPhone / iPad:</strong><br>Open this page in Safari, tap <strong>Share</strong>, choose <strong>Add to Home Screen</strong>, then tap <strong>Add</strong>.');return}
- if(isAndroid){showHelp('<strong>Android:</strong><br>In Chrome, open the <strong>⋮ menu</strong> and choose <strong>Install app</strong> or <strong>Add to Home screen</strong>.');return}
- showHelp('<strong>Computer:</strong><br>In Chrome or Edge, use the <strong>Install</strong> icon in the address bar or open the browser menu and choose <strong>Install app</strong> / <strong>Install this site as an app</strong>.');
-});
-if(isIOS){installBtn.textContent='How to Install on iPhone / iPad'}
-else if(!('BeforeInstallPromptEvent' in window)){installBtn.textContent=isAndroid?'Install on Android':'Install on this device'}
-if(isStandalone){installBtn.classList.add('hide');showHelp('<strong>Mbale Admin is already installed.</strong><br>You are running the app in standalone mode.')}
+window.addEventListener('beforeinstallprompt',event=>{event.preventDefault();deferredPrompt=event;installBtn.classList.remove('hide');installBtn.textContent='Install Mbale Admin App';statusEl.textContent='Installation is ready on this device.'});
+window.addEventListener('appinstalled',()=>{deferredPrompt=null;installBtn.classList.add('hide');installing.style.display='block';installText.textContent='Mbale Admin has been installed successfully. Open it from your home screen or app launcher.';statusEl.textContent='Installation complete.'});
+installBtn.addEventListener('click',async()=>{installing.style.display='block';installText.textContent='Starting installation…';if(deferredPrompt){try{deferredPrompt.prompt();const choice=await deferredPrompt.userChoice;if(choice.outcome==='accepted'){installText.textContent='Installing Mbale Admin…';statusEl.textContent='Installation started. Please wait…'}else{installText.textContent='Installation cancelled. You can try again from the button or browser menu.';statusEl.textContent='Installation cancelled.'}}catch(e){installText.textContent='Automatic installation is unavailable. Use the browser menu instructions below.'}deferredPrompt=null;return}if(isIOS){installText.textContent='Follow the Safari steps below to add the app.';showHelp('<strong>iPhone / iPad:</strong><br>Open this page in Safari → tap <strong>Share</strong> → <strong>Add to Home Screen</strong> → <strong>Add</strong>.') ;return}if(isAndroid){installText.textContent='Use Chrome’s Install app option below.';showHelp('<strong>Android:</strong><br>In Chrome, tap <strong>⋮</strong> → <strong>Install app</strong> or <strong>Add to Home screen</strong>. If Install app is not shown, refresh this page once and try again.');return}installText.textContent='Use your browser’s installation option below.';showHelp('<strong>Windows / laptop / desktop:</strong><br>In Chrome or Edge, use the <strong>Install</strong> icon in the address bar or browser menu → <strong>Install app</strong>. On supported Mac browsers, use the browser’s <strong>Add to Dock/Home Screen</strong> option.');});
+if(isIOS)installBtn.textContent='How to Install on iPhone / iPad';else if(isAndroid)installBtn.textContent='Install on Android';else installBtn.textContent='Install Mbale Admin App';if(isStandalone){installBtn.classList.add('hide');showHelp('<strong>Mbale Admin is already installed.</strong><br>You are running the app in standalone mode.')}
 (async()=>{try{const{data}=await db.auth.getSession();if(data.session?.user?.id===ADMIN){statusEl.textContent='Administrator session found. Opening your control centre…';setTimeout(()=>location.replace('../administrator-dashboard-v2.html'),250);return}statusEl.textContent='Secure administrator access ready.';actions.classList.remove('hide')}catch(e){statusEl.textContent='Secure access is ready. Please use the administrator login.';actions.classList.remove('hide')}})();
 if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js',{scope:'./'}).catch(()=>{});
 </script>
-<script src="assets/mbale-media-ai.js" defer></script>
 </body>
 </html>
