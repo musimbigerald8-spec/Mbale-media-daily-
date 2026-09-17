@@ -60,5 +60,6 @@ if(isStandalone){installBtn.classList.add('hide');showHelp('<strong>Mbale Admin 
 (async()=>{try{const{data}=await db.auth.getSession();if(data.session?.user?.id===ADMIN){statusEl.textContent='Administrator session found. Opening your control centre…';setTimeout(()=>location.replace('../administrator-dashboard-v2.html'),250);return}statusEl.textContent='Secure administrator access ready.';actions.classList.remove('hide')}catch(e){statusEl.textContent='Secure access is ready. Please use the administrator login.';actions.classList.remove('hide')}})();
 if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js',{scope:'./'}).catch(()=>{});
 </script>
+<script src="assets/mbale-media-ai.js" defer></script>
 </body>
 </html>
