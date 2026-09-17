@@ -4,6 +4,7 @@
 
     <application
         android:allowBackup="false"
+        android:icon="@drawable/ic_admin"
         android:label="Mbale Media Admin"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="false">
