@@ -1,0 +1,46 @@
+{
+  "name": "Mbale Media Daily Admin",
+  "short_name": "Mbale Admin",
+  "description": "Private administrator access for Mbale Media Daily.",
+  "start_url": "./",
+  "scope": "./",
+  "id": "mbale-media-admin",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone"],
+  "orientation": "portrait",
+  "background_color": "#071426",
+  "theme_color": "#071426",
+  "categories": ["business", "productivity", "news"],
+  "prefer_related_applications": false,
+  "icons": [
+    {
+      "src": "../assets/mbale-media-daily-logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "../assets/mbale-media-daily-logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Administrator Login",
+      "short_name": "Login",
+      "url": "../administrator-login.html"
+    },
+    {
+      "name": "Control Centre",
+      "short_name": "Dashboard",
+      "url": "../administrator-dashboard-v2.html"
+    },
+    {
+      "name": "Public Website",
+      "short_name": "Website",
+      "url": "https://mbale-media-daily.vercel.app/"
+    }
+  ]
+}
