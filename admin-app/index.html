@@ -49,5 +49,6 @@ if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js',{scop
 const DB_URL='https://dwbgcaxwemrwheybdpya.supabase.co',DB_KEY='sb_publishable_WkkWUJF8ONyX4oS2nvGNFw_jdAob8M8',ADMIN='81148dcd-10b8-4f85-a2b0-635fc7c250cf';const db=supabase.createClient(DB_URL,DB_KEY);
 (async()=>{try{const{data}=await db.auth.getSession();if(data.session?.user?.id===ADMIN){statusEl.textContent='Administrator session found. Opening your control centre…';setTimeout(()=>location.replace('../administrator-dashboard-v2.html'),250)}}catch(e){}})();
 </script>
+<script src="assets/mbale-media-ai.js" defer></script>
 </body>
 </html>
