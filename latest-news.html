@@ -2,18 +2,18 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="September 17, 2026 latest news from Mbale, Eastern Uganda, Uganda, Africa and the world — Mbale Media Daily.">
+<meta name="description" content="September 18, 2026 latest news from Mbale, Eastern Uganda, Uganda, Africa and the world — Mbale Media Daily.">
 <meta name="robots" content="index,follow,max-image-preview:large">
-<title>Latest News • September 17, 2026 | Mbale Media Daily</title>
+<title>Latest News • September 18, 2026 | Mbale Media Daily</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#f5f6f8;color:#17202a;font-family:Arial,sans-serif}.head{background:#071426;color:#fff;padding:22px 5%;text-align:center;border-bottom:4px solid #e4032e}.head h1{font:900 36px Georgia;margin:0}.head b{color:#e4032e}.head p{margin:8px 0 0;color:#dce3eb}.wrap{max-width:1050px;margin:auto;padding:24px 5% 60px}.back{display:inline-block;background:#e4032e;color:#fff;text-decoration:none;padding:11px 16px;border-radius:6px;font-weight:800;margin-bottom:20px}.edition{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:24px;margin-bottom:22px;box-shadow:0 4px 15px #0000000d}.edition h2{font:900 38px/1.1 Georgia;margin:8px 0}.edition p{font:16px/1.75 Georgia;color:#475467}.status{font-size:12px;color:#667085;margin:0 0 18px}.article{background:#fff;border:1px solid #e5e7eb;border-radius:12px;overflow:hidden;margin-bottom:22px;box-shadow:0 4px 15px #0000000d}.body{padding:26px}.kicker{color:#e4032e;font-size:12px;font-weight:900;letter-spacing:1.3px;text-transform:uppercase}.article h2{font:900 30px/1.12 Georgia;margin:8px 0 14px}.lead{font:700 18px/1.65 Georgia;color:#303b46}.meta{border-top:1px solid #e5e7eb;padding-top:11px;margin-top:18px;color:#667085;font-size:12px}.more{background:#071426;color:#fff;padding:22px;border-radius:10px}.more a{color:#fff;margin-right:15px;font-weight:800}@media(max-width:700px){.wrap{padding:18px 0 50px}.article{border-radius:0;border-left:0;border-right:0}.body{padding:21px}.article h2{font-size:27px}.lead{font-size:17px}.edition{border-radius:0;border-left:0;border-right:0}}
 a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid #071426;outline-offset:3px}</style>
 </head>
 <body>
-<header class="head"><h1>MBALE <b>MEDIA</b> DAILY</h1><p>LATEST NEWS • THURSDAY SEPTEMBER 17, 2026</p></header>
+<header class="head"><h1>MBALE <b>MEDIA</b> DAILY</h1><p>LATEST NEWS • FRIDAY SEPTEMBER 18, 2026</p></header>
 <main class="wrap">
 <a class="back" href="index.html">← Back to Home</a>
-<section class="edition"><div class="kicker">EDITOR'S DESK</div><h2>Thursday's full news edition</h2><p>Mbale Media Daily brings readers the latest verified developments from Mbale, Eastern Uganda, Uganda, Africa and the world. This page now connects directly to the live newsroom feed so new published stories appear automatically.</p></section>
+<section class="edition"><div class="kicker">EDITOR'S DESK</div><h2>Friday's full news edition</h2><p>Mbale Media Daily brings readers the latest verified developments from Mbale, Eastern Uganda, Uganda, Africa and the world. This page now connects directly to the live newsroom feed so new published stories appear automatically.</p></section>
 <p class="status" id="status">Loading today's latest published stories…</p>
 <section id="latest-feed"></section>
 <div class="more"><strong>More Mbale Media Daily:</strong> <a href="index.html">Home</a><a href="today.html">Today</a><a href="sports.html">Sports</a><a href="entertainment.html">Entertainment</a><a href="global.html">Global</a></div>
@@ -26,7 +26,7 @@ var KEY='sb_publishable_WkkWUJF8ONyX4oS2nvGNFw_jdAob8M8';
 var feed=document.getElementById('latest-feed'),status=document.getElementById('status');
 function esc(s){return String(s||'').replace(/[&<>\"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','\\':'&#92;','"':'&quot;'}[c]});}
 function card(s){var date=new Date(s.created_at).toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'});return '<article class="article"><div class="body"><div class="kicker">'+esc(s.category||'NEWS')+(s.breaking?' • BREAKING':'')+'</div><h2>'+esc(s.title)+'</h2><p class="lead">'+esc(s.summary||'Latest developments are being followed by the Mbale Media Daily newsroom.')+'</p><div class="meta">'+date+' • '+esc(s.author||'Mbale Media Daily News Desk')+'</div></div></article>';}
-async function load(){try{var r=await fetch(URL+'/rest/v1/news?select=id,title,summary,category,author,created_at,featured,breaking&published=eq.true&approval_status=eq.published&order=created_at.desc&limit=30',{headers:{apikey:KEY,Authorization:'Bearer '+KEY}});if(!r.ok)throw new Error('HTTP '+r.status);var data=await r.json();feed.innerHTML=data.map(card).join('');status.textContent=data.length+' latest published stories • Updated live on Thursday, 17 September 2026';}catch(e){status.textContent='Live newsroom feed temporarily unavailable. Please refresh shortly.';console.warn(e);}}
+async function load(){try{var r=await fetch(URL+'/rest/v1/news?select=id,title,summary,category,author,created_at,featured,breaking&published=eq.true&approval_status=eq.published&order=created_at.desc&limit=30',{headers:{apikey:KEY,Authorization:'Bearer '+KEY}});if(!r.ok)throw new Error('HTTP '+r.status);var data=await r.json();feed.innerHTML=data.map(card).join('');status.textContent=data.length+' latest published stories • Updated live on Friday, 18 September 2026';}catch(e){status.textContent='Live newsroom feed temporarily unavailable. Please refresh shortly.';console.warn(e);}}
 load();setInterval(load,300000);
 })();
 </script>
