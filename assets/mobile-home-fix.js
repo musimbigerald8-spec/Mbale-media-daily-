@@ -72,8 +72,25 @@
       if(h)h.textContent="Kampala City — Uganda's Capital in Focus";
     }
 
-    document.querySelectorAll('a[href="journalist.html"],a[href^="journalist.html?"],a[href="editor.html"],a[href="editors"],a[href="careers"]').forEach(a=>a.remove());
-    document.querySelectorAll('.main-nav a').forEach(a=>{if(/journalist|editor desk/i.test(a.textContent))a.remove()});
+    // Keep the newsroom links visible: Journalist submits stories to the Editor Desk.
+    const mainNav=document.querySelector('.main-nav');
+    if(mainNav){
+      if(!mainNav.querySelector('a[href="journalist.html"]')){
+        const j=document.createElement('a'); j.href='journalist.html'; j.textContent='Journalist'; j.className='editor-link'; mainNav.appendChild(j);
+      }
+      if(!mainNav.querySelector('a[href="editor.html"]')){
+        const e=document.createElement('a'); e.href='editor.html'; e.textContent='Editor Desk'; e.className='editor-link'; mainNav.appendChild(e);
+      }
+    }
+    const mobileNav=document.getElementById('navLinks');
+    if(mobileNav){
+      if(!mobileNav.querySelector('a[href="journalist.html"]')){
+        const j=document.createElement('a'); j.href='journalist.html'; j.textContent='Journalist'; j.className='editor-link'; mobileNav.appendChild(j);
+      }
+      if(!mobileNav.querySelector('a[href="editor.html"]')){
+        const e=document.createElement('a'); e.href='editor.html'; e.textContent='Editor Desk'; e.className='editor-link'; mobileNav.appendChild(e);
+      }
+    }
     const floating=document.getElementById('mbmd-public-private-links');
     if(floating)floating.remove();
     document.querySelectorAll('body > div').forEach(el=>{if(/Careers|Editors/.test(el.textContent||'')&&el.querySelector('a[href="editors"]'))el.remove()});
