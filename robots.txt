@@ -4,7 +4,14 @@ Disallow: /account.html
 Disallow: /dashboard.html
 Disallow: /search.html
 Disallow: /share.html
+Disallow: /admin/
+Disallow: /admin.html
+Disallow: /admin-*.html
+Disallow: /administrator-*.html
+Disallow: /editor.html
+Disallow: /journalist.html
+Disallow: /journalist-*.html
+Disallow: /newsroom.html
 Disallow: /newsroom-admin.html
-Disallow: /administrator-dashboard.html
 
 Sitemap: https://musimbigerald8-spec.github.io/sitemap.xml
