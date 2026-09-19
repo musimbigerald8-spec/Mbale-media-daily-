@@ -54,7 +54,7 @@ a:focus-visible,button:focus-visible{outline:3px solid #071426;outline-offset:3p
 
 <div class="card">
 <h2>What this portal fixes</h2>
-<p class="note">The administrator account is identified by its existing Supabase Auth user ID. The repair button only restores that user's row in the private <code>editors</code> table as an active <code>super_admin</code>; it does not create or reveal passwords and does not grant access to any other account.</p>
+<p class="note">The administrator account is identified by its existing Supabase Auth user ID. The repair button restores that user's active row in the private <code>editors</code> table; the administrator role itself is maintained by the private role/staff records. It does not create or reveal passwords and does not grant access to any other account.</p>
 </div>
 </section>
 </main>
@@ -84,9 +84,9 @@ async function runChecks(){
  const out=[];
  out.push(check('Administrator session','Authenticated as '+(user.email||'the approved administrator')+'.','ok'));
 
- const editor=await db.from('editors').select('user_id,display_name,role,active').eq('user_id',ADMIN).maybeSingle();
+ const editor=await db.from('editors').select('id,display_name,active').eq('id',ADMIN).maybeSingle();
  if(editor.error) out.push(check('Administrator role','Could not read the private editors table: '+editor.error.message,'err'));
- else if(editor.data?.active&&editor.data?.role==='super_admin') out.push(check('Administrator role','Active super_admin role is installed.','ok'));
+ else if(editor.data?.active) out.push(check('Administrator role','Active administrator editor record is installed.','ok'));
  else out.push(check('Administrator role','The administrator role is missing or inactive. Use Repair Admin Role.','warn'));
 
  const tables=['news','journalist_submissions','editors'];
@@ -113,7 +113,7 @@ $('repair').onclick=async function(){
  try{
    const name=user.user_metadata?.full_name||'musimbigerald8';
    const email=user.email||'';
-   const r=await db.from('editors').upsert({user_id:ADMIN,display_name:name,email,role:'super_admin',active:true,updated_at:new Date().toISOString()},{onConflict:'user_id'});
+   const r=await db.from('editors').upsert({id:ADMIN,display_name:name,email,active:true},{onConflict:'id'});
    if(r.error)alert('Repair failed: '+r.error.message); else alert('Administrator role repaired successfully.');
    await runChecks();
  }catch(e){alert('Repair failed: '+(e.message||e))}
