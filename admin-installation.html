@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#071426">
+<title>Mbale Media Daily • Admin Installation & Diagnostics</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--nav:#071426;--red:#e4032e;--bg:#f4f6fa;--card:#fff;--ink:#17202a;--muted:#667085;--line:#dfe5ec;--green:#15803d;--amber:#a16207;--blue:#2563eb}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Arial,Inter,sans-serif}
+.top{background:var(--nav);color:#fff;padding:18px 5%;font-weight:900}.wrap{max-width:900px;margin:auto;padding:22px}
+.card{background:#fff;border:1px solid var(--line);border-radius:15px;padding:22px;margin-bottom:16px;box-shadow:0 5px 20px #0714260b}
+h1,h2{font-family:Georgia,serif}.hero{background:linear-gradient(135deg,#071426,#17375e);color:#fff}.hero p{color:#dce5ef;line-height:1.55}
+.status{padding:13px;border-radius:10px;font-weight:800;margin:8px 0}.ok{background:#ecfdf3;color:#166534;border:1px solid #bbf7d0}.warn{background:#fffbeb;color:#92400e;border:1px solid #fde68a}.err{background:#fef2f2;color:#991b1b;border:1px solid #fecaca}.loading{background:#f8fafc;color:#64748b;border:1px solid var(--line)}
+.check{display:flex;justify-content:space-between;gap:15px;align-items:center;padding:13px 0;border-bottom:1px solid var(--line)}.check:last-child{border-bottom:0}.check b{display:block}.check small{color:var(--muted)}
+.badge{padding:5px 9px;border-radius:999px;font-size:11px;font-weight:900;white-space:nowrap}.badge.ok{background:#dcfce7;color:#166534;border:0}.badge.err{background:#fee2e2;color:#991b1b;border:0}.badge.warn{background:#fef3c7;color:#92400e;border:0}
+.actions{display:flex;gap:9px;flex-wrap:wrap}.btn{border:0;border-radius:8px;padding:11px 15px;color:#fff;background:var(--red);font-weight:900;text-decoration:none;cursor:pointer}.btn.dark{background:var(--nav)}.btn.blue{background:var(--blue)}.btn.gray{background:#64748b}.btn:disabled{opacity:.55;cursor:not-allowed}
+.note{font-size:12px;color:var(--muted);line-height:1.55}.hidden{display:none!important}
+@media(max-width:600px){.wrap{padding:12px}.card{padding:18px}.check{align-items:flex-start;flex-direction:column;gap:7px}}
+a:focus-visible,button:focus-visible{outline:3px solid #071426;outline-offset:3px}
+</style>
+</head>
+<body>
+<header class="top">🔐 MBALE MEDIA DAILY • ADMIN INSTALLATION & DIAGNOSTICS</header>
+<main class="wrap">
+<section id="loginCard" class="card">
+<h1>Administrator verification</h1>
+<p>This private installer is not a public signup page. Sign in with the approved administrator account before any system checks or repair actions are available.</p>
+<a class="btn dark" href="admin-login.html">Open Administrator Sign In</a>
+</section>
+
+<section id="app" class="hidden">
+<div class="card hero">
+<h1>Admin Installation Portal</h1>
+<p>Check the newsroom installation, repair the administrator role if necessary, and open the private Control Center. No public website content is changed by the diagnostics.</p>
+<div class="actions">
+<a class="btn" href="admin-control-center.html">Open Control Center</a>
+<button id="refresh" class="btn blue" type="button">Run Checks Again</button>
+<button id="repair" class="btn gray" type="button">Repair Admin Role</button>
+<button id="logout" class="btn dark" type="button">Sign Out</button>
+</div>
+</div>
+
+<div class="card">
+<h2>Installation status</h2>
+<div id="checks"><div class="status loading">Running secure checks…</div></div>
+</div>
+
+<div class="card">
+<h2>Newsroom summary</h2>
+<div id="summary"><div class="status loading">Loading…</div></div>
+</div>
+
+<div class="card">
+<h2>What this portal fixes</h2>
+<p class="note">The administrator account is identified by its existing Supabase Auth user ID. The repair button only restores that user's row in the private <code>editors</code> table as an active <code>super_admin</code>; it does not create or reveal passwords and does not grant access to any other account.</p>
+</div>
+</section>
+</main>
+
+<script>
+(function(){
+'use strict';
+const URL='https://dwbgcaxwemrwheybdpya.supabase.co';
+const KEY='sb_publishable_WkkWUJF8ONyX4oS2nvGNFw_jdAob8M8';
+const ADMIN='81148dcd-10b8-4f85-a2b0-635fc7c250cf';
+const db=window.supabase.createClient(URL,KEY);
+const $=id=>document.getElementById(id);
+let user=null;
+
+function check(name,detail,state){
+ const cls=state==='ok'?'ok':state==='warn'?'warn':'err';
+ const label=state==='ok'?'OK':state==='warn'?'CHECK':'FAILED';
+ return '<div class="check"><div><b>'+name+'</b><small>'+detail+'</small></div><span class="badge '+cls+'">'+label+'</span></div>';
+}
+function showLogin(){ $('loginCard').classList.remove('hidden'); $('app').classList.add('hidden'); }
+function showApp(){ $('loginCard').classList.add('hidden'); $('app').classList.remove('hidden'); runChecks(); }
+
+async function runChecks(){
+ $('checks').innerHTML='<div class="status loading">Running secure checks…</div>';
+ $('summary').innerHTML='<div class="status loading">Loading newsroom data…</div>';
+ if(!user||user.id!==ADMIN){showLogin();return}
+ const out=[];
+ out.push(check('Administrator session','Authenticated as '+(user.email||'the approved administrator')+'.','ok'));
+
+ const editor=await db.from('editors').select('user_id,display_name,role,active').eq('user_id',ADMIN).maybeSingle();
+ if(editor.error) out.push(check('Administrator role','Could not read the private editors table: '+editor.error.message,'err'));
+ else if(editor.data?.active&&editor.data?.role==='super_admin') out.push(check('Administrator role','Active super_admin role is installed.','ok'));
+ else out.push(check('Administrator role','The administrator role is missing or inactive. Use Repair Admin Role.','warn'));
+
+ const tables=['news','journalist_submissions','editors'];
+ for(const table of tables){
+   const r=await db.from(table).select('*',{count:'exact',head:true});
+   out.push(r.error?check('Database: '+table,'Access check failed: '+r.error.message,'err'):check('Database: '+table,'Table is reachable. '+(r.count??0)+' rows.','ok'));
+ }
+
+ const bucket=await db.storage.from('news-images').list('',{limit:1});
+ out.push(bucket.error?check('Media storage','news-images bucket check failed: '+bucket.error.message,'err'):check('Media storage','news-images bucket is reachable.','ok'));
+
+ const pub=await db.from('news').select('id',{count:'exact',head:true}).eq('published',true).is('deleted_at',null);
+ const pending=await db.from('journalist_submissions').select('id',{count:'exact',head:true}).eq('status','pending');
+ const editors=await db.from('editors').select('id',{count:'exact',head:true}).eq('active',true);
+ $('summary').innerHTML='<div class="check"><div><b>Published stories</b><small>Live articles in the newsroom database</small></div><strong>'+((pub.count??'—'))+'</strong></div>'+
+ '<div class="check"><div><b>Pending submissions</b><small>Journalist stories waiting for review</small></div><strong>'+((pending.count??'—'))+'</strong></div>'+
+ '<div class="check"><div><b>Active editors</b><small>Active newsroom editor accounts</small></div><strong>'+((editors.count??'—'))+'</strong></div>';
+ $('checks').innerHTML=out.join('');
+}
+
+$('repair').onclick=async function(){
+ if(!user||user.id!==ADMIN)return showLogin();
+ $('repair').disabled=true;$('repair').textContent='Repairing…';
+ try{
+   const name=user.user_metadata?.full_name||'musimbigerald8';
+   const email=user.email||'';
+   const r=await db.from('editors').upsert({user_id:ADMIN,display_name:name,email,role:'super_admin',active:true,updated_at:new Date().toISOString()},{onConflict:'user_id'});
+   if(r.error)alert('Repair failed: '+r.error.message); else alert('Administrator role repaired successfully.');
+   await runChecks();
+ }catch(e){alert('Repair failed: '+(e.message||e))}
+ finally{$('repair').disabled=false;$('repair').textContent='Repair Admin Role'}
+};
+$('refresh').onclick=runChecks;
+$('logout').onclick=async()=>{await db.auth.signOut();user=null;showLogin()};
+
+async function boot(){
+ const r=await db.auth.getSession();
+ if(r.error){showLogin();return}
+ user=r.data.session?.user||null;
+ if(user&&user.id===ADMIN)showApp();else showLogin();
+ db.auth.onAuthStateChange((_e,s)=>{user=s?.user||null;if(user&&user.id===ADMIN)showApp();else showLogin()});
+}
+boot();
+})();
+</script>
+</body>
+</html>
