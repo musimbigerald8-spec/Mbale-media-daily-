@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="September 18, 2026 latest news from Mbale, Eastern Uganda, Uganda, Africa and the world — Mbale Media Daily.">
+<meta name="description" content="September 22, 2026 latest news from Mbale, Eastern Uganda, Uganda, Africa and the world — Mbale Media Daily.">
 <meta name="robots" content="index,follow,max-image-preview:large">
 <title>Latest News • September 18, 2026 | Mbale Media Daily</title>
 <style>
@@ -10,11 +10,19 @@
 a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid #071426;outline-offset:3px}</style>
 </head>
 <body>
-<header class="head"><h1>MBALE <b>MEDIA</b> DAILY</h1><p>LATEST NEWS • FRIDAY SEPTEMBER 18, 2026</p></header>
+<header class="head"><h1>MBALE <b>MEDIA</b> DAILY</h1><p>LATEST NEWS • TUESDAY SEPTEMBER 22, 2026</p></header>
 <main class="wrap">
 <a class="back" href="index.html">← Back to Home</a>
-<section class="edition"><div class="kicker">EDITOR'S DESK</div><h2>Friday's full news edition</h2><p>Mbale Media Daily brings readers the latest verified developments from Mbale, Eastern Uganda, Uganda, Africa and the world. This page now connects directly to the live newsroom feed so new published stories appear automatically.</p></section>
-<p class="status" id="status">Loading today's latest published stories…</p>
+<section class="edition"><div class="kicker">EDITOR'S DESK</div><h2>Tuesday's full news edition</h2><p>Mbale Media Daily brings readers the latest verified developments from Mbale, Eastern Uganda, Uganda, Africa and the world. This page now connects directly to the live newsroom feed so new published stories appear automatically. The Tuesday edition highlights the latest verified reports available on September 21.</p></section>
+<p class="status" id="status">Loading Tuesday's latest published stories…</p><section class="edition" style="border-left:5px solid #e4032e">
+<div class="kicker">TUESDAY 22 SEPTEMBER</div>
+<h2>Top reports for readers</h2>
+<p><strong>Bugisu:</strong> The Monitor profiles Dr Agatha Nambuya, a pioneering doctor from Bugisu who continues working in medicine at 74.</p>
+<p><strong>Business:</strong> Uganda's export revenues are reported at $1.4 billion, with gold gains helping offset weaker coffee earnings.</p>
+<p><strong>Road safety:</strong> Traffic authorities report 569 vehicles impounded in ongoing national enforcement operations.</p>
+<p><strong>Eastern Uganda:</strong> A woman died and three people, including two children, were injured after a verandah collapsed in Malaba Town, Tororo District.</p>
+<p><strong>Community:</strong> Operation Empowering Churches is scheduled for 27 September at Zionlight International Ministries, featuring Evangelist Khaukha Phillex Mukisa as guest preacher and Apostle Antony Enyaru as host.</p>
+</section>
 <section id="latest-feed"></section>
 <div class="more"><strong>More Mbale Media Daily:</strong> <a href="index.html">Home</a><a href="today.html">Today</a><a href="sports.html">Sports</a><a href="entertainment.html">Entertainment</a><a href="global.html">Global</a></div>
 </main>
@@ -26,7 +34,7 @@ var KEY='sb_publishable_WkkWUJF8ONyX4oS2nvGNFw_jdAob8M8';
 var feed=document.getElementById('latest-feed'),status=document.getElementById('status');
 function esc(s){return String(s||'').replace(/[&<>\"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','\\':'&#92;','"':'&quot;'}[c]});}
 function card(s){var date=new Date(s.created_at).toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'});return '<article class="article"><div class="body"><div class="kicker">'+esc(s.category||'NEWS')+(s.breaking?' • BREAKING':'')+'</div><h2>'+esc(s.title)+'</h2><p class="lead">'+esc(s.excerpt||s.summary||'Latest developments are being followed by the Mbale Media Daily newsroom.')+'</p><div class="meta">'+date+' • '+esc(s.author||'Mbale Media Daily News Desk')+'</div></div></article>';}
-async function load(){try{var r=await fetch(URL+'/rest/v1/news?select=id,title,excerpt,summary,category,author,created_at,featured,breaking&published=eq.true&approval_status=eq.published&order=created_at.desc&limit=30',{headers:{apikey:KEY,Authorization:'Bearer '+KEY}});if(!r.ok)throw new Error('HTTP '+r.status);var data=await r.json();feed.innerHTML=data.map(card).join('');status.textContent=data.length+' latest published stories • Updated live on Friday, 18 September 2026';}catch(e){status.textContent='Live newsroom feed temporarily unavailable. Please refresh shortly.';console.warn(e);}}
+async function load(){try{var r=await fetch(URL+'/rest/v1/news?select=id,title,excerpt,summary,category,author,created_at,featured,breaking&published=eq.true&approval_status=eq.published&order=created_at.desc&limit=30',{headers:{apikey:KEY,Authorization:'Bearer '+KEY}});if(!r.ok)throw new Error('HTTP '+r.status);var data=await r.json();feed.innerHTML=data.map(card).join('');status.textContent=data.length+' latest published stories • Updated live for Tuesday, 22 September 2026';}catch(e){status.textContent='Live newsroom feed temporarily unavailable. Please refresh shortly.';console.warn(e);}}
 load();setInterval(load,300000);
 })();
 </script>
