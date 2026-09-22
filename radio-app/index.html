@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#070b0d"><meta name="description" content="Mbale Media Daily Radio — listen live 24/7.">
+<link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="../assets/mbale-media-daily-logo.png">
+<title>Mbale Media Daily Radio</title>
+<style>
+:root{--bg:#070b0d;--card:#11181c;--line:#263138;--text:#fff;--muted:#9da7ac;--red:#e4032e}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 50% 0,#2a0b12 0,#070b0d 42%);color:var(--text);font-family:Arial,sans-serif;min-height:100vh}
+main{max-width:520px;margin:auto;padding:22px 18px 38px}.top{display:flex;align-items:center;justify-content:space-between}.brand{display:flex;gap:10px;align-items:center;font-weight:900}.brand img{width:44px;height:44px;object-fit:contain}.brand span{color:var(--red)}.install{border:1px solid var(--line);background:var(--card);color:#fff;border-radius:999px;padding:8px 11px;font-size:11px}
+.hero{text-align:center;padding:32px 0 20px}.live{display:inline-flex;gap:8px;align-items:center;border:1px solid #5b1724;background:#210d13;border-radius:999px;padding:7px 12px;color:#ff8b98;font-size:10px;font-weight:900}.dot{width:8px;height:8px;border-radius:50%;background:var(--red);box-shadow:0 0 0 5px #e4032e22}.hero h1{font:900 43px Georgia,serif;line-height:.95;margin:18px 0 10px}.hero h1 span{color:var(--red)}.hero p{color:var(--muted);font-size:13px;line-height:1.5}
+.player{background:linear-gradient(150deg,#151e23,#0b1013);border:1px solid var(--line);border-radius:22px;padding:22px;box-shadow:0 20px 70px #0008}.art{height:245px;border-radius:17px;display:grid;place-items:center;background:radial-gradient(circle,#e4032e22,transparent 48%),#0a0e10;border:1px solid #263138}.art img{width:150px;height:150px;object-fit:contain}.eyebrow{text-align:center;color:#ff766d;font-size:10px;font-weight:900;letter-spacing:1.3px;margin-top:20px}.title{text-align:center;font:800 25px Georgia,serif;margin:7px 0}.sub{text-align:center;color:var(--muted);font-size:12px}.play{display:block;margin:24px auto 12px;width:78px;height:78px;border:0;border-radius:50%;background:var(--red);color:white;font-size:29px;box-shadow:0 12px 30px #e4032e55}.status{text-align:center;min-height:17px;color:var(--muted);font-size:11px}.volume{width:100%;accent-color:var(--red);margin-top:17px}.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}.stat{background:#0d1316;border:1px solid var(--line);border-radius:12px;padding:14px;text-align:center}.stat b{display:block;font-size:12px}.stat span{font-size:10px;color:var(--muted)}.links{display:grid;gap:10px;margin-top:16px}.link{display:block;text-align:center;text-decoration:none;color:white;background:var(--card);border:1px solid var(--line);padding:14px;border-radius:12px;font-weight:800;font-size:12px}.note{margin-top:15px;color:#777f84;text-align:center;font-size:10px;line-height:1.5}
+</style></head>
+<body><main>
+<header class="top"><div class="brand"><img src="../assets/mbale-media-daily-logo.png" alt="Mbale Media Daily"><div>MBALE <span>MEDIA</span> DAILY</div></div><button class="install" id="install" hidden>INSTALL APP</button></header>
+<section class="hero"><div class="live"><i class="dot"></i><span id="badge">ONLINE RADIO</span></div><h1>MBALE <span>MEDIA</span><br>RADIO</h1><p>Live news, talk, music and community programming from Eastern Uganda.</p></section>
+<section class="player">
+<div class="art"><img src="../assets/mbale-media-daily-logo.png" alt="Mbale Media Daily Radio"></div>
+<div class="eyebrow">NOW PLAYING</div><div class="title">Mbale Media Daily Radio</div><div class="sub">Live stream • 24/7</div>
+<audio id="audio" preload="none" crossorigin="anonymous"></audio>
+<button class="play" id="play" aria-label="Play radio">▶</button><div class="status" id="status">Ready to listen live.</div>
+<input class="volume" id="volume" type="range" min="0" max="1" step=".01" value=".85" aria-label="Volume">
+<div class="stats"><div class="stat"><b>🔴 LIVE</b><span id="live">Ready</span></div><div class="stat"><b>📍 MBALE</b><span>Eastern Uganda</span></div></div>
+</section>
+<div class="links"><a class="link" href="../radio.html">OPEN RADIO PAGE</a><a class="link" href="../index.html">READ MBALE MEDIA DAILY NEWS</a><a class="link" href="../tv.html">WATCH MBALE MEDIA DAILY TV</a></div>
+<div class="note">Listener count will be connected to the radio provider's live analytics when that API is available. The app never invents a listener number.</div>
+</main>
+<script>
+const STREAM="https://listen.nobexradio.com/station_ns-mbalemediadaily";
+const a=document.getElementById('audio'),p=document.getElementById('play'),s=document.getElementById('status'),l=document.getElementById('live'),b=document.getElementById('badge');
+a.volume=.85;
+p.onclick=async()=>{if(a.paused){a.src=STREAM;try{await a.play();p.textContent='❚❚';s.innerHTML='<b>LIVE — You are listening now.</b>';l.textContent='Broadcasting';b.textContent='LIVE NOW'}catch(e){s.textContent='The radio stream could not be started.'}}else{a.pause();p.textContent='▶';s.textContent='Radio paused.'}};
+document.getElementById('volume').oninput=e=>a.volume=+e.target.value;
+a.onplaying=()=>{p.textContent='❚❚';s.innerHTML='<b>LIVE — You are listening now.</b>';l.textContent='Broadcasting';b.textContent='LIVE NOW'};
+a.onerror=()=>{p.textContent='▶';s.textContent='Stream unavailable. Please try again.'};
+let deferred;
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferred=e;document.getElementById('install').hidden=false});
+document.getElementById('install').onclick=async()=>{if(deferred){deferred.prompt();await deferred.userChoice;deferred=null}};
+if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
+</script></body></html>
