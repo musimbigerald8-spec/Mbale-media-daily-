@@ -18,24 +18,24 @@
 <section class="hero"><div class="live"><i class="dot"></i><span id="liveBadge">ONLINE RADIO</span></div><h1>MBALE <span>MEDIA</span> RADIO</h1><p>Live news, talk, music and community programming from Eastern Uganda — brought to you by Mbale Media Daily.</p></section>
 <section class="player-card">
 <div class="cover"><img src="assets/mbale-media-daily-logo.png" alt="Mbale Media Daily Radio"></div>
-<div class="now"><div class="small">NOW PLAYING</div><h2 id="stationName">Mbale Media Daily Radio</h2><p id="trackName">Live stream — connect your station stream to start broadcasting.</p></div>
+<div class="now"><div class="small">NOW PLAYING</div><h2 id="stationName">Mbale Media Daily Radio</h2><p id="trackName">Live stream — Mbale Media Daily Radio is on air 24/7.</p></div>
 <div class="controls"><button class="play" id="play" type="button" aria-label="Play radio">▶</button><input class="vol" id="volume" type="range" min="0" max="1" step=".01" value=".85" aria-label="Volume"></div>
-<div class="status" id="status">Stream not connected yet. Add your live stream URL in the page settings.</div>
+<div class="status" id="status">Ready to listen live.</div><div style="text-align:center;margin-top:16px"><a href="https://www.nobexradio.com/radio/ns-mbalemediadaily/mbale-media-daily" target="_blank" rel="noopener" style="display:inline-block;background:var(--red);color:#fff;text-decoration:none;padding:12px 18px;border-radius:6px;font-weight:900;font-size:11px">OPEN FULL RADIO PLAYER ↗</a></div>
 <audio id="radio" preload="none" crossorigin="anonymous"></audio>
 <div class="info"><div><b>🔴 LIVE</b><span id="liveText">Waiting for stream</span></div><div><b>📍 LOCATION</b><span>Mbale, Eastern Uganda</span></div><div><b>📰 NEWS</b><span>Every Story Matters</span></div></div>
 </section>
 <section class="grid">
-<div class="card"><h3>About the Radio</h3><p>Mbale Media Daily Radio is designed to bring the newsroom to listeners with live bulletins, interviews, talk shows, community updates, sports and music. The website player is ready; a dedicated streaming server is required before public live broadcasting can begin.</p><div class="notice"><strong>Broadcast setup:</strong> connect an Icecast/Shoutcast/AzuraCast stream URL to the player. The website itself is static, so the audio stream must be hosted by a radio streaming provider or your own streaming server.</div></div>
+<div class="card"><h3>About the Radio</h3><p>Mbale Media Daily Radio brings the newsroom to listeners with news, interviews, talk shows, community updates, sports and music. The station is powered by Nobex Cloud AutoDJ and is currently broadcasting online.</p><div class="notice"><strong>Listen live:</strong> the station is hosted by Nobex Radio. Use the player above or open the full listener page for the complete now-playing experience.</div></div>
 <div class="card"><h3>Programme Guide</h3><ul class="schedule"><li><span>06:00</span> Morning News</li><li><span>09:00</span> Community Voice</li><li><span>12:00</span> Midday News</li><li><span>15:00</span> Sports Desk</li><li><span>18:00</span> Evening News</li><li><span>20:00</span> Talk &amp; Interviews</li></ul></div>
 </section>
 </main>
 <footer class="footer">© 2026 Mbale Media Daily • Online Radio • Every Story Matters</footer>
 <script>
-const STREAM_URL=""; // Add your Icecast/Shoutcast/AzuraCast public stream URL here.
+const STREAM_URL="https://listen.nobexradio.com/station_ns-mbalemediadaily";
 const audio=document.getElementById("radio"),play=document.getElementById("play"),volume=document.getElementById("volume"),status=document.getElementById("status"),liveText=document.getElementById("liveText"),badge=document.getElementById("liveBadge");
 audio.volume=.85;
-function setStatus(t,live=false){status.innerHTML=t;liveText.textContent=live?"Live now":"Waiting for stream";badge.textContent=live?"LIVE NOW":"ONLINE RADIO";}
-play.addEventListener("click",async()=>{if(!STREAM_URL){setStatus("<strong>Radio is ready, but the live stream URL has not been connected.</strong>");return}if(audio.paused){audio.src=STREAM_URL;try{await audio.play();play.textContent="❚❚";setStatus("<strong>LIVE — You are listening to Mbale Media Daily Radio.</strong>",true)}catch(e){setStatus("The stream could not be started. Check the stream URL and server.");}}else{audio.pause();play.textContent="▶";setStatus("Radio paused.");}});
+function setStatus(t,live=false){status.innerHTML=t;liveText.textContent=live?"Live now":"Ready to listen";badge.textContent=live?"LIVE NOW":"ONLINE RADIO";}
+play.addEventListener("click",async()=>{if(!STREAM_URL){setStatus("<strong>Radio stream is not configured.</strong>");return}if(audio.paused){audio.src=STREAM_URL;try{await audio.play();play.textContent="❚❚";setStatus("<strong>LIVE — You are listening to Mbale Media Daily Radio.</strong>",true)}catch(e){setStatus("The stream could not be started. Check the stream URL and server.");}}else{audio.pause();play.textContent="▶";setStatus("Radio paused.");}});
 volume.addEventListener("input",()=>audio.volume=Number(volume.value));
 audio.addEventListener("playing",()=>{play.textContent="❚❚";setStatus("<strong>LIVE — You are listening to Mbale Media Daily Radio.</strong>",true)});
 audio.addEventListener("pause",()=>{play.textContent="▶"});
