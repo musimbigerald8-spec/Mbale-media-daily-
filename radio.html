@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Mbale Media Daily Radio — live online radio, news, talk, music and community programmes from Eastern Uganda.">
+<meta name="theme-color" content="#070b0d">
+<link rel="icon" type="image/png" href="assets/mbale-media-daily-logo.png">
+<title>Mbale Media Daily Radio | Listen Live</title>
+<style>
+:root{--bg:#070b0d;--panel:#0e1417;--panel2:#12191d;--red:#e4032e;--coral:#ff766d;--text:#f5f6f7;--muted:#9aa4aa;--line:#20282d}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,Helvetica,sans-serif}.top{border-bottom:1px solid var(--line);background:#050809}.topin{max-width:1100px;margin:auto;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;gap:16px}.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:#fff}.brand img{width:42px;height:42px;object-fit:contain}.brand strong{font:800 21px Georgia,serif}.brand strong span{color:var(--red)}.home{color:#d9dee1;text-decoration:none;font-size:12px}.wrap{max-width:1000px;margin:auto;padding:38px 20px 60px}.hero{text-align:center;padding:22px 0 30px}.live{display:inline-flex;align-items:center;gap:8px;background:#261016;border:1px solid #54202b;color:#ff8a94;border-radius:999px;padding:7px 12px;font-size:11px;font-weight:900;letter-spacing:.7px}.dot{width:8px;height:8px;border-radius:50%;background:var(--red);box-shadow:0 0 0 5px #e4032e22}.hero h1{font:900 clamp(38px,7vw,72px)/.95 Georgia,serif;margin:18px 0 12px}.hero h1 span{color:var(--red)}.hero p{max-width:650px;margin:auto;color:var(--muted);line-height:1.6;font-size:14px}.player-card{max-width:760px;margin:20px auto 0;background:linear-gradient(145deg,#11191d,#0b1013);border:1px solid #253037;border-radius:16px;padding:26px;box-shadow:0 18px 60px #0007}.cover{height:170px;border-radius:12px;background:radial-gradient(circle at 50% 45%,#e4032e33,transparent 35%),linear-gradient(135deg,#151e23,#080b0d);display:flex;align-items:center;justify-content:center;border:1px solid #202a30}.cover img{width:125px;height:125px;object-fit:contain}.now{margin:20px 0 14px;text-align:center}.now .small{font-size:10px;color:var(--coral);font-weight:900;letter-spacing:1.2px}.now h2{font:800 27px Georgia,serif;margin:7px 0}.now p{margin:0;color:var(--muted);font-size:12px}.controls{display:flex;align-items:center;justify-content:center;gap:14px;margin:22px 0 15px}.play{width:64px;height:64px;border:0;border-radius:50%;background:var(--red);color:#fff;font-size:25px;cursor:pointer;box-shadow:0 8px 25px #e4032e44}.vol{width:170px;accent-color:var(--red)}.status{text-align:center;color:var(--muted);font-size:11px;min-height:16px}.status strong{color:#fff}.info{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:20px}.info div{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px;text-align:center}.info b{display:block;font-size:12px;margin-bottom:5px}.info span{font-size:11px;color:var(--muted)}.grid{display:grid;grid-template-columns:1.2fr .8fr;gap:18px;margin-top:25px}.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px}.card h3{font:800 21px Georgia,serif;margin:0 0 10px}.card p{color:var(--muted);font-size:12px;line-height:1.6;margin:0}.schedule{list-style:none;margin:10px 0 0;padding:0}.schedule li{display:flex;justify-content:space-between;gap:15px;padding:12px 0;border-bottom:1px solid var(--line);font-size:12px}.schedule li:last-child{border:0}.schedule span{color:var(--coral);font-weight:800}.notice{margin-top:18px;background:#17130a;border:1px solid #3d3114;border-radius:10px;padding:14px;color:#cfc6a7;font-size:11px;line-height:1.5}.footer{text-align:center;color:#6f7a80;font-size:10px;padding:20px;border-top:1px solid var(--line)}@media(max-width:700px){.topin{padding:13px 14px}.wrap{padding:22px 14px 45px}.player-card{padding:18px}.info,.grid{grid-template-columns:1fr}.cover{height:145px}.cover img{width:105px;height:105px}.vol{width:120px}.hero h1{font-size:45px}}
+</style>
+</head>
+<body>
+<header class="top"><div class="topin"><a class="brand" href="index.html"><img src="assets/mbale-media-daily-logo.png" alt="Mbale Media Daily"><strong>MBALE <span>MEDIA</span> DAILY</strong></a><a class="home" href="index.html">← Back to News</a></div></header>
+<main class="wrap">
+<section class="hero"><div class="live"><i class="dot"></i><span id="liveBadge">ONLINE RADIO</span></div><h1>MBALE <span>MEDIA</span> RADIO</h1><p>Live news, talk, music and community programming from Eastern Uganda — brought to you by Mbale Media Daily.</p></section>
+<section class="player-card">
+<div class="cover"><img src="assets/mbale-media-daily-logo.png" alt="Mbale Media Daily Radio"></div>
+<div class="now"><div class="small">NOW PLAYING</div><h2 id="stationName">Mbale Media Daily Radio</h2><p id="trackName">Live stream — connect your station stream to start broadcasting.</p></div>
+<div class="controls"><button class="play" id="play" type="button" aria-label="Play radio">▶</button><input class="vol" id="volume" type="range" min="0" max="1" step=".01" value=".85" aria-label="Volume"></div>
+<div class="status" id="status">Stream not connected yet. Add your live stream URL in the page settings.</div>
+<audio id="radio" preload="none" crossorigin="anonymous"></audio>
+<div class="info"><div><b>🔴 LIVE</b><span id="liveText">Waiting for stream</span></div><div><b>📍 LOCATION</b><span>Mbale, Eastern Uganda</span></div><div><b>📰 NEWS</b><span>Every Story Matters</span></div></div>
+</section>
+<section class="grid">
+<div class="card"><h3>About the Radio</h3><p>Mbale Media Daily Radio is designed to bring the newsroom to listeners with live bulletins, interviews, talk shows, community updates, sports and music. The website player is ready; a dedicated streaming server is required before public live broadcasting can begin.</p><div class="notice"><strong>Broadcast setup:</strong> connect an Icecast/Shoutcast/AzuraCast stream URL to the player. The website itself is static, so the audio stream must be hosted by a radio streaming provider or your own streaming server.</div></div>
+<div class="card"><h3>Programme Guide</h3><ul class="schedule"><li><span>06:00</span> Morning News</li><li><span>09:00</span> Community Voice</li><li><span>12:00</span> Midday News</li><li><span>15:00</span> Sports Desk</li><li><span>18:00</span> Evening News</li><li><span>20:00</span> Talk &amp; Interviews</li></ul></div>
+</section>
+</main>
+<footer class="footer">© 2026 Mbale Media Daily • Online Radio • Every Story Matters</footer>
+<script>
+const STREAM_URL=""; // Add your Icecast/Shoutcast/AzuraCast public stream URL here.
+const audio=document.getElementById("radio"),play=document.getElementById("play"),volume=document.getElementById("volume"),status=document.getElementById("status"),liveText=document.getElementById("liveText"),badge=document.getElementById("liveBadge");
+audio.volume=.85;
+function setStatus(t,live=false){status.innerHTML=t;liveText.textContent=live?"Live now":"Waiting for stream";badge.textContent=live?"LIVE NOW":"ONLINE RADIO";}
+play.addEventListener("click",async()=>{if(!STREAM_URL){setStatus("<strong>Radio is ready, but the live stream URL has not been connected.</strong>");return}if(audio.paused){audio.src=STREAM_URL;try{await audio.play();play.textContent="❚❚";setStatus("<strong>LIVE — You are listening to Mbale Media Daily Radio.</strong>",true)}catch(e){setStatus("The stream could not be started. Check the stream URL and server.");}}else{audio.pause();play.textContent="▶";setStatus("Radio paused.");}});
+volume.addEventListener("input",()=>audio.volume=Number(volume.value));
+audio.addEventListener("playing",()=>{play.textContent="❚❚";setStatus("<strong>LIVE — You are listening to Mbale Media Daily Radio.</strong>",true)});
+audio.addEventListener("pause",()=>{play.textContent="▶"});
+audio.addEventListener("error",()=>{play.textContent="▶";setStatus("Stream unavailable. Please check the broadcast server.");});
+</script>
+</body></html>
