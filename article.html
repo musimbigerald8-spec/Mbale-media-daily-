@@ -15,15 +15,17 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid #0714
 <nav><a href="index.html">Home</a><a href="index.html#latest">Latest News</a><a href="index.html#mbale">Mbale</a><a href="index.html#national">National</a><a href="index.html#sports">Sports</a><a href="index.html#global">Global</a></nav>
 <main class="wrap"><a class="back" href="index.html">← Back to Mbale Media Daily</a><article class="article" id="reader"><p>Loading story…</p></article></main>
 <footer class="footer">© 2026 Mbale Media Daily • The Voice of Eastern Uganda</footer>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 function esc(s){return String(s||'').replace(/[&<>\"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[c]))}
 function render(){
- const q=new URLSearchParams(location.search).get('id');
- const raw=localStorage.getItem('mbaleArticle_'+q);
+ const params=new URLSearchParams(location.search); const q=params.get('id'); const slug=params.get('slug');
  const reader=document.getElementById('reader');
- if(!raw){reader.innerHTML='<h2>Story not found</h2><p>This article link is no longer available in this browser. Return to the homepage and open the story again.</p><a class="actions" href="index.html">Return home</a>';return;}
+ let a=null;
+ if(q){const raw=localStorage.getItem('mbaleArticle_'+q); if(raw){try{a=JSON.parse(raw)}catch(e){}}}
+ if(!a && slug){try{const db=window.supabase.createClient('https://dwbgcaxwemrwheybdpya.supabase.co','sb_publishable_WkkWUJF8ONyX4oS2nvGNFw_jdAob8M8'); const r=await db.from('news').select('title,slug,excerpt,content,image_url,category,author,created_at,published').eq('slug',slug).eq('published',true).maybeSingle(); if(!r.error && r.data){a={title:r.data.title,category:r.data.category,meta:(r.data.author||'Mbale Media Daily')+' • '+new Date(r.data.created_at).toLocaleDateString(),image:r.data.image_url,lead:r.data.excerpt,text:r.data.content}}}catch(e){}}
+ if(!a){reader.innerHTML='<h2>Story not found</h2><p>This article could not be found. Return to Mbale Media Daily and open the story again.</p><a class="actions" href="index.html">Return home</a>';return;}
  try{
-  const a=JSON.parse(raw);
   document.title=(a.title||'Full Story')+' | Mbale Media Daily';
   const text=(a.text||'').trim();
   const paragraphs=text.split(/\n+/).filter(Boolean).map(p=>'<p>'+esc(p)+'</p>').join('');
