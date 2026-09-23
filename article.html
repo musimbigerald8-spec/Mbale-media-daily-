@@ -18,7 +18,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid #0714
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 function esc(s){return String(s||'').replace(/[&<>\"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[c]))}
-function render(){
+async function render(){
  const params=new URLSearchParams(location.search); const q=params.get('id'); const slug=params.get('slug');
  const reader=document.getElementById('reader');
  let a=null;
