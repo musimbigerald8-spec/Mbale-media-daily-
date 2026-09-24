@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#070b0d">
+<meta name="description" content="Mbale AI — the Mbale Media Daily digital news assistant.">
+<title>Mbale AI | Mbale Media Daily</title>
+<link rel="icon" type="image/png" href="assets/mbale-media-daily-logo.png">
+<style>
+:root{--bg:#050709;--panel:#0d1317;--panel2:#111a1f;--red:#e4032e;--red2:#ff334f;--text:#f5f7f8;--muted:#98a3aa;--line:#222c32}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 80% 10%,#271018 0,#050709 38%),var(--bg);color:var(--text);font-family:Arial,Helvetica,sans-serif;min-height:100vh}
+header{height:72px;border-bottom:1px solid var(--line);background:#050709e8;backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:space-between;padding:0 5%;position:sticky;top:0;z-index:20}.brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:#fff}.brand img{width:46px;height:46px;object-fit:contain}.brand strong{font:800 21px Georgia,serif}.brand strong span{color:var(--red)}.back{color:#c7cdd1;text-decoration:none;font-size:12px;font-weight:800}.back:hover{color:#fff}
+main{width:min(1050px,92%);margin:0 auto;padding:42px 0 60px}.hero{text-align:center;max-width:760px;margin:0 auto 28px}.eyebrow{display:inline-block;background:#210a10;color:#ff7182;border:1px solid #58121f;border-radius:999px;padding:7px 12px;font-size:10px;font-weight:900;letter-spacing:1px}.hero h1{font:800 clamp(42px,7vw,72px)/.95 Georgia,serif;margin:17px 0 12px}.hero h1 span{color:var(--red)}.hero p{color:var(--muted);font-size:14px;line-height:1.6;margin:0 auto;max-width:650px}
+.app{display:grid;grid-template-columns:260px 1fr;gap:16px;margin-top:30px}.side,.chat{background:linear-gradient(180deg,#0d1418,#090e11);border:1px solid var(--line);border-radius:16px}.side{padding:16px}.side h2{font:800 17px Georgia,serif;margin:3px 0 14px}.side p{font-size:11px;line-height:1.5;color:var(--muted)}.feature{padding:13px;border:1px solid #1e292f;border-radius:10px;background:#0a1013;margin:10px 0}.feature b{display:block;font-size:12px;margin-bottom:4px}.feature span{font-size:10px;color:var(--muted)}
+.chat{min-height:590px;display:flex;flex-direction:column;overflow:hidden}.chat-head{padding:17px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between}.chat-title{display:flex;gap:10px;align-items:center}.dot{width:10px;height:10px;border-radius:50%;background:#24d06c;box-shadow:0 0 14px #24d06c}.chat-title strong{font-size:14px}.chat-title small{display:block;color:var(--muted);font-size:10px;margin-top:3px}.clear{background:none;border:1px solid #2b363c;color:#b9c2c7;border-radius:7px;padding:7px 9px;font-size:10px;font-weight:800}.messages{flex:1;padding:18px;overflow:auto;background:linear-gradient(180deg,#0b1115,#080c0f)}.msg{max-width:82%;padding:12px 14px;border-radius:12px;margin:0 0 12px;font-size:13px;line-height:1.55;white-space:pre-wrap}.ai{background:#151e23;border:1px solid #243037;color:#e8edef}.user{background:var(--red);margin-left:auto;color:#fff}.composer{padding:12px;border-top:1px solid var(--line);background:#090e11}.composer form{display:flex;gap:8px}.composer input{flex:1;min-width:0;background:#05080a;border:1px solid #303a40;color:#fff;border-radius:9px;padding:13px;font-size:13px;outline:none}.composer input:focus{border-color:#e4032e}.send{background:var(--red);border:0;color:#fff;border-radius:9px;padding:0 17px;font-weight:900}.suggestions{display:flex;gap:7px;overflow:auto;padding:0 0 10px}.suggestions button{white-space:nowrap;background:#11191e;border:1px solid #29343a;color:#cbd2d6;border-radius:999px;padding:7px 10px;font-size:10px}.notice{font-size:10px;color:#77838a;text-align:center;padding:8px 0 0}
+@media(max-width:760px){header{height:62px;padding:0 4%}.brand strong{font-size:17px}.brand img{width:40px;height:40px}main{width:94%;padding-top:30px}.app{grid-template-columns:1fr}.side{display:none}.chat{min-height:620px}.msg{max-width:90%}}
+</style>
+</head>
+<body>
+<header><a class="brand" href="index.html"><img src="assets/mbale-media-daily-logo.png" alt="Mbale Media Daily"><strong>MBALE <span>MEDIA</span> DAILY</strong></a><a class="back" href="index.html">← BACK TO NEWS</a></header>
+<main>
+<section class="hero"><span class="eyebrow">MBALE MEDIA DAILY • AI DESK</span><h1>Meet <span>Mbale AI</span></h1><p>A fresh, focused digital assistant for Mbale Media Daily. Ask about published stories, Mbale, Uganda, the radio, or general topics.</p></section>
+<section class="app">
+<aside class="side"><h2>What Mbale AI can do</h2><p>The new interface is designed around the newsroom instead of the old floating chat widget.</p><div class="feature"><b>📰 News assistant</b><span>Find and explain published stories.</span></div><div class="feature"><b>📍 Mbale & Eastern Uganda</b><span>Ask about local coverage and topics.</span></div><div class="feature"><b>📻 Media guide</b><span>Help visitors find radio, TV and site content.</span></div><div class="feature"><b>🔒 Privacy-first design</b><span>No credentials or private newsroom data are exposed in the browser.</span></div></aside>
+<section class="chat"><div class="chat-head"><div class="chat-title"><span class="dot"></span><div><strong>Mbale AI</strong><small>Newsroom assistant</small></div></div><button class="clear" id="clear">CLEAR</button></div><div class="messages" id="messages"><div class="msg ai">Hello 👋 I’m Mbale AI, the new assistant for Mbale Media Daily.<br><br>Ask me something to get started.</div></div><div class="composer"><div class="suggestions"><button>Latest Mbale stories</button><button>What is Mbale Media Daily?</button><button>Where can I listen to the radio?</button></div><form id="form"><input id="input" autocomplete="off" placeholder="Ask Mbale AI…"><button class="send" type="submit">SEND</button></form><div class="notice">AI answers should be checked against published reporting for important claims.</div></div></section>
+</section>
+</main>
+<script src="assets/mbale-ai-v2.js"></script>
+</body>
+</html>
