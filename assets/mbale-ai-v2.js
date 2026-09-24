@@ -1,6 +1,6 @@
 (function(){
 'use strict';
-const API='/api/mbale-ai';
+const API='/api/chat';
 const messages=document.getElementById('messages');
 const form=document.getElementById('form');
 const input=document.getElementById('input');
@@ -13,9 +13,9 @@ form.addEventListener('submit',async e=>{
  e.preventDefault(); const q=input.value.trim(); if(!q)return;
  input.value=''; add(q,'user'); const reply=add('Thinking…','ai');
  try{
-   const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:q})});
+   const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:q,pageContext:document.body.innerText.slice(0,6000),news:[]})});
    const raw=await r.text(); let data={}; try{data=JSON.parse(raw)}catch(_){}
-   if(!r.ok) throw new Error(data.error||'The AI service is not connected yet.');
+   if(!r.ok) throw new Error(data.error||'The AI service is temporarily unavailable.');
    reply.textContent=data.answer||data.output_text||data.reply||'No answer was returned.';
  }catch(err){
    reply.textContent='Mbale AI is ready, but its secure AI engine is not connected yet. The new interface is live; the next step is connecting the server-side AI provider.';
