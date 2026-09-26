@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://musimbigerald8-spec.github.io/Mbale-media-daily-/</loc><lastmod>2026-09-18</lastmod><changefreq>daily</changefreq><priority>1.0</priority></url>
+  <url><loc>https://musimbigerald8-spec.github.io/Mbale-media-daily-/</loc><lastmod>2026-09-26</lastmod><changefreq>daily</changefreq><priority>1.0</priority></url>
   <url><loc>https://musimbigerald8-spec.github.io/Mbale-media-daily-/news.html</loc><lastmod>2026-09-18</lastmod><changefreq>daily</changefreq><priority>0.9</priority></url>
   <url><loc>https://musimbigerald8-spec.github.io/Mbale-media-daily-/today.html</loc><lastmod>2026-09-18</lastmod><changefreq>daily</changefreq><priority>0.9</priority></url>
   <url><loc>https://musimbigerald8-spec.github.io/Mbale-media-daily-/articles.html</loc><lastmod>2026-09-18</lastmod><changefreq>daily</changefreq><priority>0.9</priority></url>
   <url><loc>https://musimbigerald8-spec.github.io/Mbale-media-daily-/sports.html</loc><priority>0.6</priority></url>
   <url><loc>https://musimbigerald8-spec.github.io/Mbale-media-daily-/entertainment.html</loc><priority>0.6</priority></url>
-  <url><loc>https://musimbigerald8-spec.github.io/Mbale-media-daily-/global.html</loc><priority>0.6</priority></url>
+  <url><loc>https://musimbigerald8-spec.github.io/Mbale-media-daily-/global.html</loc><lastmod>2026-09-26</lastmod><changefreq>daily</changefreq><priority>0.6</priority></url>
   <url><loc>https://musimbigerald8-spec.github.io/Mbale-media-daily-/community.html</loc><priority>0.6</priority></url>
   <url><loc>https://musimbigerald8-spec.github.io/Mbale-media-daily-/about.html</loc><priority>0.5</priority></url>
   <url><loc>https://musimbigerald8-spec.github.io/Mbale-media-daily-/contact.html</loc><priority>0.5</priority></url>
@@ -16,8 +16,8 @@
   <url><loc>https://musimbigerald8-spec.github.io/Mbale-media-daily-/subscribe.html</loc><priority>0.4</priority></url>
   <url><loc>https://musimbigerald8-spec.github.io/Mbale-media-daily-/privacy.html</loc><priority>0.3</priority></url>
   <url><loc>https://musimbigerald8-spec.github.io/Mbale-media-daily-/terms.html</loc><priority>0.3</priority></url>
-  <url><loc>https://musimbigerald8-spec.github.io/Mbale-media-daily-/careers.html</loc><priority>0.7</priority></url>
-  <url><loc>https://musimbigerald8-spec.github.io/Mbale-media-daily-/editors.html</loc><priority>0.5</priority></url>
+  <url><loc>https://musimbigerald8-spec.github.io/Mbale-media-daily-/careers.html</loc><priority>0.5</priority></url>
+  <url><loc>https://musimbigerald8-spec.github.io/Mbale-media-daily-/editors.html</loc><lastmod>2026-09-26</lastmod><priority>0.6</priority></url>
   <url><loc>https://musimbigerald8-spec.github.io/Mbale-media-daily-/article-uganda-schools-third-term.html</loc><lastmod>2026-09-18</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://musimbigerald8-spec.github.io/Mbale-media-daily-/article-drc-student-quarantine.html</loc><lastmod>2026-09-18</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://musimbigerald8-spec.github.io/Mbale-media-daily-/article-premier-league-results-september-12-2026.html</loc><lastmod>2026-09-18</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
