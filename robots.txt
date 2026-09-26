@@ -14,4 +14,4 @@ Disallow: /journalist-*.html
 Disallow: /newsroom.html
 Disallow: /newsroom-admin.html
 
-Sitemap: https://musimbigerald8-spec.github.io/sitemap.xml
+Sitemap: https://musimbigerald8-spec.github.io/Mbale-media-daily-/sitemap.xml
