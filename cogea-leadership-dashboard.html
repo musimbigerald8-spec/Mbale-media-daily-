@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>COGEA ELGON YOUTH CONNECT | Leadership Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--green:#116b3f;--deep:#083d27;--gold:#d8aa3b;--bg:#f4f7f5;--card:#fff;--ink:#17231d;--muted:#65736b;--line:#dfe7e2;--red:#a83232}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;color:var(--ink)}button,input{font:inherit}.top{background:linear-gradient(135deg,var(--deep),var(--green));color:white;padding:18px 22px;position:sticky;top:0;z-index:10;box-shadow:0 5px 20px #062f1a22}.bar{max-width:1250px;margin:auto;display:flex;align-items:center;gap:14px}.brandmark{width:54px;height:54px;border-radius:50%;background:#fff;display:grid;place-items:center;position:relative;overflow:hidden}.brandmark:before{content:"";width:38px;height:42px;background:#17812f;border-radius:48% 44% 52% 45%;transform:rotate(-12deg);position:absolute}.brandmark:after{content:"✝";position:absolute;color:#111;font-size:32px;line-height:1}.brand h1{font-size:18px;margin:0}.brand p{font-size:12px;margin:2px 0 0;color:#dcece4}.spacer{flex:1}.logout{background:#ffffff18;color:white;border:1px solid #ffffff55;padding:9px 13px;border-radius:10px;cursor:pointer}.wrap{max-width:1250px;margin:auto;padding:22px}.login{max-width:460px;margin:70px auto;background:white;border-radius:20px;padding:28px;box-shadow:0 12px 35px #14382a12}.login .brandmark{margin:0 auto 12px}.login h2{text-align:center;margin:4px 0}.login p{text-align:center;color:var(--muted);font-size:14px}.field{margin:14px 0}.field label{display:block;font-weight:700;font-size:13px;margin-bottom:6px}.field input{width:100%;padding:13px;border:1px solid var(--line);border-radius:10px}.primary{width:100%;padding:13px;border:0;border-radius:10px;background:var(--green);color:#fff;font-weight:800;cursor:pointer}.msg{color:var(--red);font-size:13px;margin-top:10px}.hidden{display:none!important}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}@media(max-width:800px){.stats{grid-template-columns:1fr 1fr}}@media(max-width:500px){.stats{grid-template-columns:1fr}.wrap{padding:14px}}.stat{background:white;border:1px solid var(--line);border-radius:16px;padding:17px}.stat small{color:var(--muted)}.stat strong{display:block;font-size:27px;margin-top:4px;color:var(--deep)}.panel{background:white;border:1px solid var(--line);border-radius:18px;overflow:hidden}.toolbar{display:flex;gap:10px;align-items:center;padding:15px;border-bottom:1px solid var(--line);flex-wrap:wrap}.toolbar input,.toolbar select{padding:11px;border:1px solid var(--line);border-radius:10px}.toolbar input{flex:1;min-width:220px}.secondary{padding:10px 13px;border:1px solid var(--line);background:#f7faf8;border-radius:10px;cursor:pointer}.tablewrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:920px}th,td{text-align:left;padding:12px 14px;border-bottom:1px solid #edf1ee;font-size:13px;vertical-align:top}th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);background:#fafcfb}.tag{display:inline-block;background:#eef6f1;color:var(--deep);padding:4px 7px;border-radius:999px;font-size:11px;margin:2px}.view{background:var(--green);color:#fff;border:0;border-radius:8px;padding:7px 10px;cursor:pointer}.empty{text-align:center;padding:45px;color:var(--muted)}.modal{position:fixed;inset:0;background:#071b1180;display:none;align-items:center;justify-content:center;padding:16px;z-index:20}.modal.open{display:flex}.dialog{background:white;border-radius:18px;max-width:720px;width:100%;max-height:90vh;overflow:auto;padding:22px}.dialoghead{display:flex;gap:10px;align-items:flex-start}.close{margin-left:auto;border:0;background:#edf2ef;border-radius:9px;padding:8px;cursor:pointer}.detailgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:15px}@media(max-width:600px){.detailgrid{grid-template-columns:1fr}}.detail{border:1px solid var(--line);border-radius:11px;padding:11px}.detail small{display:block;color:var(--muted);margin-bottom:4px}.signature{max-width:100%;height:150px;border:1px solid var(--line);border-radius:10px;object-fit:contain;background:#fafcfa}.commit{background:#fbfaf2;border-left:4px solid var(--gold);padding:13px;border-radius:8px;line-height:1.55;margin-top:14px}.notice{background:#fff8e8;border:1px solid #eedca9;padding:12px;border-radius:10px;color:#654f1a;font-size:13px;margin-bottom:15px}
+</style>
+</head>
+<body>
+<header class="top hidden" id="top"><div class="bar"><div class="brandmark"></div><div class="brand"><h1>COGEA ELGON YOUTH CONNECT</h1><p>Church of God of East Africa Uganda • Leadership Dashboard</p></div><div class="spacer"></div><button class="logout" id="logout">Sign out</button></div></header>
+
+<section id="login" class="login">
+<div class="brandmark"></div>
+<h2>COGEA Leadership Dashboard</h2>
+<p>Authorized fellowship leaders only. Sign in with your approved leadership account.</p>
+<div class="field"><label>Email</label><input id="email" type="email" autocomplete="username" placeholder="leader@example.com"></div>
+<div class="field"><label>Password</label><input id="password" type="password" autocomplete="current-password"></div>
+<button class="primary" id="loginBtn">SIGN IN</button>
+<div class="msg" id="loginMsg"></div>
+<p style="font-size:12px;margin-top:15px">If you are a leader but do not yet have access, the administrator must add your account to the COGEA leadership access list.</p>
+</section>
+
+<main id="app" class="wrap hidden">
+<div class="notice"><strong>Private leadership area.</strong> Registration records, phone numbers and signatures are restricted to approved COGEA leaders.</div>
+<section class="stats">
+<div class="stat"><small>Total registrations</small><strong id="total">0</strong></div>
+<div class="stat"><small>Today</small><strong id="today">0</strong></div>
+<div class="stat"><small>Under 18</small><strong id="under18">0</strong></div>
+<div class="stat"><small>Service interests</small><strong id="serviceCount">0</strong></div>
+</section>
+<section class="panel">
+<div class="toolbar">
+<input id="search" placeholder="Search name, phone, district or church...">
+<select id="ageFilter"><option value="">All ages</option><option>13-17</option><option>18-24</option><option>25-30</option><option>31+</option></select>
+<button class="secondary" id="refresh">Refresh</button>
+<button class="secondary" id="csv">Export CSV</button>
+</div>
+<div class="tablewrap"><table><thead><tr><th>Name</th><th>WhatsApp</th><th>Age</th><th>Church / Area</th><th>Interests</th><th>Registered</th><th></th></tr></thead><tbody id="rows"></tbody></table></div>
+</section>
+</main>
+
+<div class="modal" id="modal"><div class="dialog"><div class="dialoghead"><div><h2 id="mname" style="margin:0"></h2><p id="mdate" style="margin:4px 0;color:var(--muted);font-size:13px"></p></div><button class="close" id="close">✕</button></div><div id="detailBody"></div></div></div>
+
+<script>
+const URL="https://dwbgcaxwemrwheybdpya.supabase.co";
+const KEY="sb_publishable_WkkWUJF8ONyX4oS2nvGNFw_jdAob8M8";
+const sb=supabase.createClient(URL,KEY);
+let records=[],filtered=[];
+
+const $=id=>document.getElementById(id);
+function escapeHtml(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]))}
+function tags(arr){return (arr||[]).map(x=>'<span class="tag">'+escapeHtml(x)+'</span>').join("")||'<span style="color:#87928c">—</span>'}
+function formatDate(x){return new Date(x).toLocaleDateString(undefined,{year:"numeric",month:"short",day:"numeric"})}
+function apply(){const q=$("search").value.trim().toLowerCase(),age=$("ageFilter").value;filtered=records.filter(r=>(!age||r.age_group===age)&&(!q||[r.full_name,r.whatsapp_number,r.district,r.area,r.church_congregation].join(" ").toLowerCase().includes(q)));render()}
+function render(){const body=$("rows");if(!filtered.length){body.innerHTML='<tr><td colspan="7" class="empty">No registrations found.</td></tr>';return}body.innerHTML=filtered.map((r,i)=>'<tr><td><strong>'+escapeHtml(r.full_name)+'</strong></td><td>'+escapeHtml(r.whatsapp_number)+'</td><td>'+escapeHtml(r.age_group)+'</td><td>'+escapeHtml(r.church_congregation||"—")+'<br><small>'+escapeHtml([r.district,r.area].filter(Boolean).join(", "))+'</small></td><td>'+tags([...(r.hopes||[]),...(r.service_areas||[]).slice(0,3)])+'</td><td>'+formatDate(r.created_at)+'</td><td><button class="view" data-i="'+i+'">View</button></td></tr>').join("");body.querySelectorAll(".view").forEach(b=>b.onclick=()=>openDetail(filtered[+b.dataset.i]))}
+function stats(){const now=new Date();const day=records.filter(r=>new Date(r.created_at).toDateString()===now.toDateString()).length;const under=records.filter(r=>r.age_group==="13-17").length;const interests=new Set(records.flatMap(r=>r.service_areas||[])).size;$("total").textContent=records.length;$("today").textContent=day;$("under18").textContent=under;$("serviceCount").textContent=interests}
+async function load(){const {data,error}=await sb.from("cogea_youth_registrations").select("*").order("created_at",{ascending:false});if(error){$("rows").innerHTML='<tr><td colspan="7" class="empty">Access denied or records could not be loaded.</td></tr>';return}records=data||[];stats();apply()}
+function openDetail(r){$("mname").textContent=r.full_name;$("mdate").textContent="Registered "+formatDate(r.created_at);$("detailBody").innerHTML='<div class="detailgrid">'+
+'<div class="detail"><small>WhatsApp</small>'+escapeHtml(r.whatsapp_number)+'</div>'+
+'<div class="detail"><small>Age / Gender</small>'+escapeHtml(r.age_group)+' • '+escapeHtml(r.gender||"Not specified")+'</div>'+
+'<div class="detail"><small>Church / Congregation</small>'+escapeHtml(r.church_congregation||"Not provided")+'</div>'+
+'<div class="detail"><small>Location</small>'+escapeHtml([r.district,r.area].filter(Boolean).join(" • ")||"Not provided")+'</div>'+
+'<div class="detail" style="grid-column:1/-1"><small>What Christian faith means to them</small>'+escapeHtml(r.faith_meaning||"Not provided")+'</div>'+
+'<div class="detail" style="grid-column:1/-1"><small>Hopes from the fellowship</small>'+tags(r.hopes)+'</div>'+
+'<div class="detail" style="grid-column:1/-1"><small>Service interests</small>'+tags(r.service_areas)+'</div>'+
+'<div class="detail" style="grid-column:1/-1"><small>Challenge facing young people</small>'+escapeHtml(r.youth_challenge||"Not provided")+'</div>'+
+'<div class="detail" style="grid-column:1/-1"><small>What they would like the fellowship to do</small>'+escapeHtml(r.contribution||"Not provided")+'</div></div>'+
+'<div class="commit"><strong>Christian commitment</strong><br>Member agreed to the fellowship commitment: <strong>'+ (r.commitment_agreed?"YES":"NO")+'</strong><br>Signed name: '+escapeHtml(r.signed_full_name)+'<br>Signed: '+formatDate(r.signed_at||r.created_at)+'</div>'+
+'<div style="margin-top:15px"><small style="display:block;color:var(--muted);margin-bottom:6px">Digital signature</small><img class="signature" src="'+r.signature_data+'" alt="Member signature"></div>';$("modal").classList.add("open")}
+$("loginBtn").onclick=async()=>{const m=$("loginMsg");m.textContent="Signing in...";const {error}=await sb.auth.signInWithPassword({email:$("email").value.trim(),password:$("password").value});if(error){m.textContent="Sign-in failed. Check your credentials or confirm that the account has been authorized by COGEA leadership.";return}m.textContent=""};
+$("logout").onclick=()=>sb.auth.signOut();$("refresh").onclick=load;$("search").oninput=apply;$("ageFilter").onchange=apply;$("close").onclick=()=>$("modal").classList.remove("open");$("modal").onclick=e=>{if(e.target.id==="modal")$("modal").classList.remove("open")};
+$("csv").onclick=()=>{if(!filtered.length)return;const cols=["full_name","whatsapp_number","age_group","gender","district","area","church_congregation","faith_meaning","hopes","service_areas","youth_challenge","contribution","commitment_agreed","signed_full_name","signed_at","created_at"];const csv=[cols.join(","),...filtered.map(r=>cols.map(c=>{let v=Array.isArray(r[c])?r[c].join(" | "):(r[c]??"");v=String(v).replace(/"/g,'""');return '"'+v+'"'}).join(","))].join("\n");const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));a.download="cogea-youth-registrations.csv";a.click()};
+sb.auth.onAuthStateChange(async(_e,session)=>{if(session){const {data:leader}=await sb.from("cogea_leaders").select("display_name,email").eq("user_id",session.user.id).maybeSingle();if(!leader){await sb.auth.signOut();$("loginMsg").textContent="This account is not on the COGEA leadership access list.";return}$("login").classList.add("hidden");$("top").classList.remove("hidden");$("app").classList.remove("hidden");load()}else{$("login").classList.remove("hidden");$("top").classList.add("hidden");$("app").classList.add("hidden")}});
+</script>
+</body>
+</html>
