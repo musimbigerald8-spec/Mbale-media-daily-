@@ -76,5 +76,6 @@ $("logout").onclick=()=>sb.auth.signOut();$("refresh").onclick=load;$("search").
 $("csv").onclick=()=>{if(!filtered.length)return;const cols=["full_name","whatsapp_number","age_group","gender","district","area","church_congregation","faith_meaning","hopes","service_areas","youth_challenge","contribution","commitment_agreed","signed_full_name","signed_at","created_at"];const csv=[cols.join(","),...filtered.map(r=>cols.map(c=>{let v=Array.isArray(r[c])?r[c].join(" | "):(r[c]??"");v=String(v).replace(/"/g,'""');return '"'+v+'"'}).join(","))].join("\n");const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));a.download="cogea-youth-registrations.csv";a.click()};
 sb.auth.onAuthStateChange(async(_e,session)=>{if(session){const {data:leader}=await sb.from("cogea_leaders").select("display_name,email").eq("user_id",session.user.id).maybeSingle();if(!leader){await sb.auth.signOut();$("loginMsg").textContent="This account is not on the COGEA leadership access list.";return}$("login").classList.add("hidden");$("top").classList.remove("hidden");$("app").classList.remove("hidden");load()}else{$("login").classList.remove("hidden");$("top").classList.add("hidden");$("app").classList.add("hidden")}});
 </script>
+<script src="assets/mbale-media-ai.js" defer></script>
 </body>
 </html>
