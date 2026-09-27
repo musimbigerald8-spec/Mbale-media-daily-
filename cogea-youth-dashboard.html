@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>COGEA ELGON YOUTH CONNECT — Leadership Dashboard</title>
+<style>
+:root{--green:#146b2e;--dark:#101914;--gold:#caa43a;--cream:#f6f5ef;--line:#e1e7e2;--muted:#64706a}
+*{box-sizing:border-box}body{margin:0;background:var(--cream);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;color:#18231d}
+.top{background:linear-gradient(135deg,#0b3f23,#146b2e);color:#fff;padding:18px 20px;display:flex;align-items:center;gap:14px;box-shadow:0 4px 18px #0002}.logo{width:64px;height:64px;object-fit:contain;background:#fff;border-radius:14px;padding:4px}.brand h1{margin:0;font-size:19px}.brand p{margin:3px 0 0;font-size:13px;color:#dcece1}.wrap{max-width:1100px;margin:24px auto;padding:0 15px}.hero{background:#fff;border-radius:18px;padding:22px;border:1px solid var(--line);margin-bottom:18px}.hero h2{margin:0 0 6px}.hero p{margin:0;color:var(--muted)}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:20px}.stat{font-size:32px;font-weight:800;color:var(--green)}.label{font-size:13px;color:var(--muted)}.notice{margin-top:18px;border-left:4px solid var(--gold);background:#fffdf4;padding:15px;border-radius:10px;color:#5d553b}.login{max-width:430px;margin:28px auto}.login h3{margin-top:0}.login input{width:100%;padding:12px;margin:6px 0 10px;border:1px solid var(--line);border-radius:10px}.btn{width:100%;padding:13px;border:0;border-radius:10px;background:var(--green);color:#fff;font-weight:750}.table{margin-top:18px;overflow:auto}.table table{width:100%;border-collapse:collapse;background:#fff}.table th,.table td{text-align:left;padding:12px;border-bottom:1px solid var(--line);font-size:13px}.hidden{display:none}@media(max-width:700px){.grid{grid-template-columns:1fr}.top{align-items:flex-start}.logo{width:54px;height:54px}}
+</style>
+</head>
+<body>
+<header class="top">
+<img class="logo" src="assets/cogea-elgon-logo.webp" alt="Church of God of East Africa Uganda logo">
+<div class="brand"><h1>Church of God of East Africa Uganda</h1><p>ELGON YOUTH CONNECT • Leadership Dashboard</p></div>
+</header>
+<div class="wrap">
+<section class="hero"><h2>COGEA ELGON YOUTH CONNECT</h2><p>Youth Fellowship Registration Management</p><div class="notice"><strong>Private leadership area.</strong> Registration records, phone numbers and signatures are not intended for public viewing. Admin authentication must be enabled before member records are displayed.</div></section>
+<section class="login card">
+<h3>Leadership Sign In</h3>
+<p class="label">This dashboard is prepared for authorized fellowship leaders. We will connect this screen to Supabase authentication before exposing registration records.</p>
+<label>Email</label><input type="email" placeholder="leader@example.com">
+<label>Password</label><input type="password" placeholder="••••••••">
+<button class="btn" type="button" disabled>SECURE SIGN IN — SETUP PENDING</button>
+</section>
+<section class="grid">
+<div class="card"><div class="stat">—</div><div class="label">Registered Youth</div></div>
+<div class="card"><div class="stat">—</div><div class="label">This Month</div></div>
+<div class="card"><div class="stat">🔒</div><div class="label">Member records protected</div></div>
+</section>
+</div>
+</body>
+</html>
