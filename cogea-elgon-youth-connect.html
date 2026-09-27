@@ -1,127 +1,3 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="Official COGEA Elgon Youth Connect youth fellowship registration form.">
-<title>COGEA ELGON YOUTH CONNECT | Registration Form</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<style>
-:root{--green:#126b45;--deep:#0b4d32;--gold:#d9aa3a;--cream:#f7f4eb;--ink:#1c2a24;--muted:#66736d;--white:#fff;--line:#dce5df;--danger:#a52a2a}
-*{box-sizing:border-box}body{margin:0;background:linear-gradient(180deg,#0b4d32 0,#126b45 300px,var(--cream) 300px);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--ink)}
-.wrap{max-width:780px;margin:auto;padding:20px 14px 48px}
-.hero{text-align:center;color:#fff;padding:8px 8px 30px}
-.logo{display:block;width:112px;height:112px;object-fit:contain;background:#fff;border-radius:22px;padding:7px;margin:0 auto 14px;box-shadow:0 8px 24px #062f1b33}
-.org{font-size:14px;font-weight:750;letter-spacing:.35px;text-transform:uppercase;color:#eaf5ef;margin:0 0 5px}
-.hero h1{margin:0;font-size:clamp(27px,6vw,40px);letter-spacing:.4px}.hero p{margin:7px 0 0;color:#eaf5ef;font-size:15px}
-.card{background:#fff;border-radius:22px;padding:24px;box-shadow:0 14px 40px #06351f22;margin-bottom:16px}.intro{border-top:5px solid var(--gold)}
-h2{font-size:19px;margin:0 0 14px;color:var(--deep)}h3{font-size:15px;margin:22px 0 8px}
-.verse{background:#f1f7f3;border-left:4px solid var(--gold);padding:14px;border-radius:10px;font-style:italic}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}@media(max-width:620px){.grid{grid-template-columns:1fr}}
-label{font-weight:650;font-size:14px;display:block;margin:0 0 6px}.req{color:var(--danger)}
-input,select,textarea{width:100%;padding:13px 12px;border:1px solid var(--line);border-radius:11px;font:inherit;background:#fff;outline:none}
-input:focus,select:focus,textarea:focus{border-color:var(--green);box-shadow:0 0 0 3px #126b4515}textarea{min-height:100px;resize:vertical}
-.checks{display:grid;grid-template-columns:1fr 1fr;gap:9px}@media(max-width:520px){.checks{grid-template-columns:1fr}}
-.check{display:flex;gap:9px;align-items:flex-start;padding:10px;border:1px solid var(--line);border-radius:10px;font-size:14px}.check input{width:auto;margin-top:3px}
-.commit{background:#fbfaf4;border:1px solid #eadfb9;padding:16px;border-radius:13px;line-height:1.6}
-.sigbox{border:1px dashed #9aaca2;border-radius:12px;overflow:hidden;background:#fafcfb}.sigbox canvas{width:100%;height:190px;display:block;touch-action:none}
-.sigtools{display:flex;justify-content:space-between;gap:10px;padding:8px;background:#f0f4f1}
-.btn{border:0;border-radius:12px;padding:14px 18px;font-weight:750;font-size:15px;cursor:pointer}.clear{background:#e9efeb;color:var(--deep)}
-.submit{width:100%;background:var(--green);color:#fff;margin-top:12px}.submit:disabled{opacity:.55;cursor:not-allowed}
-.wa{display:inline-flex;align-items:center;justify-content:center;width:100%;background:#1da851;color:#fff;text-decoration:none;border-radius:12px;padding:15px;font-weight:800}
-.success{display:none;text-align:center}.success .big{font-size:46px}.note{font-size:12px;color:var(--muted);line-height:1.5}
-.error{color:var(--danger);font-size:13px;margin-top:8px;display:none}.hidden{display:none}.progress{height:6px;background:#e9efeb;border-radius:99px;overflow:hidden;margin:10px 0 20px}.progress i{display:block;height:100%;width:100%;background:var(--gold)}
-footer{text-align:center;color:#dcebe4;font-size:12px;margin-top:18px}
-@media(max-width:520px){.logo{width:96px;height:96px;border-radius:18px}.card{padding:19px}}
-a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid #071426;outline-offset:3px}</style>
-</head>
-<body>
-<div class="wrap">
-<header class="hero">
-<img decoding="async" loading="lazy" class="logo" src="assets/cogea-elgon-logo.webp" alt="Church of God of East Africa Uganda — ELGON YOUTH CONNECT logo">
-<p class="org">Church of God of East Africa Uganda</p>
-<h1>ELGON YOUTH CONNECT</h1>
-<p>Official Youth Fellowship Registration Form</p>
-</header>
-
-<main id="formView">
-<section class="card intro">
-<h2>Welcome to COGEA ELGON YOUTH CONNECT</h2>
-<p>We are glad you are interested in joining COGEA ELGON YOUTH CONNECT — a Christian youth fellowship for spiritual growth, fellowship, prayer, service, leadership and positive community impact.</p>
-<div class="verse">“Behold, how good and how pleasant it is for brethren to dwell together in unity!” — Psalm 133:1</div>
-<p class="note">Please complete this registration form honestly. Your registration is sent securely to the fellowship registration database. Personal details and your digital signature are not displayed publicly.</p>
-</section>
-
-<form id="regForm" class="card">
-<div class="progress"><i></i></div>
-<h2>1. Personal Information</h2>
-<div class="grid">
-<div><label>Full name <span class="req">*</span></label><input id="full_name" required maxlength="120" autocomplete="name"></div>
-<div><label>WhatsApp phone number <span class="req">*</span></label><input id="whatsapp_number" required maxlength="30" autocomplete="tel" placeholder="+256..."></div>
-<div><label>Age group <span class="req">*</span></label><select id="age_group" required><option value="">Select</option><option>13-17</option><option>18-24</option><option>25-30</option><option>31+</option></select></div>
-<div><label>Gender</label><select id="gender"><option value="">Prefer not to say</option><option>Male</option><option>Female</option></select></div>
-<div><label>District</label><input id="district" maxlength="80"></div>
-<div><label>Area / Town / Sub-county</label><input id="area" maxlength="100"></div>
-</div>
-<div style="margin-top:14px"><label>Local church / congregation</label><input id="church_congregation" maxlength="150"></div>
-
-<h2 style="margin-top:28px">2. Your Faith Journey</h2>
-<label>What does your Christian faith mean to you?</label><textarea id="faith_meaning" maxlength="1500"></textarea>
-<h3>What do you hope to gain from COGEA ELGON YOUTH CONNECT?</h3>
-<div class="checks">
-<label class="check"><input type="checkbox" name="hopes" value="Spiritual growth"><span>Spiritual growth</span></label><label class="check"><input type="checkbox" name="hopes" value="Bible study"><span>Bible study</span></label><label class="check"><input type="checkbox" name="hopes" value="Prayer & fellowship"><span>Prayer & fellowship</span></label><label class="check"><input type="checkbox" name="hopes" value="Christian friendships"><span>Christian friendships</span></label><label class="check"><input type="checkbox" name="hopes" value="Leadership development"><span>Leadership development</span></label><label class="check"><input type="checkbox" name="hopes" value="Mentorship"><span>Mentorship</span></label><label class="check"><input type="checkbox" name="hopes" value="Community service"><span>Community service</span></label><label class="check"><input type="checkbox" name="hopes" value="Evangelism"><span>Evangelism</span></label><label class="check"><input type="checkbox" name="hopes" value="Personal development"><span>Personal development</span></label>
-</div>
-
-<h3>How would you like to serve?</h3>
-<div class="checks">
-<label class="check"><input type="checkbox" name="service" value="Prayer ministry"><span>Prayer ministry</span></label><label class="check"><input type="checkbox" name="service" value="Worship / music"><span>Worship / music</span></label><label class="check"><input type="checkbox" name="service" value="Bible study"><span>Bible study</span></label><label class="check"><input type="checkbox" name="service" value="Evangelism"><span>Evangelism</span></label><label class="check"><input type="checkbox" name="service" value="Youth leadership"><span>Youth leadership</span></label><label class="check"><input type="checkbox" name="service" value="Community outreach"><span>Community outreach</span></label><label class="check"><input type="checkbox" name="service" value="Media & communication"><span>Media & communication</span></label><label class="check"><input type="checkbox" name="service" value="Technology"><span>Technology</span></label><label class="check"><input type="checkbox" name="service" value="Sports & talent"><span>Sports & talent</span></label><label class="check"><input type="checkbox" name="service" value="Organizing youth activities"><span>Organizing youth activities</span></label>
-</div>
-
-<h2 style="margin-top:28px">3. Your Voice Matters</h2>
-<label>What is one major challenge facing young people in our community today?</label><textarea id="youth_challenge" maxlength="1500"></textarea>
-<label style="margin-top:14px">What would you like COGEA ELGON YOUTH CONNECT to do to help young people?</label><textarea id="contribution" maxlength="1500"></textarea>
-
-<h2 style="margin-top:28px">4. Fellowship Commitment</h2>
-<div class="commit">
-<p><strong>My Commitment</strong></p>
-<p>I desire to be part of COGEA ELGON YOUTH CONNECT for Christian fellowship, spiritual growth, service and positive youth engagement.</p>
-<p>I commit to treating fellow members with love, respect and dignity. I will strive to uphold Christian values, participate positively in fellowship activities, and use the group responsibly.</p>
-<p>I will avoid abusive, discriminatory, sexually inappropriate, hateful or deliberately harmful content and will respect the leadership and agreed guidelines of the fellowship.</p>
-<p>I understand that being part of this fellowship comes with a responsibility to encourage, support and build one another in Christ.</p>
-</div>
-<label class="check" style="margin-top:12px"><input id="commitment" type="checkbox" required><span>I have read and agree to this Christian fellowship commitment. <span class="req">*</span></span></label>
-<label id="guardianBox" class="check hidden" style="margin-top:9px"><input id="guardian_awareness" type="checkbox"><span>If I am under 18, I confirm that my parent/guardian is aware that I am requesting to join this youth fellowship.</span></label>
-
-<h2 style="margin-top:28px">5. Digital Signature</h2>
-<p class="note">Sign below using your finger or stylus. Your signature is stored with your registration and is not publicly displayed.</p>
-<div class="sigbox"><canvas id="signature" aria-label="Signature area"></canvas><div class="sigtools"><button type="button" class="btn clear" id="clearSig">Clear signature</button><span class="note" style="padding-top:7px">Sign inside the box</span></div></div>
-<div style="margin-top:14px"><label>Full name confirming this signature <span class="req">*</span></label><input id="signed_full_name" required maxlength="120"></div>
-<div class="error" id="error"></div>
-<button class="btn submit" id="submitBtn" type="submit">SUBMIT REGISTRATION</button>
-<p class="note" style="margin-top:10px;text-align:center">By submitting, you confirm that the information provided is truthful and that you are voluntarily requesting to join COGEA ELGON YOUTH CONNECT.</p>
-</form>
-</main>
-
-<section id="success" class="card success">
-<div class="big">🙏</div><h2>WELCOME TO COGEA ELGON YOUTH CONNECT!</h2>
-<p>Your registration has been received successfully.</p>
-<div class="verse">“As iron sharpens iron, so one person sharpens another.” — Proverbs 27:17</div>
-<p>You can now proceed to the fellowship WhatsApp group.</p>
-<a class="wa" href="https://chat.whatsapp.com/KggNSezlJSR3diVWhcTLek" target="_blank" rel="noopener">JOIN THE WHATSAPP FELLOWSHIP</a>
-<p class="note" style="margin-top:14px">Please use the WhatsApp group to encourage one another, share God's Word, communicate fellowship activities and build each other up.</p>
-</section>
-<footer>COGEA ELGON YOUTH CONNECT • Christian fellowship • Growing in Christ • Serving with Purpose</footer>
-</div>
-
-<script>
-const SUPABASE_URL="https://dwbgcaxwemrwheybdpya.supabase.co";
-const SUPABASE_KEY="sb_publishable_WkkWUJF8ONyX4oS2nvGNFw_jdAob8M8";
-const supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-const canvas=document.getElementById("signature"),ctx=canvas.getContext("2d");let drawing=false,hasSignature=false;
-function resizeCanvas(){const dpr=window.devicePixelRatio||1,w=canvas.clientWidth,h=190;canvas.width=w*dpr;canvas.height=h*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);ctx.lineWidth=2.2;ctx.lineCap="round";ctx.lineJoin="round";ctx.strokeStyle="#163c2b"}resizeCanvas();window.addEventListener("resize",()=>{if(!hasSignature)resizeCanvas()});
-function point(e){const r=canvas.getBoundingClientRect();const p=e.touches?e.touches[0]:e;return{x:p.clientX-r.left,y:p.clientY-r.top}}function start(e){e.preventDefault();drawing=true;hasSignature=true;const p=point(e);ctx.beginPath();ctx.moveTo(p.x,p.y)}function move(e){if(!drawing)return;e.preventDefault();const p=point(e);ctx.lineTo(p.x,p.y);ctx.stroke()}function end(){drawing=false}
-canvas.addEventListener("pointerdown",start);canvas.addEventListener("pointermove",move);canvas.addEventListener("pointerup",end);canvas.addEventListener("pointerleave",end);
-document.getElementById("clearSig").onclick=()=>{ctx.clearRect(0,0,canvas.width,canvas.height);hasSignature=false;resizeCanvas()};
 const age=document.getElementById("age_group"),guardianBox=document.getElementById("guardianBox");age.addEventListener("change",()=>guardianBox.classList.toggle("hidden",age.value!=="13-17"));
 function vals(name){return [...document.querySelectorAll('input[name="'+name+'"]:checked')].map(x=>x.value)}
 document.getElementById("regForm").addEventListener("submit",async e=>{
@@ -129,13 +5,10 @@ e.preventDefault();const err=document.getElementById("error"),btn=document.getEl
 if(!hasSignature){err.textContent="Please sign in the signature box before submitting.";err.style.display="block";return}
 if(age.value==="13-17"&&!document.getElementById("guardian_awareness").checked){err.textContent="For members aged 13–17, please confirm that a parent/guardian is aware.";err.style.display="block";return}
 if(document.getElementById("signed_full_name").value.trim().toLowerCase()!==document.getElementById("full_name").value.trim().toLowerCase()){err.textContent="The name confirming the signature should match the full name above.";err.style.display="block";return}
-btn.disabled=true;btn.textContent="SUBMITTING...";
+btn.disabled=true;btn.textContent="CONFIRMING REGISTRATION...";
 const payload={full_name:document.getElementById("full_name").value.trim(),whatsapp_number:document.getElementById("whatsapp_number").value.trim(),age_group:age.value,gender:document.getElementById("gender").value||null,district:document.getElementById("district").value.trim()||null,area:document.getElementById("area").value.trim()||null,church_congregation:document.getElementById("church_congregation").value.trim()||null,faith_meaning:document.getElementById("faith_meaning").value.trim()||null,hopes:vals("hopes"),service_areas:vals("service"),youth_challenge:document.getElementById("youth_challenge").value.trim()||null,contribution:document.getElementById("contribution").value.trim()||null,commitment_agreed:true,guardian_awareness:document.getElementById("guardian_awareness").checked,signature_data:canvas.toDataURL("image/png"),signed_full_name:document.getElementById("signed_full_name").value.trim()};
 const {error}=await supabaseClient.from("cogea_youth_registrations").insert(payload);
 if(error){console.error(error);err.textContent="We could not submit the registration. Please check your internet connection and try again.";err.style.display="block";btn.disabled=false;btn.textContent="SUBMIT REGISTRATION";return}
 document.getElementById("formView").style.display="none";document.getElementById("success").style.display="block";window.scrollTo({top:0,behavior:"smooth"});
+setTimeout(()=>{window.location.href="https://chat.whatsapp.com/KggNSezlJSR3diVWhcTLek"},1200);
 });
-</script>
-<script src="assets/mbale-media-ai.js" defer></script>
-</body>
-</html>
