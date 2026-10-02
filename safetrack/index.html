@@ -1,56 +1,47 @@
 <!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>SafeTrack — Consent-Based Location Sharing</title>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SafeTrack V2 — Authorized Safety Tracking</title>
 <style>
-*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:#f4f7fb;color:#172033}
-header{background:#102a43;color:white;padding:22px 18px}header h1{margin:0;font-size:25px}header p{margin:6px 0 0;opacity:.85}
-main{max-width:900px;margin:24px auto;padding:0 16px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:18px}
-.card{background:white;border-radius:16px;padding:20px;box-shadow:0 5px 20px #102a4312}.card h2{margin-top:0}
-button{border:0;border-radius:10px;padding:12px 16px;font-weight:700;cursor:pointer;margin:5px 5px 5px 0}
-.primary{background:#1769e0;color:white}.danger{background:#c62828;color:white}.secondary{background:#e8eef7;color:#172033}
-#status{padding:12px;border-radius:10px;background:#eef3f8;margin:12px 0}.ok{background:#e7f6ec!important;color:#176b35}.warn{background:#fff5db!important;color:#765400}
-#coords{font-family:monospace;word-break:break-word}.small{font-size:13px;color:#5c6b7a}footer{text-align:center;padding:25px;color:#667}
-</style>
-</head>
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:#f4f7fb;color:#172033}header{background:#102a43;color:#fff;padding:20px}header h1{margin:0}header p{margin:5px 0;opacity:.85}main{max-width:1000px;margin:auto;padding:18px}.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}.tabs button,.btn{border:0;border-radius:10px;padding:11px 15px;font-weight:700;cursor:pointer}.active,.primary{background:#1769e0;color:#fff}.danger{background:#c62828;color:#fff}.secondary{background:#e8eef7;color:#172033}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}.card{background:#fff;border-radius:16px;padding:18px;box-shadow:0 5px 20px #102a4312;margin-bottom:16px}.card h2{margin-top:0}.status{padding:11px;border-radius:10px;background:#eef3f8;margin:10px 0}.ok{background:#e7f6ec;color:#176b35}.warn{background:#fff5db;color:#765400}.dangerbox{background:#fdecec;color:#8b1e1e}.hidden{display:none}input,select{width:100%;padding:11px;border:1px solid #ccd6e2;border-radius:9px;margin:6px 0 12px}.mono{font-family:monospace;word-break:break-word}.map{height:230px;background:#e8eef7;border-radius:12px;display:flex;align-items:center;justify-content:center;text-align:center}.person{padding:12px;border:1px solid #dde4ed;border-radius:10px;margin:8px 0}.small{font-size:13px;color:#637083}footer{text-align:center;color:#667;padding:25px}
+</style></head>
 <body>
-<header><h1>SafeTrack</h1><p>Consent-based location sharing</p></header>
+<header><h1>SafeTrack V2</h1><p>Authorized location sharing, safety alerts and check-ins</p></header>
 <main>
-<div class="card">
-<h2>Share your location</h2>
-<p>This page only gets your location after you press the button and approve your browser's location permission. Nothing is collected secretly.</p>
-<div id="status" class="warn">Location sharing is OFF.</div>
-<button class="primary" id="start">Share My Location</button>
-<button class="danger" id="stop" disabled>Stop Sharing</button>
-<div id="coords" class="small">No location shared.</div>
+<div class="tabs"><button class="active" data-tab="dashboard">Dashboard</button><button data-tab="share">Share</button><button data-tab="safety">Safety</button><button data-tab="privacy">Privacy</button></div>
+
+<section id="dashboard">
+<div class="grid">
+<div class="card"><h2>My sharing</h2><div id="shareStatus" class="status warn">OFF — no location is being shared.</div><button class="btn primary" id="start">Start Sharing</button><button class="btn danger" id="stop" disabled>Stop Sharing</button><p id="coords" class="small">No live location.</p></div>
+<div class="card"><h2>Check-in</h2><p>Confirm that you are safe. This demo stores the last check-in on this device.</p><button class="btn primary" id="checkin">I'm Safe — Check In</button><p id="lastCheckin" class="small">No check-in yet.</p></div>
+<div class="card"><h2>SOS</h2><p>Prepare an emergency message for your chosen contact.</p><button class="btn danger" id="sos">Send SOS</button><p class="small">V2 demo opens your device's messaging app; it does not secretly send messages.</p></div>
 </div>
-<div class="grid" style="margin-top:18px">
-<div class="card"><h2>How it works</h2><ol><li>You choose to share.</li><li>Your browser asks for permission.</li><li>Your current location is displayed on this device.</li><li>Press Stop Sharing to end it.</li></ol></div>
-<div class="card"><h2>Privacy</h2><p>V1 is intentionally local: it does not upload coordinates to a server, read messages, access passwords, activate a camera or microphone, or track anyone without permission.</p></div>
-</div>
-</main><footer>SafeTrack V1 • Built for transparent, authorized location sharing</footer>
+<div class="card"><h2>Live map</h2><div id="map" class="map">Your live map will appear here after location sharing is enabled.<br>V2 frontend stores coordinates locally and does not upload them.</div></div>
+</section>
+
+<section id="share" class="hidden">
+<div class="grid">
+<div class="card"><h2>Authorized sharing</h2><label>Person/contact label</label><input id="contact" placeholder="e.g. Family member"><label>Access duration</label><select id="duration"><option>15 minutes</option><option>1 hour</option><option>24 hours</option></select><button class="btn primary" id="createCode">Create sharing code</button><div id="code" class="status hidden"></div><p class="small">The code is a demo pairing token. A production version will use a secure authenticated server and encrypted transport.</p></div>
+<div class="card"><h2>My authorized people</h2><div id="people">No authorized contacts yet.</div></div>
+</div></section>
+
+<section id="safety" class="hidden">
+<div class="grid"><div class="card"><h2>Geofence</h2><p>Define an area you are authorized to monitor.</p><input id="radius" type="number" min="50" value="500" placeholder="Radius in metres"><button class="btn secondary" id="geofence">Set Demo Geofence</button><div id="geoStatus" class="status">No geofence configured.</div></div>
+<div class="card"><h2>Safety rules</h2><ul><li>Sharing requires explicit permission.</li><li>Sharing can be stopped immediately.</li><li>Temporary access expires.</li><li>Emergency actions are visible to the user.</li></ul></div></div>
+</section>
+
+<section id="privacy" class="hidden"><div class="card"><h2>Privacy & access</h2><p><b>SafeTrack does not secretly spy on people.</b> This V2 prototype uses the browser Location API only after the user requests sharing and grants permission.</p><p>It does not read WhatsApp, SMS, passwords, keystrokes, camera or microphone, and it does not bypass device security.</p><p class="small">For real multi-user live tracking, the next backend version should use authentication, HTTPS, encrypted location records, access logs, revocation, rate limits and automatic deletion/expiry.</p></div></section>
+</main><footer>SafeTrack V2 • Transparent, authorized safety tracking</footer>
 <script>
-let watchId=null;
-const statusEl=document.getElementById('status'), coords=document.getElementById('coords'), start=document.getElementById('start'), stop=document.getElementById('stop');
-function success(p){
- const {latitude,longitude,accuracy}=p.coords;
- coords.textContent='Latitude: '+latitude.toFixed(6)+' | Longitude: '+longitude.toFixed(6)+' | Accuracy: ±'+Math.round(accuracy)+' m';
- statusEl.textContent='Location sharing is ON on this device.';
- statusEl.className='ok';
-}
-function error(e){statusEl.textContent='Location unavailable: '+e.message;statusEl.className='warn';}
-start.onclick=()=>{
- if(!navigator.geolocation){statusEl.textContent='This browser does not support location sharing.';return}
- watchId=navigator.geolocation.watchPosition(success,error,{enableHighAccuracy:true,maximumAge:10000,timeout:15000});
- start.disabled=true;stop.disabled=false;
-};
-stop.onclick=()=>{
- if(watchId!==null) navigator.geolocation.clearWatch(watchId);
- watchId=null;start.disabled=false;stop.disabled=true;
- statusEl.textContent='Location sharing is OFF.';statusEl.className='warn';
- coords.textContent='No location shared.';
-};
-</script>
-</body></html>
+let watch=null, last=null;
+const $=id=>document.getElementById(id);
+document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{document.querySelectorAll('section').forEach(s=>s.classList.add('hidden'));$(b.dataset.tab).classList.remove('hidden');document.querySelectorAll('.tabs button').forEach(x=>x.classList.remove('active'));b.classList.add('active')});
+function loc(p){last=p.coords;const a=p.coords; $('coords').textContent='Lat '+a.latitude.toFixed(6)+' | Lon '+a.longitude.toFixed(6)+' | Accuracy ±'+Math.round(a.accuracy)+' m';$('shareStatus').textContent='ON — your location is being shared on this device.';$('shareStatus').className='status ok';$('map').innerHTML='<b>Live location</b><br>'+a.latitude.toFixed(6)+', '+a.longitude.toFixed(6)+'<br><span class="small">OpenStreetMap integration can be connected in the backend version.</span>'}
+function locErr(e){$('shareStatus').textContent='Location error: '+e.message;$('shareStatus').className='status warn'}
+$('start').onclick=()=>{if(!navigator.geolocation){locErr({message:'Browser location is unavailable'});return}watch=navigator.geolocation.watchPosition(loc,locErr,{enableHighAccuracy:true,maximumAge:10000,timeout:15000});$('start').disabled=true;$('stop').disabled=false};
+$('stop').onclick=()=>{if(watch!==null)navigator.geolocation.clearWatch(watch);watch=null;$('start').disabled=false;$('stop').disabled=true;$('shareStatus').textContent='OFF — no location is being shared.';$('shareStatus').className='status warn';$('coords').textContent='No live location.';$('map').textContent='Sharing stopped.'};
+$('checkin').onclick=()=>{const t=new Date().toLocaleString();localStorage.setItem('checkin',t);$('lastCheckin').textContent='Last check-in: '+t};
+$('lastCheckin').textContent=localStorage.getItem('checkin')?'Last check-in: '+localStorage.getItem('checkin'):'No check-in yet.';
+$('sos').onclick=()=>{let msg='SAFE TRACK SOS: I need assistance. Please contact me.';if(last)msg+=' My current coordinates are '+last.latitude.toFixed(6)+', '+last.longitude.toFixed(6)+'.';location.href='sms:?body='+encodeURIComponent(msg)};
+$('createCode').onclick=()=>{const c='ST-'+Math.random().toString(36).slice(2,8).toUpperCase();$('code').textContent='Temporary sharing code: '+c+' — '+$('duration').value;$('code').classList.remove('hidden');$('people').innerHTML='<div class="person"><b>'+($('contact').value||'Authorized contact')+'</b><br><span class="small">Access: '+$('duration').value+' • Revocable</span><br><button class="btn secondary" onclick="this.parentElement.remove()">Revoke</button></div>'};
+$('geofence').onclick=()=>{$('geoStatus').textContent='Demo geofence configured: '+$('radius').value+' metres. A backend is required to compare server-side live positions.';$('geoStatus').className='status ok'};
+</script></body></html>
