@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Network Security Monitor</title>
+<style>
+body{margin:0;font-family:Inter,Arial,sans-serif;background:#0b1220;color:#e8eef8}header{padding:24px 6%;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #243149}h1{margin:0;font-size:24px}.status{color:#62e6a8}.wrap{padding:30px 6%;max-width:1200px;margin:auto}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}.card{background:#121c2e;border:1px solid #263653;border-radius:14px;padding:20px}.num{font-size:30px;font-weight:700;margin-top:8px}.muted{color:#91a0b8;font-size:13px}.section{margin-top:28px}.event{display:flex;justify-content:space-between;padding:15px 0;border-bottom:1px solid #243149}.badge{padding:5px 9px;border-radius:999px;background:#263653;font-size:12px}.warn{color:#ffd166}.ok{color:#62e6a8}.table{width:100%;border-collapse:collapse}.table th,.table td{text-align:left;padding:14px;border-bottom:1px solid #243149}.online{color:#62e6a8}@media(max-width:750px){.grid{grid-template-columns:1fr 1fr}.table{font-size:13px}header{padding:18px 5%}.wrap{padding:24px 5%}}@media(max-width:480px){.grid{grid-template-columns:1fr}}
+</style></head>
+<body><header><h1>Network Security Monitor</h1><div class="status">● SYSTEM ONLINE</div></header>
+<main class="wrap"><div class="grid">
+<div class="card"><div class="muted">DEVICES</div><div class="num" id="devices">18</div></div>
+<div class="card"><div class="muted">ONLINE</div><div class="num">16</div></div>
+<div class="card"><div class="muted">ALERTS</div><div class="num warn">2</div></div>
+<div class="card"><div class="muted">BANDWIDTH</div><div class="num">24.6</div><div class="muted">Mbps</div></div></div>
+<section class="section card"><h2>Security Events</h2>
+<div class="event"><span><span class="warn">⚠</span> Multiple failed login attempts</span><span class="badge">HIGH</span></div>
+<div class="event"><span><span class="ok">●</span> New device detected</span><span class="badge">INFO</span></div>
+<div class="event"><span><span class="ok">●</span> Device disconnected</span><span class="badge">INFO</span></div>
+<div class="event"><span><span class="warn">⚠</span> Unusual connection activity</span><span class="badge">MEDIUM</span></div></section>
+<section class="section card"><h2>Connected Devices</h2><table class="table"><thead><tr><th>Device</th><th>IP Address</th><th>Status</th><th>Last Seen</th></tr></thead><tbody>
+<tr><td>Office-PC</td><td>192.168.1.12</td><td class="online">● Online</td><td>Now</td></tr>
+<tr><td>Printer</td><td>192.168.1.20</td><td class="online">● Online</td><td>Now</td></tr>
+<tr><td>Router</td><td>192.168.1.1</td><td class="online">● Online</td><td>Now</td></tr>
+<tr><td>Laptop</td><td>192.168.1.31</td><td class="online">● Online</td><td>2m</td></tr>
+</tbody></table></section>
+<section class="section card"><h2>V1 Status</h2><p class="muted">Dashboard prototype. Live network telemetry requires a monitoring agent on a network you own or administer. No device contents, passwords, cameras, microphones, or private messages are accessed.</p></section>
+</main></body></html>
