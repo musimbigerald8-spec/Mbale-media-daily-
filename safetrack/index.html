@@ -20,13 +20,13 @@
 
 <section id="share" class="hidden">
 <div class="grid">
-<div class="card"><h2>Authorized sharing</h2><label>Person/contact label</label><input id="contact" placeholder="e.g. Family member"><label>Access duration</label><select id="duration"><option>15 minutes</option><option>1 hour</option><option>24 hours</option></select><button class="btn primary" id="createCode">Create sharing code</button><div id="code" class="status hidden"></div><p class="small">The code is a demo pairing token. A production version will use a secure authenticated server and encrypted transport.</p></div>
+<div class="card"><h2>Authorized sharing</h2><label>Person/contact label</label><input id="contact" placeholder="e.g. Family member"><label>Sharing access</label><div class="status ok">Permanent until the owner revokes access.</div><button class="btn primary" id="createCode">Create permanent sharing code</button><div id="code" class="status hidden"></div><p class="small">This prototype keeps the authorization until it is revoked. The production version will use a secure authenticated server and encrypted transport.</div>
 <div class="card"><h2>My authorized people</h2><div id="people">No authorized contacts yet.</div></div>
 </div></section>
 
 <section id="safety" class="hidden">
 <div class="grid"><div class="card"><h2>Geofence</h2><p>Define an area you are authorized to monitor.</p><input id="radius" type="number" min="50" value="500" placeholder="Radius in metres"><button class="btn secondary" id="geofence">Set Demo Geofence</button><div id="geoStatus" class="status">No geofence configured.</div></div>
-<div class="card"><h2>Safety rules</h2><ul><li>Sharing requires explicit permission.</li><li>Sharing can be stopped immediately.</li><li>Temporary access expires.</li><li>Emergency actions are visible to the user.</li></ul></div></div>
+<div class="card"><h2>Safety rules</h2><ul><li>Sharing requires explicit permission.</li><li>Sharing can be stopped immediately.</li><li>Access remains active until explicitly revoked.</li><li>Emergency actions are visible to the user.</li></ul></div></div>
 </section>
 
 <section id="privacy" class="hidden"><div class="card"><h2>Privacy & access</h2><p><b>SafeTrack does not secretly spy on people.</b> This V2 prototype uses the browser Location API only after the user requests sharing and grants permission.</p><p>It does not read WhatsApp, SMS, passwords, keystrokes, camera or microphone, and it does not bypass device security.</p><p class="small">For real multi-user live tracking, the next backend version should use authentication, HTTPS, encrypted location records, access logs, revocation, rate limits and automatic deletion/expiry.</p></div></section>
@@ -42,7 +42,7 @@ $('stop').onclick=()=>{if(watch!==null)navigator.geolocation.clearWatch(watch);w
 $('checkin').onclick=()=>{const t=new Date().toLocaleString();localStorage.setItem('checkin',t);$('lastCheckin').textContent='Last check-in: '+t};
 $('lastCheckin').textContent=localStorage.getItem('checkin')?'Last check-in: '+localStorage.getItem('checkin'):'No check-in yet.';
 $('sos').onclick=()=>{let msg='SAFE TRACK SOS: I need assistance. Please contact me.';if(last)msg+=' My current coordinates are '+last.latitude.toFixed(6)+', '+last.longitude.toFixed(6)+'.';location.href='sms:?body='+encodeURIComponent(msg)};
-$('createCode').onclick=()=>{const c='ST-'+Math.random().toString(36).slice(2,8).toUpperCase();$('code').textContent='Temporary sharing code: '+c+' — '+$('duration').value;$('code').classList.remove('hidden');$('people').innerHTML='<div class="person"><b>'+($('contact').value||'Authorized contact')+'</b><br><span class="small">Access: '+$('duration').value+' • Revocable</span><br><button class="btn secondary" onclick="this.parentElement.remove()">Revoke</button></div>'};
+$('createCode').onclick=()=>{const c='ST-'+Math.random().toString(36).slice(2,8).toUpperCase();const name=$('contact').value||'Authorized contact';$('code').textContent='Permanent sharing code: '+c;$('code').classList.remove('hidden');localStorage.setItem('safetrackContact',name);localStorage.setItem('safetrackCode',c);$('people').innerHTML='<div class="person"><b>'+name+'</b><br><span class="small">Permanent access • Revocable by the owner</span><br><button class="btn secondary" id="revoke">Revoke Access</button></div>';document.getElementById('revoke').onclick=()=>{localStorage.removeItem('safetrackContact');localStorage.removeItem('safetrackCode');$('people').textContent='No authorized contacts yet.';$('code').classList.add('hidden')}};
 $('geofence').onclick=()=>{$('geoStatus').textContent='Demo geofence configured: '+$('radius').value+' metres. A backend is required to compare server-side live positions.';$('geoStatus').className='status ok'};
 </script><script src="assets/mbale-media-ai.js" defer></script>
 </body></html>
