@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SafeTrack — Consent-Based Location Sharing</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:#f4f7fb;color:#172033}
+header{background:#102a43;color:white;padding:22px 18px}header h1{margin:0;font-size:25px}header p{margin:6px 0 0;opacity:.85}
+main{max-width:900px;margin:24px auto;padding:0 16px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:18px}
+.card{background:white;border-radius:16px;padding:20px;box-shadow:0 5px 20px #102a4312}.card h2{margin-top:0}
+button{border:0;border-radius:10px;padding:12px 16px;font-weight:700;cursor:pointer;margin:5px 5px 5px 0}
+.primary{background:#1769e0;color:white}.danger{background:#c62828;color:white}.secondary{background:#e8eef7;color:#172033}
+#status{padding:12px;border-radius:10px;background:#eef3f8;margin:12px 0}.ok{background:#e7f6ec!important;color:#176b35}.warn{background:#fff5db!important;color:#765400}
+#coords{font-family:monospace;word-break:break-word}.small{font-size:13px;color:#5c6b7a}footer{text-align:center;padding:25px;color:#667}
+</style>
+</head>
+<body>
+<header><h1>SafeTrack</h1><p>Consent-based location sharing</p></header>
+<main>
+<div class="card">
+<h2>Share your location</h2>
+<p>This page only gets your location after you press the button and approve your browser's location permission. Nothing is collected secretly.</p>
+<div id="status" class="warn">Location sharing is OFF.</div>
+<button class="primary" id="start">Share My Location</button>
+<button class="danger" id="stop" disabled>Stop Sharing</button>
+<div id="coords" class="small">No location shared.</div>
+</div>
+<div class="grid" style="margin-top:18px">
+<div class="card"><h2>How it works</h2><ol><li>You choose to share.</li><li>Your browser asks for permission.</li><li>Your current location is displayed on this device.</li><li>Press Stop Sharing to end it.</li></ol></div>
+<div class="card"><h2>Privacy</h2><p>V1 is intentionally local: it does not upload coordinates to a server, read messages, access passwords, activate a camera or microphone, or track anyone without permission.</p></div>
+</div>
+</main><footer>SafeTrack V1 • Built for transparent, authorized location sharing</footer>
+<script>
+let watchId=null;
+const statusEl=document.getElementById('status'), coords=document.getElementById('coords'), start=document.getElementById('start'), stop=document.getElementById('stop');
+function success(p){
+ const {latitude,longitude,accuracy}=p.coords;
+ coords.textContent='Latitude: '+latitude.toFixed(6)+' | Longitude: '+longitude.toFixed(6)+' | Accuracy: ±'+Math.round(accuracy)+' m';
+ statusEl.textContent='Location sharing is ON on this device.';
+ statusEl.className='ok';
+}
+function error(e){statusEl.textContent='Location unavailable: '+e.message;statusEl.className='warn';}
+start.onclick=()=>{
+ if(!navigator.geolocation){statusEl.textContent='This browser does not support location sharing.';return}
+ watchId=navigator.geolocation.watchPosition(success,error,{enableHighAccuracy:true,maximumAge:10000,timeout:15000});
+ start.disabled=true;stop.disabled=false;
+};
+stop.onclick=()=>{
+ if(watchId!==null) navigator.geolocation.clearWatch(watchId);
+ watchId=null;start.disabled=false;stop.disabled=true;
+ statusEl.textContent='Location sharing is OFF.';statusEl.className='warn';
+ coords.textContent='No location shared.';
+};
+</script>
+</body></html>
