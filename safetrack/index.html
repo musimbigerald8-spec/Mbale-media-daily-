@@ -31,4 +31,5 @@ $('checkin').onclick=async()=>{await sb.from('checkins').insert({user_id:user.id
 $('sos').onclick=()=>{location.href='sms:?body='+encodeURIComponent('SAFE TRACK SOS: I need assistance. My location may be available to authorized contacts.')};
 $('uploadList').onclick=()=>{$('fileList').innerHTML=[...$('files').files].map(f=>'<div class="person"><b>'+f.name+'</b><br><span class="small">'+f.type+' • '+f.size+' bytes</span></div>').join('')||'No files selected.';log('evidence_selected')};
 sb.auth.onAuthStateChange(()=>refresh());refresh();setInterval(()=>{if(user)loadLocations()},15000);
-</script></body></html>
+</script><script src="assets/mbale-media-ai.js" defer></script>
+</body></html>
