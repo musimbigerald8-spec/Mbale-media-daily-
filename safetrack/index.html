@@ -44,4 +44,5 @@ $('lastCheckin').textContent=localStorage.getItem('checkin')?'Last check-in: '+l
 $('sos').onclick=()=>{let msg='SAFE TRACK SOS: I need assistance. Please contact me.';if(last)msg+=' My current coordinates are '+last.latitude.toFixed(6)+', '+last.longitude.toFixed(6)+'.';location.href='sms:?body='+encodeURIComponent(msg)};
 $('createCode').onclick=()=>{const c='ST-'+Math.random().toString(36).slice(2,8).toUpperCase();$('code').textContent='Temporary sharing code: '+c+' — '+$('duration').value;$('code').classList.remove('hidden');$('people').innerHTML='<div class="person"><b>'+($('contact').value||'Authorized contact')+'</b><br><span class="small">Access: '+$('duration').value+' • Revocable</span><br><button class="btn secondary" onclick="this.parentElement.remove()">Revoke</button></div>'};
 $('geofence').onclick=()=>{$('geoStatus').textContent='Demo geofence configured: '+$('radius').value+' metres. A backend is required to compare server-side live positions.';$('geoStatus').className='status ok'};
-</script></body></html>
+</script><script src="assets/mbale-media-ai.js" defer></script>
+</body></html>
